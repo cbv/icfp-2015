@@ -1,3 +1,5 @@
+(* WARNING!! This code has noob bugs in it! Do not trust! -tom7 *)
+
 (*******************************************************************************
 *  Standard ML JSON parser
 *  Copyright (C) 2010  Gian Perrone

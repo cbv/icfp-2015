@@ -58,6 +58,34 @@ struct
       deuniformize_coord (ux, uy)
     end
 
+  (* Rotate about the origin. We won't rotate any other way, because
+     what we actually do is compute the 6 rotations of the piece
+     at the beginning, and then only translate.
+
+     (x, y) are in uniform coordinates.
+     n is the clockwise angle in hexgrees. *)
+  fun rotate_uniform n (ux, uy) =
+    let
+      val uxx = ref ux
+      val uyy = ref uy
+    in
+      Util.for 0 (n - 1)
+      (fn _ =>
+       let in
+         uxx := ~ (!uyy);
+         uyy := (!uxx + !uyy)
+       end);
+      (!uxx, !uyy)
+    end
+
+  fun rotate n (x, y) =
+    let
+      val (ux, uy) = uniformize_coord (x, y)
+      val (ux, uy) = rotate_uniform n (ux, uy)
+    in
+      deuniformize_coord (ux, uy)
+    end
+
   fun fromjson s =
     let
       datatype json = datatype JSONDatatypeCallbacks.json
