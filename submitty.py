@@ -28,6 +28,7 @@ if __name__ == "__main__":
    if args.sol is None and args.prob is None and args.seed is None:
       if args.filename is None:
          print "Either a filename or a problem/seed/tag combo must be given"
+         parser.print_help()
          sys.exit(1)
       if args.prob is not None: fail("Both filename and problem given")
       if args.seed is not None: fail("Both filename and seed given")
