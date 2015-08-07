@@ -16,7 +16,7 @@ struct
 
   type legalchar = char
 
-  (* Assuming the pivot is at 0,0 *)
+  (* Vector of members (filled spaces), assuming the pivot is at 0,0 *)
   type piece =
     (int * int) Vector.vector
 
@@ -99,7 +99,46 @@ struct
   fun moveresultstring (Continue {scored, lines, locked}) = "Continue..."
     | moveresultstring (Done {reason}) = "Done..."
 
-  fun toascii _ = "sorry, unimplemented"
+  (* TODO: Use this beauty, but might need to use ansi backgrounds...
+  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/
+  /  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__
+  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/
+  /  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__
+  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/
+*)
+
+  fun toascii (state as
+               S { problem = P {width, height, ... },
+                   board, x = px, y = py, ... }) =
+    let
+      (*
+         . . . . .
+          . . O O .
+         . # . O .
+          . # . . .
+
+          *)
+
+      fun oneline y =
+        let val r = ref
+          (if y mod 2 = 0
+           then "" (* empty half *)
+           else " ")
+        in
+          (* XXX also draw current piece. *)
+          Util.for 0 (width - 1)
+          (fn x =>
+           r := !r ^
+           (if isfull (state, x, y)
+            then "# "
+            else ". "));
+          !r
+        end
+
+    in
+      StringUtil.delimit "\n" (List.tabulate (height, oneline))
+    end
+
 
   val dw   : legalchar vector = Vector.fromList (explode "p'!.03")
   val de   : legalchar vector = Vector.fromList (explode "bcefy2")
