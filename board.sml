@@ -63,6 +63,7 @@ struct
            (* XXX Need history of commands, for word scoring *)
 
            (* XXX history of where we've been *)
+
            rng: RNG.rng ref }
 
     (*
@@ -309,6 +310,7 @@ struct
 
   fun clone_array a =
     (* PERF There must be a faster way to do this?? *)
+    (* I think ArraySlice *)
     Array.tabulate (Array.length a, fn i => Array.sub(a, i))
 
   fun clone (S { board, problem, score, rng, piece, a, x, y }) : state =

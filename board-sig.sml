@@ -34,6 +34,7 @@ sig
 
   (* always functional; this denotes a specific piece that
      can occur *)
+  (* TODO: Expose symmetry group, at least; it's useful *)
   type piece
 
   val fromjson : string -> problem
