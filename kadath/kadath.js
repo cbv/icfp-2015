@@ -17,7 +17,7 @@ function load_problem(problemNumber) {
             g_board.filled.forEach(function(p) {
               g_board.occup[p.y][p.x] = true;
             });
-            g_board.cur_piece = {unit_id: 0, rotation: 1, translation: {x:0, y:0}};
+            g_board.cur_piece = {unit_id: 0, rotation: 1, translation: {x:0, y:4}};
             draw_board(g_board);
           }});
 }
@@ -84,6 +84,9 @@ function draw_hex(scale, xx, yy, c) {
   d.restore();
 }
 
+function valid_pt(board, pt) {
+  return pt.x >= 0 && pt.y >= 0 && pt.x < board.width && pt.y < board.height;
+}
 function draw_board(board) {
   d.clearRect(0,0,w,h);
 
@@ -103,13 +106,15 @@ function draw_board(board) {
         rotate_about(uniformize_coords(member), upivot, board.cur_piece.rotation)
       )
     );
-    if (xmember.x >= 0 && xmember.y >= 0 && xmember.x < board.width && xmember.y < board.height) {
+    if (valid_pt(board, xmember)) {
       board.color[xmember.y][xmember.x] = "#f54";
     }
   });
   var xpivot = deuniformize_coords(vadd(board.cur_piece.translation, upivot));
-  board.color[xpivot.y][xpivot.x] = board.color[xpivot.y][xpivot.x] == "#f54" ?
-    "#f5f" : "#ff0";
+  if (valid_pt(board, xpivot)) {
+    board.color[xpivot.y][xpivot.x] = board.color[xpivot.y][xpivot.x] == "#f54" ?
+      "#f5f" : "#ff0";
+  }
 
   var scale = 0.5 * Math.min(w, h) / Math.max(board.width, board.height);
 
@@ -123,29 +128,57 @@ function draw_board(board) {
 load_problem(0);
 console.log("Keybindings:\n ','/'.' prev/next problem\n '/','\\' rotate piece cw,ccw \n 'uihknm' move piece \n '['/']' prev/next unit");
 $(document).on('keydown', function(e) {
-  // can use "," and "." keys to move around problems
-  console.log(e.keyCode);
-  if (e.keyCode == 188) {
+  //   console.log(e.keyCode);
+  if (e.keyCode == 188) { // ","
     problemNumber--;
     load_problem(problemNumber);
   }
-  if (e.keyCode == 190) {
+  if (e.keyCode == 190) { // "."
     problemNumber++;
     load_problem(problemNumber);
   }
-  if (e.keyCode == 191) {
+  if (e.keyCode == 191) { // "/"
     g_board.cur_piece.rotation = (g_board.cur_piece.rotation + 1) % 6;
     draw_board(g_board);
   }
-  if (e.keyCode == 85) { // "u"
-    g_board.cur_piece.translation.x--;
-    g_board.cur_piece.translation.y--;
-    draw_board(g_board);
-  }
-
-  if (e.keyCode == 220) {
+  if (e.keyCode == 220) { // "\\"
     g_board.cur_piece.rotation = (g_board.cur_piece.rotation + 5) % 6;
     draw_board(g_board);
   }
+  if (e.keyCode == 85) { // "u"
+    g_board.cur_piece.translation.y--;
+    draw_board(g_board);
+  }
+  if (e.keyCode == 73) { // "i"
+    g_board.cur_piece.translation.x++;
+    g_board.cur_piece.translation.y--;
+    draw_board(g_board);
+  }
+  if (e.keyCode == 72) { // "h"
+    g_board.cur_piece.translation.x--;
+    draw_board(g_board);
+  }
+  if (e.keyCode == 75) { // "k"
+    g_board.cur_piece.translation.x++;
+    draw_board(g_board);
+  }
+  if (e.keyCode == 78) { // "n"
+    g_board.cur_piece.translation.x--;
+    g_board.cur_piece.translation.y++;
+    draw_board(g_board);
+  }
+  if (e.keyCode == 77) { // "m"
+    g_board.cur_piece.translation.y++;
+    draw_board(g_board);
+  }
+  if (e.keyCode == 219) { // "["
+    g_board.cur_piece.unit_id = (g_board.cur_piece.unit_id + g_board.units.length- 1) % g_board.units.length;
+    draw_board(g_board);
+  }
+  if (e.keyCode == 221) { // "]"
+    g_board.cur_piece.unit_id = (g_board.cur_piece.unit_id + 1) % g_board.units.length;
+    draw_board(g_board);
+  }
+
 
 });
