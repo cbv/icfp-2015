@@ -7,8 +7,10 @@ sml-lib/njlib/lib-base-sig.sml
 sml-lib/njlib/lib-base.sml
 sml-lib/njlib/ord-key-sig.sml
 sml-lib/njlib/ord-map-sig.sml
+sml-lib/njlib/ord-set-sig.sml
 sml-lib/njlib/splaytree-sig.sml
 sml-lib/njlib/splaytree.sml
+sml-lib/njlib/splay-set-fn.sml
 sml-lib/njlib/splay-map-fn.sml
 
 sml-lib/util/util-sig.sml
@@ -29,6 +31,8 @@ sml-lib/util/script.sml
 json.sml
 
 ansi.sml
+sml-lib/algo/heap-sig.sml
+sml-lib/algo/heap.sml
 
 rng-sig.sml
 rng.sml
@@ -37,5 +41,11 @@ phrases.sml
 
 board-sig.sml
 board.sml
+
+tactic-sig.sml
+(* astar.sml *)
+
+forwardchain-sig.sml
+forwardchain.sml
 
 testboard.sml

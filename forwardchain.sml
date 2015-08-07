@@ -1,7 +1,6 @@
 structure ForwardChain :> FORWARD_CHAIN =
 struct
-
-  exception Unimplemented
+  open Board
 
   datatype PieceLocation = PL of {px: int, py: int, a: int, fixed: bool}
 
@@ -24,10 +23,6 @@ struct
      else if (not fixed0 andalso fixed1)
      then GREATER
      else EQUAL
-
-
-  fun piece_position _ = raise Unimplemented
-  fun piece_angle _ = raise Unimplemented
 
   structure LocSet = SplaySetFn(struct
                                    type ord_key = PieceLocation
