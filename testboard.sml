@@ -18,6 +18,8 @@ struct
       print "There is nothing, only Zuulthuhu.\n";
       loop (RNG.fromseed 0w17, 20)
     end
+  handle Board.Board s =>
+    TextIO.output (TextIO.stdErr, "Uncaught Board: " ^ s ^ "\n")
 
 end
 

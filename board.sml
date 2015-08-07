@@ -109,7 +109,7 @@ struct
           seeds = Vector.fromList (map Word32.fromInt seeds),
           sourcelength = sourcelength,
           start = Array.vector a,
-          pieces = Vector.fromList (map Piece (List (j, "pieces"))) }
+          pieces = Vector.fromList (map Piece (List (j, "units"))) }
     end
 
   fun clone_array a =
