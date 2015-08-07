@@ -3,6 +3,20 @@ fullscreen(); // sets global variables w, h
 var R3 = Math.sqrt(3) / 2;
 var problemNumber = 0;
 
+function init_piece(board, unit_id) {
+  g_board.cur_piece = {unit_id: unit_id, rotation:0};
+  var members = board.units[unit_id].members;
+  console.log(JSON.stringify(members));
+  var xs = members.map(function(z) { return z.x; });
+  var ys = members.map(function(z) { return z.x; });
+  var minx = _.min(xs);
+  var maxx = _.max(xs);
+  var miny = _.min(ys);
+  var maxy = _.max(ys);
+  g_board.cur_piece.translation = {x: Math.ceil((board.width - minx - maxx) / 2) - 1, y: -miny }
+  console.log(JSON.stringify(g_board.cur_piece.translation));
+}
+
 function load_problem(problemNumber) {
   $.ajax("../qualifiers/problem_" + problemNumber + ".json",
          {dataType: "json",
@@ -17,7 +31,7 @@ function load_problem(problemNumber) {
             g_board.filled.forEach(function(p) {
               g_board.occup[p.y][p.x] = true;
             });
-            g_board.cur_piece = {unit_id: 0, rotation: 1, translation: {x:0, y:4}};
+            init_piece(g_board, 0);
             draw_board(g_board);
           },
           error:function(error) {
@@ -181,11 +195,11 @@ $(document).on('keydown', function(e) {
     draw_board(g_board);
   }
   if (e.keyCode == 219) { // "["
-    g_board.cur_piece.unit_id = (g_board.cur_piece.unit_id + g_board.units.length- 1) % g_board.units.length;
+    init_piece(g_board, (g_board.cur_piece.unit_id + g_board.units.length- 1) % g_board.units.length);
     draw_board(g_board);
   }
   if (e.keyCode == 221) { // "]"
-    g_board.cur_piece.unit_id = (g_board.cur_piece.unit_id + 1) % g_board.units.length;
+    init_piece(g_board, (g_board.cur_piece.unit_id + 1) % g_board.units.length);
     draw_board(g_board);
   }
 
