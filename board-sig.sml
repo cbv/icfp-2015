@@ -34,7 +34,7 @@ sig
 
   (* always functional; this denotes a specific piece that
      can occur *)
-  type member
+  type piece
 
   (* val read_problem : json -> problem *)
 
@@ -44,12 +44,15 @@ sig
   (* legal command characters *)
   eqtype legalchar
 
-  val members : problem -> member vector
+  val pieces : problem -> piece vector
 
   (* Restart the problem, creating the initial state. It's
      fine to have multiple outstanding states for the same
      problem. *)
   val reset : problem -> state
+
+  (* Make an exact copy of the state with a new identity *)
+  val clone : state -> state
 
   (* Get an arbitrary character for the command,
      in case we aren't concerned with spelling

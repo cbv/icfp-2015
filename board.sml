@@ -16,22 +16,41 @@ struct
 
   type legalchar = char
 
+  (* Assuming the pivot is at 0,0 *)
+  type piece =
+    (int * int) Vector.vector
+
   datatype problem =
-    P of { start: bool Vector.vector,
+    P of { start: bool vector,
            width: int,
-           height : int
-           (* ... *)
+           height : int,
+           sourcelength : int,
+           seeds : Word32.word vector,
+           (* aka units, an ml keyword *)
+           pieces : piece vector
           }
 
-  (* Assuming the origin is at 0,0 *)
-  type member =
-    (int * int) Vector.vector
-  (* XXX *)
-  type state = unit
+  datatype state =
+    S of { board: bool array,
+           score: int ref,
+           (* position of pivot *)
+           x: int ref,
+           y: int ref,
+           rng: RNG.rng ref }
+
+  fun clone_array a =
+    (* PERF There must be a faster way to do this?? *)
+    Array.tabulate (Array.length a, fn i => Array.sub(a, i))
+
+  fun clone (S { board, score, x, y, rng }) : state =
+           S { board = clone_array board,
+               score = ref (!score),
+               x = ref (!x),
+               y = ref (!y),
+               rng = ref (!rng) }
 
   fun isempty _ = raise Board "unimplemented"
   fun isfull _ = raise Board "unimplemented"
-  fun members _ = raise Board "unimplemented"
   fun move _ = raise Board "unimplemented"
   fun move_undo _ = raise Board "unimplemented"
   fun move_unwind _ = raise Board "unimplemented"
@@ -142,8 +161,9 @@ struct
       c
     end
 
-  fun size (P {width, height, ...}) = (width, height)
-  fun width (P {width, ...}) = width
-  fun height (P {height, ...}) = height
+  fun size (P { width, height, ... }) = (width, height)
+  fun width (P { width, ... }) = width
+  fun height (P { height, ... }) = height
+  fun pieces (P { pieces, ... }) = pieces
 
 end
