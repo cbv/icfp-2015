@@ -52,8 +52,15 @@ struct
            (* Angle in hexgrees [0, 5] *)
            a: int ref,
 
+           (* XXX Need history of commands, for word scoring *)
+
            (* XXX history of where we've been *)
            rng: RNG.rng ref }
+
+  fun delta E = (1, 0)
+    | delta W = (~1, 0)
+    | delta SE = (0, 1)
+    | delta SW = (~1, 1)
 
   fun uniformize_coord (x, y) =
     (x - y div 2, y)
@@ -211,28 +218,11 @@ struct
           x = ref startx,
           y = ref starty,
           a = ref starta,
+          (* PERF ArraySlice. *)
           board = Array.tabulate
           (Vector.length start,
            (fn x => Vector.sub(start, x))) }
     end
-
-  fun move_undo (S { ... }, ch) =
-    let in
-      { result = raise Board "unimplemented",
-        undo = raise Board "unimplemented" }
-    end
-
-  fun move (s, c) = #result (move_undo (s, c))
-
-  fun move_unwind (s, c, k) =
-    let
-      val {result, undo} = move_undo (s, c)
-      val r = k result
-    in
-      undo ();
-      r
-    end
-
 
   fun ispiece (S {x, y, piece, a, ...}, xx, yy) =
     let
@@ -247,7 +237,6 @@ struct
 
   fun ispivot (S {x, y, ...}, xx, yy) = xx = !x andalso yy = !y
   fun pivot (S { x, y, ... }) = (!x, !y)
-
 
   fun dirstring E = "E"
     | dirstring W = "W"
@@ -397,6 +386,69 @@ struct
       ignore (charcommand c);
       c
     end
+
+  (*
+  datatype dir = E | W | SE | SW
+  datatype turn = CW | CCW
+  datatype command = D of dir | T of turn
+  *)
+
+  fun move_undo (state as
+                 S { rng, score, piece, problem, x, y, a, board },
+                 ch : legalchar) =
+    let
+      (* PERF! Avoid copying the board; the idea here is that we
+         can just un-fill any cells that are locked, if that happens. *)
+      val old_state = clone state
+      fun undo () =
+        let
+          val S { rng = old_rng, score = old_score, x = old_x, y = old_y,
+                  a = old_a, board = old_board, ... } = old_state
+        in
+          rng := !old_rng;
+          score := !old_score;
+          x := !old_x;
+          y := !old_y;
+          a := !old_a;
+          Array.copy {di = 0, dst = board, src = old_board}
+        end
+    in
+      case charcommand ch of
+        D dir =>
+          let
+            val (dx, dy) = delta dir
+            val (nx, ny) = translate (dx, dy) (!x, !y)
+          in
+            x := nx;
+            y := ny;
+            (* XXX check locking. *)
+            (* XXX check lines. *)
+            { result = Continue { scored = 0, lines = 0, locked = false },
+              undo = undo }
+          end
+      | T turn =>
+          let
+            val angle = case turn of CW => 1 | CCW => ~1
+            val a = (!a + angle) mod 6
+          in
+            (* XXX check locking. *)
+            (* XXX check lines. *)
+            { result = Continue { scored = 0, lines = 0, locked = false },
+              undo = undo }
+          end
+    end
+
+  fun move (s, c) = #result (move_undo (s, c))
+
+  fun move_unwind (s, c, k) =
+    let
+      val {result, undo} = move_undo (s, c)
+      val r = k result
+    in
+      undo ();
+      r
+    end
+
 
   fun size (P { width, height, ... }) = (width, height)
   fun width (P { width, ... }) = width
