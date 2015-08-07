@@ -39,28 +39,33 @@ struct
                Board.anychar (Board.T Board.CW), Board.anychar (Board.T Board.CCW)
               ]
 
-
-  fun move_helper state move =
+  fun move_helper (state, visitedSetRef) move =
     let val {result, undo} = Board.move_undo (state, move);
         val () =
         (case result of
              Board.Continue {scored, lines, locked} =>
               let val pl = piece_location(state, locked)
-              in ()
+              in
+                  if LocSet.member (!visitedSetRef, pl)
+                  then () (* already visited *)
+                  else let val () = visitedSetRef := (LocSet.add (!visitedSetRef, pl));
+                       in
+                           helper (state, visitedSetRef)
+                       end
               end
           |  Board.Done {reason}  => ())
     in
-        undo ();
-        ()
+        undo ()
     end
 
-  fun helper (state, visitedSet) =
-    List.app (move_helper state) moves
+  and helper (state, visitedSetRef) =
+    List.app (move_helper (state, visitedSetRef)) moves
 
   fun accessible_locations state =
-    let val set = LocSet.singleton (piece_location (state, false)); (* XXX locked? *)
+    let val setRef = ref (LocSet.singleton (piece_location (state, false))); (* XXX locked? *)
+        val () = helper (state, setRef);
     in
-        LocSet.listItems set
+        LocSet.listItems (!setRef)
     end
 
 end
