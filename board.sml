@@ -16,6 +16,27 @@ struct
 
   type legalchar = char
 
+  datatype problem =
+    P of { start: bool Vector.vector,
+           width: int,
+           height : int
+           (* ... *)
+          }
+
+  (* Assuming the origin is at 0,0 *)
+  type member =
+    (int * int) Vector.vector
+  (* XXX *)
+  type state = unit
+
+  fun isempty _ = raise Board "unimplemented"
+  fun isfull _ = raise Board "unimplemented"
+  fun members _ = raise Board "unimplemented"
+  fun move _ = raise Board "unimplemented"
+  fun move_undo _ = raise Board "unimplemented"
+  fun move_unwind _ = raise Board "unimplemented"
+  fun reset _ = raise Board "unimplemented"
+
   fun dirstring E = "E"
     | dirstring W = "W"
     | dirstring SE = "SE"
@@ -46,6 +67,14 @@ struct
     | commandorder (D _, _) = LESS
     | commandorder (_, D _) = GREATER
     | commandorder (T t, T tt) = turnorder (t, tt)
+
+  fun reasonstring _ = "sorry, unimplemented"
+
+  (* XXX show everything *)
+  fun moveresultstring (Continue {scored, lines, locked}) = "Continue..."
+    | moveresultstring (Done {reason}) = "Done..."
+
+  fun toascii _ = "sorry, unimplemented"
 
   val dw   : legalchar vector = Vector.fromList (explode "p'!.03")
   val de   : legalchar vector = Vector.fromList (explode "bcefy2")
@@ -113,5 +142,8 @@ struct
       c
     end
 
+  fun size (P {width, height, ...}) = (width, height)
+  fun width (P {width, ...}) = width
+  fun height (P {height, ...}) = height
 
 end

@@ -60,8 +60,19 @@ sig
   val legalize : char -> legalchar
   val getchars : command -> legalchar vector
   val charcommand : legalchar -> command
+
   val move : problem * state * legalchar -> moveresult
 
+  (* Apply the move, updating the state, and then call the continuation
+     with the result. When the continuation returns, undo the move
+     (assuming it is the ONLY change to the state) and return whatever
+     the continuation returned. *)
+  val move_unwind : problem * state * legalchar -> (moveresult -> 'a) -> 'a
+
+  (* Also return a function that undoes the change to the state (assuming
+     it is the ONLY change); this function should be called at most once. *)
+  val move_undo : problem * state * legalchar -> { result: moveresult,
+                                                   undo: unit -> unit }
 
   (* Human-readable for interactivity *)
   val toascii : problem * state -> string
