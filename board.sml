@@ -32,6 +32,7 @@ struct
 
   datatype state =
     S of { board: bool array,
+           problem: problem,
            score: int ref,
            (* position of pivot *)
            x: int ref,
@@ -42,15 +43,20 @@ struct
     (* PERF There must be a faster way to do this?? *)
     Array.tabulate (Array.length a, fn i => Array.sub(a, i))
 
-  fun clone (S { board, score, x, y, rng }) : state =
+  fun clone (S { board, problem, score, x, y, rng }) : state =
            S { board = clone_array board,
+               problem = problem,
                score = ref (!score),
                x = ref (!x),
                y = ref (!y),
                rng = ref (!rng) }
 
-  fun isempty _ = raise Board "unimplemented"
-  fun isfull _ = raise Board "unimplemented"
+  fun isfull (S { board, problem = P{ width, height, ... }, ... },
+              x, y) =
+    x < 0 orelse y < 0 orelse x >= width orelse y >= height orelse
+    Array.sub (board, y * width + x)
+  fun isempty (state, x, y) = not (isfull (state, x, y))
+
   fun move _ = raise Board "unimplemented"
   fun move_undo _ = raise Board "unimplemented"
   fun move_unwind _ = raise Board "unimplemented"

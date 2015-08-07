@@ -80,6 +80,8 @@ sig
   (* Human-readable for interactivity *)
   val toascii : problem * state -> string
 
+  (* Is the cell full/empty? Doesn't count the current active piece.
+     Anything outside the valid bounds of the board counts as "full." *)
   val isfull : state * int * int -> bool
   val isempty : state * int * int -> bool
 
