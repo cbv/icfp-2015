@@ -16,7 +16,7 @@ struct
 
   type legalchar = char
 
-  (* Assuming the pivot is at 0,0 *)
+  (* Vector of members (filled spaces), assuming the pivot is at 0,0 *)
   type piece =
     (int * int) Vector.vector
 
@@ -32,6 +32,7 @@ struct
 
   datatype state =
     S of { board: bool array,
+           problem: problem,
            score: int ref,
            (* position of pivot *)
            x: int ref,
@@ -42,15 +43,20 @@ struct
     (* PERF There must be a faster way to do this?? *)
     Array.tabulate (Array.length a, fn i => Array.sub(a, i))
 
-  fun clone (S { board, score, x, y, rng }) : state =
+  fun clone (S { board, problem, score, x, y, rng }) : state =
            S { board = clone_array board,
+               problem = problem,
                score = ref (!score),
                x = ref (!x),
                y = ref (!y),
                rng = ref (!rng) }
 
-  fun isempty _ = raise Board "unimplemented"
-  fun isfull _ = raise Board "unimplemented"
+  fun isfull (S { board, problem = P{ width, height, ... }, ... },
+              x, y) =
+    x < 0 orelse y < 0 orelse x >= width orelse y >= height orelse
+    Array.sub (board, y * width + x)
+  fun isempty (state, x, y) = not (isfull (state, x, y))
+
   fun move _ = raise Board "unimplemented"
   fun move_undo _ = raise Board "unimplemented"
   fun move_unwind _ = raise Board "unimplemented"
@@ -93,7 +99,46 @@ struct
   fun moveresultstring (Continue {scored, lines, locked}) = "Continue..."
     | moveresultstring (Done {reason}) = "Done..."
 
-  fun toascii _ = "sorry, unimplemented"
+  (* TODO: Use this beauty, but might need to use ansi backgrounds...
+  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/
+  /  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__
+  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/
+  /  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__
+  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/
+*)
+
+  fun toascii (state as
+               S { problem = P {width, height, ... },
+                   board, x = px, y = py, ... }) =
+    let
+      (*
+         . . . . .
+          . . O O .
+         . # . O .
+          . # . . .
+
+          *)
+
+      fun oneline y =
+        let val r = ref
+          (if y mod 2 = 0
+           then "" (* empty half *)
+           else " ")
+        in
+          (* XXX also draw current piece. *)
+          Util.for 0 (width - 1)
+          (fn x =>
+           r := !r ^
+           (if isfull (state, x, y)
+            then "# "
+            else ". "));
+          !r
+        end
+
+    in
+      StringUtil.delimit "\n" (List.tabulate (height, oneline))
+    end
+
 
   val dw   : legalchar vector = Vector.fromList (explode "p'!.03")
   val de   : legalchar vector = Vector.fromList (explode "bcefy2")
