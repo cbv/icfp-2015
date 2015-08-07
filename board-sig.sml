@@ -36,7 +36,7 @@ sig
      can occur *)
   type piece
 
-  (* val read_problem : json -> problem *)
+  val fromjson : string -> problem
 
   (* mutable version *)
   type state

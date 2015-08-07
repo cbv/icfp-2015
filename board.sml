@@ -36,8 +36,86 @@ struct
            score: int ref,
            (* XXX position of pivot *)
 
-           (* XXX history of where we've been*)
+           (* XXX history of where we've been *)
            rng: RNG.rng ref }
+
+  local
+    fun uniformize_coords (x, y) =
+      (x - y div 2, y)
+
+    fun deuniformize_coords (x, y) =
+      (x + y div 2, y)
+  in
+
+    (* Correctly translate a point (x, y) by (dx, dy) where (dx, dy) are
+       "east" and "south-east". This is not just pointwise addition
+       because the grid is ragged; "down" moves alternatingly SE and
+       SW in "spec" coordinates. *)
+    fun translate (dx, dy) (x, y) =
+      let
+        val (ux, uy) = uniformize_coords (x, y)
+        val ux = ux + dx
+        val uy = uy + dy
+      in
+        deuniformize_coords (ux, uy)
+      end
+  end
+
+  fun fromjson s =
+    let
+      datatype json = datatype JSONDatatypeCallbacks.json
+
+      val j = JSON.parse s
+
+      fun UnInt (JInt i) = i
+        | UnInt _ = raise Board "Not an int"
+
+      fun Int (JMap m, key) =
+        (case ListUtil.Alist.find op= m key of
+           SOME (JInt i) => i
+         | _ => raise Board ("Expected int for key " ^ key))
+        | Int _ = raise Board "Not JMap"
+
+      fun List (JMap m, key) =
+        (case ListUtil.Alist.find op= m key of
+           SOME (JArray l) => l
+         | _ => raise Board ("Expected list for key " ^ key))
+        | List _ = raise Board "Not JMap"
+
+      fun Coord j = (Int (j, "x"), Int (j, "y"))
+
+      val width = Int (j, "width")
+      val height = Int (j, "height")
+      val id = Int (j, "id")
+      val filled = map Coord (List (j, "filled"))
+      val sourcelength = Int (j, "sourceLength")
+      (* TODO: Harden against these being bigger than 2^31, negative, etc. *)
+      val seeds = map UnInt (List (j, "sourceSeeds"))
+
+      val a = Array.array (width * height, false)
+    in
+      app (fn (x, y) =>
+           Array.update (a, y * width + x, true)) filled;
+      P { width = width, height = height,
+          seeds = Vector.fromList (map Word32.fromInt seeds),
+          sourcelength = sourcelength,
+          start = Array.vector a,
+          pieces = Vector.fromList []
+          }
+          (*
+
+  datatype problem =
+    P of { start: bool vector,
+           width: int,
+           height : int,
+           sourcelength : int,
+           seeds : Word32.word vector,
+           (* aka units, an ml keyword *)
+           pieces : piece vector
+          }
+    *)
+
+    end
 
   fun clone_array a =
     (* PERF There must be a faster way to do this?? *)
@@ -103,6 +181,8 @@ struct
     | moveresultstring (Done {reason}) = "Done..."
 
   (* TODO: Use this beauty, but might need to use ansi backgrounds...
+
+     WRONG NOT BEAUTIFUL!!!
       \__/  \__/  \__/  \__/  \__/  \__/
       /  \__/  \__/  \__/  \__/  \__/  \__
       \__/  \__/  \__/  \__/  \__/  \__/
