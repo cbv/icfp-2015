@@ -78,6 +78,9 @@ struct
      presence
      *)
 
+  fun piece_position (S {x, y, ...}) = (!x, !y)
+  fun piece_angle (S {a, ...}) = !a
+
   fun delta E = (1, 0)
     | delta W = (~1, 0)
     | delta SE = (0, 1)

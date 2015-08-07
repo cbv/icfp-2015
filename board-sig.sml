@@ -41,6 +41,9 @@ sig
   (* mutable version *)
   type state
 
+  val piece_position : state -> int * int
+  val piece_angle : state -> int
+
   (* legal command characters *)
   eqtype legalchar
 
