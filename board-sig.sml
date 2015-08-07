@@ -6,18 +6,19 @@ sig
   datatype dir = E | W | SE | SW
   datatype turn = CW | CCW
   datatype command = D of dir | T of turn
-  datatype reason =
-      (* Gracefully used all pieces *)
-      COMPLETE
-      (* Last move locked a piece, but there's no space
-         to place the next one. *)
-    | NO_SPACE
-      (* Bad command? *)
-    | ERROR
-  datatype moveresult =
-      Continue of { scored: int, lines: int, locked: bool }
-    | Done of { reason: reason }
+  datatype status =
+    (* Game keeps going *)
+    CONTINUE
+  (* Gracefully used all pieces *)
+  | COMPLETE
+  (* Last move locked a piece, but there's no space
+     to place the next one. *)
+  | NO_SPACE
+  (* Bad command? *)
+  | ERROR
 
+  datatype moveresult =
+    M of { scored: int, lines: int, locked: bool, status: status }
 
   val dirstring : dir -> string
   val dirorder : dir * dir -> order
@@ -25,9 +26,9 @@ sig
   val turnorder : turn * turn -> order
   val commandstring : command -> string
   val commandorder : command * command -> order
-  val reasonstring : reason -> string
+  val statusstring : status -> string
   val moveresultstring : moveresult -> string
-  (* val reasonorder : reason -> order *)
+  (* val statusorderorder : status -> order *)
 
   (* The problem is always functional. *)
   type problem

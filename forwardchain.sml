@@ -32,18 +32,21 @@ struct
   structure LocSet = SplaySetFn(struct
                                    type ord_key = PieceLocation
                                    val compare = compare
-                                   end)
+                                end)
 
-  val moves = [Board.anychar (Board.D Board.E), Board.anychar (Board.D Board.W),
-               Board.anychar (Board.D Board.SE), Board.anychar (Board.D Board.SW),
-               Board.anychar (Board.T Board.CW), Board.anychar (Board.T Board.CCW)
-              ]
+  datatype command = datatype Board.command
+  datatype dir = datatype Board.dir
+  datatype turn = datatype Board.turn
+  val moves = map Board.anychar [(D E), (D W),
+                                 (D SE), (D SW),
+                                 (T CW), (T CCW)]
 
   fun move_helper (state, visitedSetRef) move =
-    let val {result, undo} = Board.move_undo (state, move);
+    let val {result = Board.M {scored, lines, locked, status}, undo} =
+          Board.move_undo (state, move)
         val () =
-        (case result of
-             Board.Continue {scored, lines, locked} =>
+        (case status of
+             Board.CONTINUE =>
               let val pl = piece_location(state, locked)
               in
                   if LocSet.member (!visitedSetRef, pl)
@@ -55,7 +58,9 @@ struct
                            else ()
                        end
               end
-          |  Board.Done {reason}  => ())
+          | Board.COMPLETE => ()
+          | Board.NO_SPACE => ()
+          | Board.ERROR => ())
     in
         undo ()
     end

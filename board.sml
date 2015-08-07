@@ -6,13 +6,19 @@ struct
   datatype dir = E | W | SE | SW
   datatype turn = CW | CCW
   datatype command = D of dir | T of turn
-  datatype reason =
-      COMPLETE
-    | NO_SPACE
-    | ERROR
+  datatype status =
+    (* Game keeps going *)
+    CONTINUE
+  (* Gracefully used all pieces *)
+  | COMPLETE
+  (* Last move locked a piece, but there's no space
+     to place the next one. *)
+  | NO_SPACE
+  (* Bad command? *)
+  | ERROR
+
   datatype moveresult =
-      Continue of { scored: int, lines: int, locked: bool }
-    | Done of { reason: reason }
+    M of { scored: int, lines: int, locked: bool, status: status }
 
   type legalchar = char
 
@@ -51,7 +57,7 @@ struct
            problem: problem,
            score: int ref,
 
-           piece: piece,
+           piece: piece ref,
            next_sourceidx: int ref,
 
            (* Position of pivot (spec coords) *)
@@ -326,7 +332,7 @@ struct
                a = ref (!a),
                x = ref (!x),
                y = ref (!y),
-               piece = piece,
+               piece = ref (!piece),
                (* piece = clone_array piece, *)
                rng = ref (!rng) }
 
@@ -383,7 +389,7 @@ struct
              rng } =>
           S { rng = ref rng,
               score = ref 0,
-              piece = piece,
+              piece = ref piece,
               problem = problem,
               next_sourceidx = ref next_sourceidx,
               x = ref startx,
@@ -397,7 +403,8 @@ struct
 
     end
 
-  fun ispiece (S {x, y, piece = Piece { rotations, ... }, a, ...}, xx, yy) =
+  fun ispiece (S {x, y, piece = ref (Piece { rotations, ... }), a, ...},
+               xx, yy) =
     let
       (* translate (xx, yy) to piece space, and look it up
          within the current rotation. *)
@@ -445,11 +452,14 @@ struct
     | commandorder (_, D _) = GREATER
     | commandorder (T t, T tt) = turnorder (t, tt)
 
-  fun reasonstring _ = "sorry, unimplemented"
+  fun statusstring _ = "sorry, unimplemented"
 
   (* XXX show everything *)
+  fun moveresultstring _ = "sorry, unimplemented..."
+(*
   fun moveresultstring (Continue {scored, lines, locked}) = "Continue..."
     | moveresultstring (Done {reason}) = "Done..."
+*)
 
   (* TODO: Use this beauty, but might need to use ansi backgrounds...
 
@@ -608,7 +618,7 @@ struct
       fun undo () =
         let
           val S { rng = old_rng, score = old_score, x = old_x, y = old_y,
-                  a = old_a, board = old_board,
+                  a = old_a, board = old_board, piece = old_piece,
                   next_sourceidx = old_next_sourceidx, ... } = old_state
         in
           rng := !old_rng;
@@ -616,6 +626,7 @@ struct
           x := !old_x;
           y := !old_y;
           a := !old_a;
+          piece := !old_piece;
           next_sourceidx := !old_next_sourceidx;
           Array.copy {di = 0, dst = board, src = old_board}
         end
@@ -624,7 +635,7 @@ struct
          would this be a collision? Then we lock at the OLD location. *)
       fun is_locked_at (nx, ny, na) =
         let
-          val Piece { rotations, ... } = piece
+          val Piece { rotations, ... } = !piece
           val oriented_piece = Vector.sub(rotations, na)
 
           (* The displacement applied to every member of the piece. *)
@@ -642,7 +653,7 @@ struct
 
       fun freeze () =
         let
-          val Piece { rotations, ... } = piece
+          val Piece { rotations, ... } = !piece
           val oriented_piece = Vector.sub(rotations, !a)
 
           (* The displacement applied to every member of the piece. *)
@@ -685,9 +696,26 @@ struct
           val () = freeze()
           val lines = check_lines problem board
         in
-          (* lines should affect score. *)
-          { result = Continue { scored = 0, lines = lines, locked = true },
-            undo = undo }
+          case getpiece (problem, !next_sourceidx, !rng) of
+            GP { next_sourceidx = new_ns, piece = new_piece, rng = new_rng } =>
+              let in
+                next_sourceidx := new_ns;
+                piece := new_piece;
+                rng := new_rng;
+
+                (* lines should affect score. *)
+                { result = M { lines = lines, scored = 0, locked = true,
+                               status = CONTINUE },
+                  undo = undo }
+              end
+          | GPNoSpace =>
+              { result = M { lines = lines, scored = 0, locked = true,
+                             status = NO_SPACE },
+                undo = undo }
+          | GPGameOver =>
+              { result = M { lines = lines, scored = 0, locked = true,
+                             status = COMPLETE },
+                undo = undo }
         end
       else
         let in
@@ -696,7 +724,8 @@ struct
           y := ny;
           a := na;
           (* PERF board hasn't changed -- don't need backup of it *)
-          { result = Continue { scored = 0, lines = 0, locked = false },
+          { result = M { scored = 0, lines = 0, locked = false,
+                         status = CONTINUE },
             undo = undo }
         end
     end
