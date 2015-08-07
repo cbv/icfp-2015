@@ -60,6 +60,19 @@ struct
            (* XXX history of where we've been *)
            rng: RNG.rng ref }
 
+    (*
+
+       XXX todo: just keep pivot x,y and angle MOD SYMMETRY GROUP PRECOMPUTED
+
+  (* This is a place that we've been in the past; we need to keep a set
+     of these so that we don't ever repeat a configuration. Contest
+     people have confirmed that the identity of the pivot matters, and
+     the identity of the
+*)
+ type
+     presence
+     *)
+
   fun delta E = (1, 0)
     | delta W = (~1, 0)
     | delta SE = (0, 1)
@@ -164,10 +177,48 @@ struct
         let
           (* PERF can just act natively on vectors, though this
              code is only run at parse time *)
-          val piecel = Vector.foldr op:: nil piece
-          val (_, min_y) = ListUtil.min (ListUtil.bysecond Int.compare) piecel
+          local
+            val piecel = Vector.foldr op:: nil piece
+          in
+            val (_, min_y) = ListUtil.min (ListUtil.bysecond Int.compare) piecel
+          end
+
+          (* Put its head on the 0th row. (Note we could just operate on y
+             directly, but being hygeinic by explicitly transforming to
+             uniform coordinate space...) *)
+          val (head_udx, head_udy) = uniformize_coord (0, min_y)
+          val piece = Vector.map (translate (head_udx, 0 - head_udy)) piece
+
+          (* val (y0_pivotx, y0_pivoty) = translate (udx, ~udy) (0, 0) *)
+
+          (* Now get spec coordinates for minimum and maximum x values when
+             in this location. *)
+          local
+            val piecel = Vector.foldr op:: nil piece
+            val (min_x, _) = ListUtil.min (ListUtil.byfirst Int.compare) piecel
+            val (max_x, _) = ListUtil.max (ListUtil.byfirst Int.compare) piecel
+
+            (* distance from left edge
+               this was tom's way. jason put the kibosh
+               *)
+            (* val left_offset = min_x
+               val right_offset = (width - 1) - max_x *)
+          in
+            (* jason's way. he is SURE about this.... buuuut nervous *)
+            val borders = (width - max_x - min_x)
+            val center_udx =
+              if borders mod 2 = 0
+              then borders div 2 - 1
+              else (borders - 1) div 2
+          end
         in
-          (0, 0)
+          (* Now we are translating the pivot by the two motions
+             we computed above (move the head to the 0th row and then
+             center it), which we can just compose with addition.
+             We actually apply this to (0, 0) since what we want here
+             are the spec coordinates of the pivot, even though it
+             will actually just be the same as the displacement. *)
+          translate (head_udx + center_udx, 0 - head_udy) (0, 0)
         end
 
       (* Take a single piece (relative to origin) in its natural rotation.
