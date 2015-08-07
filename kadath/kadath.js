@@ -17,20 +17,45 @@ function load_problem(problemNumber) {
             g_board.filled.forEach(function(p) {
               g_board.occup[p.y][p.x] = true;
             });
-            g_board.cur_piece = {unit_id: 0, rotation: 0};
+            g_board.cur_piece = {unit_id: 0, rotation: 1, translation: {x:0, y:0}};
             draw_board(g_board);
           }});
 }
 
-// convert from the coordinate system in the problem to
-// a uniform coordinate system where x increases to the east
-// and y increases to the southeast
-function uniformize_coords(x, y) {
-  return {x:x - Math.floor(y / 2), y:y};
+// Convert from the "nonuniform coordinate system" (the one specified
+// in the problem description) to a uniform coordinate system where x
+// (still) increases to the east and y consistently increases to the
+// southeast.
+function uniformize_coords(p) {
+  return {x:p.x - Math.floor(p.y / 2), y:p.y};
+}
+
+// Invert the above coordinate change
+function deuniformize_coords(p) {
+  return {x:p.x + Math.floor(p.y / 2), y:p.y};
+}
+
+// p1 and p2 are both in uniform coordinates; return p1 rotated about p2 clockwise by n * 60 degrees
+function rotate_about(p1, p2, n) {
+  var rotated = rotate_about_origin({x: p1.x - p2.x, y: p1.y - p2.y}, n);
+  return {x: p2.x + rotated.x, y: p2.y + rotated.y};
+}
+
+// p is in uniform coordinates; return p rotated about origin clockwise by n * 60 degrees
+function rotate_about_origin(p, n) {
+  var q = p;
+  for (var i = 0; i < n; i++) {
+    q = {x:-q.y, y:q.x+q.y};
+  }
+  return q;
+}
+
+function vadd(p1, p2) {
+  return {x:p1.x + p2.x, y:p1.y + p2.y};
 }
 
 function draw_hex(scale, xx, yy, c) {
-  var p = uniformize_coords(xx, yy);
+  var p = uniformize_coords({x:xx, y:yy});
   var x = p.x;
   var y = p.y;
   // "scale" is the edge length of the hexagon in pixels
@@ -69,6 +94,23 @@ function draw_board(board) {
       })
     });
 
+  var unit = board.units[board.cur_piece.unit_id];
+  var upivot = uniformize_coords(unit.pivot);
+  unit.members.forEach(function(member) {
+    var xmember = deuniformize_coords(
+      vadd(
+        board.cur_piece.translation,
+        rotate_about(uniformize_coords(member), upivot, board.cur_piece.rotation)
+      )
+    );
+    if (xmember.x >= 0 && xmember.y >= 0 && xmember.x < board.width && xmember.y < board.height) {
+      board.color[xmember.y][xmember.x] = "#f54";
+    }
+  });
+  var xpivot = deuniformize_coords(vadd(board.cur_piece.translation, upivot));
+  board.color[xpivot.y][xpivot.x] = board.color[xpivot.y][xpivot.x] == "#f54" ?
+    "#f5f" : "#ff0";
+
   var scale = 0.5 * Math.min(w, h) / Math.max(board.width, board.height);
 
   for (var i = 0; i < board.width; i++) {
@@ -79,10 +121,10 @@ function draw_board(board) {
 }
 
 load_problem(0);
-
+console.log("Keybindings:\n ','/'.' prev/next problem\n '/','\\' rotate piece cw,ccw \n 'uihknm' move piece \n '['/']' prev/next unit");
 $(document).on('keydown', function(e) {
   // can use "," and "." keys to move around problems
-
+  console.log(e.keyCode);
   if (e.keyCode == 188) {
     problemNumber--;
     load_problem(problemNumber);
@@ -91,4 +133,19 @@ $(document).on('keydown', function(e) {
     problemNumber++;
     load_problem(problemNumber);
   }
+  if (e.keyCode == 191) {
+    g_board.cur_piece.rotation = (g_board.cur_piece.rotation + 1) % 6;
+    draw_board(g_board);
+  }
+  if (e.keyCode == 85) { // "u"
+    g_board.cur_piece.translation.x--;
+    g_board.cur_piece.translation.y--;
+    draw_board(g_board);
+  }
+
+  if (e.keyCode == 220) {
+    g_board.cur_piece.rotation = (g_board.cur_piece.rotation + 5) % 6;
+    draw_board(g_board);
+  }
+
 });
