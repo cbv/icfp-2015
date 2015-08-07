@@ -548,18 +548,19 @@ struct
          then lines := !lines + 1
          else ((if !newy <> y
                 then Util.for 0 (width-1)
-                              (fn x => Array.update(board, !newy * width + x,
-                                                    Array.sub(board, y * width + x)))
+                  (fn x => Array.update(board, !newy * width + x,
+                                        Array.sub(board, y * width + x)))
                 else ());
                newy := !newy - 1)
        end);
-      Util.for 0 (!newy) (fn negy =>
-                             let
-                               val y = height - negy - 1
-                             in
-                               Util.for 0 (width-1)
-                                        (fn x => Array.update(board, y * width + x, false))
-                             end);
+      Util.for 0 (!newy)
+      (fn negy =>
+       let
+         val y = height - negy - 1
+       in
+         Util.for 0 (width-1)
+         (fn x => Array.update(board, y * width + x, false))
+       end);
       !lines
     end
 
@@ -605,6 +606,27 @@ struct
           Vector.exists is_collision oriented_piece
         end
 
+      fun freeze () =
+        let
+          val Piece { rotations, ... } = piece
+          val oriented_piece = Vector.sub(rotations, !a)
+
+          (* The displacement applied to every member of the piece. *)
+          val (upx, upy) = uniformize_coord (!x, !y)
+          fun write_to_board (px, py) =
+            let val (px, py) = translate (upx, upy) (px, py)
+            in
+              (* Could be assert. (none of these conditions should
+                 be true)
+              px < 0 orelse py < 0 orelse
+              px >= width orelse py >= height orelse
+              Array.sub (board, py * width + px) *)
+              Array.update (board, py * width + px, true)
+            end
+        in
+          Vector.app write_to_board oriented_piece
+        end
+
       val (nx, ny, na) =
         case charcommand ch of
           D dir =>
@@ -622,10 +644,11 @@ struct
               (!x, !y, new_a)
             end
     in
-      if is_locked_at (nx, ny, !a)
+      if is_locked_at (nx, ny, na)
       then
         let
-          (* XXX update board here. *)
+          (* TODO: get score from freezing *)
+          val () = freeze()
           val lines = check_lines problem board
         in
           (* lines should affect score. *)
