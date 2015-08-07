@@ -7,6 +7,7 @@ sml-lib/njlib/ord-map-sig.sml
 sml-lib/njlib/ord-set-sig.sml
 sml-lib/njlib/splaytree-sig.sml
 sml-lib/njlib/splaytree.sml
+sml-lib/njlib/splay-set-fn.sml
 sml-lib/njlib/splay-map-fn.sml
 sml-lib/njlib/splay-set-fn.sml
 
@@ -41,5 +42,8 @@ board.sml
 
 tactic-sig.sml
 astar.sml
+
+forwardchain-sig.sml
+forwardchain.sml
 
 testboard.sml

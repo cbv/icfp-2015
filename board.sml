@@ -79,6 +79,9 @@ struct
      presence
      *)
 
+  fun piece_position (S {x, y, ...}) = (!x, !y)
+  fun piece_angle (S {a, ...}) = !a
+
   fun delta E = (1, 0)
     | delta W = (~1, 0)
     | delta SE = (0, 1)
@@ -528,6 +531,31 @@ struct
       c
     end
 
+  (* Imperatively update board to reflect deleted lines, and return
+  the number of lines so deleted. *)
+  fun check_lines (P { width, height, ... }) board =
+    let
+      val newa = Array.array (width * height, false)
+      val newy = ref (height-1)
+      val lines = ref 0
+    in
+      Util.for 0 (height-1)
+               (fn negy =>
+                   let
+                     val y = height - negy - 1
+                     val should_delete = ref true
+                     val _ = Util.for 0 (width-1) (fn x => if Array.sub(board, y * width + x)
+                                                           then ()
+                                                           else should_delete := false)
+                   in
+                     if !should_delete
+                     then lines := !lines + 1
+                     else (Util.for 0 (width-1) (fn x => Array.update(newa, !newy * width + x, Array.sub(board, y * width + x)));
+                           newy := !newy - 1)
+                   end);
+      !lines
+    end
+
   fun move_undo (state as
                  S { rng, score, piece, problem, x, y, a, board },
                  ch : legalchar) =
@@ -553,12 +581,15 @@ struct
           let
             val (dx, dy) = delta dir
             val (nx, ny) = translate (dx, dy) (!x, !y)
+            val _ = (x := nx; y := ny)
+            val lines = check_lines problem board
           in
             x := nx;
             y := ny;
             (* XXX check locking. *)
-            (* XXX check lines. *)
-            { result = Continue { scored = 0, lines = 0, locked = false },
+
+            (* check lines *)
+            { result = Continue { scored = 0, lines = lines, locked = false },
               undo = undo }
           end
       | T turn =>
@@ -573,6 +604,7 @@ struct
               undo = undo }
           end
     end
+
 
   fun move (s, c) = #result (move_undo (s, c))
 
