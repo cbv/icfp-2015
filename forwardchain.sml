@@ -1,4 +1,5 @@
 structure ForwardChain :> FORWARD_CHAIN = struct
+  open Board
   datatype PieceLocation = PL of {px: int, py: int, a: int, fixed: bool}
 
   fun compare (PL {px = px0, py = py0, a = a0, fixed = fixed0},
