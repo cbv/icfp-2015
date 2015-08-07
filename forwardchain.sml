@@ -2,6 +2,10 @@ structure ForwardChain :> FORWARD_CHAIN =
 struct
   datatype PieceLocation = PL of {px: int, py: int, a: int, locked: bool}
 
+  fun toascii (PL {px, py, a, locked}) =
+    "{(" ^ (Int.toString px) ^ ", " ^ (Int.toString py) ^ ") a:" ^ (Int.toString a) ^ ", locked: "
+    ^ Bool.toString(locked) ^ "}"
+
   fun piece_location (state, locked) =
     let val (px, py) = Board.piece_position state;
          val angle = Board.piece_angle state;
