@@ -10,12 +10,15 @@ var problemNumber = 0;
 function init_piece(board, unit_id) {
   g_board.cur_piece = {unit_id: unit_id, rotation:0};
   var members = board.units[unit_id].members;
-//  console.log(JSON.stringify(members));
-  var xs = members.map(function(z) { return z.x; });
+  //  console.log(JSON.stringify(members));
   var ys = members.map(function(z) { return z.y; });
+  var miny = _.min(ys);
+
+  var xs = members.map(function(z) { return z.x - Math.floor(z.y / 2) + Math.floor ((z.y - miny) / 2); });
+
   var minx = _.min(xs);
   var maxx = _.max(xs);
-  var miny = _.min(ys);
+
   var maxy = _.max(ys);
   g_board.cur_piece.translation = {x: Math.ceil((board.width - minx - maxx) / 2) - 1, y: -miny }
 //  console.log(JSON.stringify(g_board.cur_piece.translation));
@@ -35,7 +38,7 @@ function load_problem(problemNumber) {
             g_board.filled.forEach(function(p) {
               g_board.occup[p.y][p.x] = true;
             });
-            init_piece(g_board, 0);
+            init_piece(g_board, Math.floor(Math.random() * g_board.units.length));
             draw_board(g_board);
           },
           error:function(error) {
@@ -47,12 +50,12 @@ function load_problem(problemNumber) {
 // in the problem description) to a uniform coordinate system where x
 // (still) increases to the east and y consistently increases to the
 // southeast.
-function uniformize_coords(p) {
+function uniformize(p) {
   return {x:p.x - Math.floor(p.y / 2), y:p.y};
 }
 
 // Invert the above coordinate change
-function deuniformize_coords(p) {
+function deuniformize(p) {
   return {x:p.x + Math.floor(p.y / 2), y:p.y};
 }
 
@@ -77,7 +80,7 @@ function vadd(p1, p2) {
 
 function draw_spot(scale, xx, yy, c, r) {
   r = r || 0.9;
-  var p = uniformize_coords({x:xx, y:yy});
+  var p = uniformize({x:xx, y:yy});
   var x = p.x;
   var y = p.y;
   d.save();
@@ -91,7 +94,7 @@ function draw_spot(scale, xx, yy, c, r) {
 }
 
 function draw_hex(scale, xx, yy, c) {
-  var p = uniformize_coords({x:xx, y:yy});
+  var p = uniformize({x:xx, y:yy});
   var x = p.x;
   var y = p.y;
   // "scale" is the edge length of the hexagon in pixels
@@ -116,7 +119,7 @@ function draw_hex(scale, xx, yy, c) {
 }
 
 function draw_text(scale, xx, yy, c) {
-  var p = uniformize_coords({x:xx, y:yy});
+  var p = uniformize({x:xx, y:yy});
   var x = p.x;
   var y = p.y;
   d.save();
@@ -136,6 +139,25 @@ function valid_pt(board, pt) {
 
 function empty_pt(board, pt) {
   return valid_pt(board, pt) && !board.occup[pt.y][pt.x];
+}
+
+function valid_piece_placement(board, piece) {
+  return _.all(in_situ(board, piece), function(member) {
+    return empty_pt(board, member);
+  });
+}
+
+function in_situ(board, piece) {
+  var unit = board.units[piece.unit_id];
+  var upivot = uniformize(unit.pivot);
+  return unit.members.map(function(member) {
+    return deuniformize(
+      vadd(
+        piece.translation,
+        rotate_about(uniformize(member), upivot, piece.rotation)
+      )
+    );
+  });
 }
 
 function draw_board(board) {
@@ -158,19 +180,12 @@ function draw_board(board) {
     }
   }
 
-  var unit = board.units[board.cur_piece.unit_id];
-  var upivot = uniformize_coords(unit.pivot);
-  unit.members.forEach(function(member) {
-    var xmember = deuniformize_coords(
-      vadd(
-        board.cur_piece.translation,
-        rotate_about(uniformize_coords(member), upivot, board.cur_piece.rotation)
-      )
-    );
+  in_situ(board, board.cur_piece).forEach(function(xmember) {
     draw_spot(scale, xmember.x, xmember.y, "#f77");
   });
 
-  var xpivot = deuniformize_coords(vadd(board.cur_piece.translation, upivot));
+  var upivot = uniformize(board.units[board.cur_piece.unit_id].pivot);
+  var xpivot = deuniformize(vadd(board.cur_piece.translation, upivot));
   draw_spot(scale, xpivot.x, xpivot.y, "#a00", 0.5);
 
   for (var i = 0; i < board.width; i++) {
@@ -202,47 +217,71 @@ $(document).on('keydown', function(e) {
     load_problem(problemNumber);
   }
   if (e.keyCode == 191) { // "/"
-    g_board.cur_piece.rotation = (g_board.cur_piece.rotation + 1) % 6;
-    draw_board(g_board);
+    attempt_move(0, 0, 1);
   }
   if (e.keyCode == 220) { // "\\"
-    g_board.cur_piece.rotation = (g_board.cur_piece.rotation + 5) % 6;
-    draw_board(g_board);
+    attempt_move(0,0,-1);
   }
   if (e.keyCode == 85) { // "u"
-    g_board.cur_piece.translation.y--;
-    draw_board(g_board);
+    attempt_move(0,-1,0);
   }
   if (e.keyCode == 73) { // "i"
-    g_board.cur_piece.translation.x++;
-    g_board.cur_piece.translation.y--;
-    draw_board(g_board);
+    attempt_move(1,-1,0);
   }
   if (e.keyCode == 72) { // "h"
-    g_board.cur_piece.translation.x--;
-    draw_board(g_board);
+    attempt_move(-1,0,0);
   }
   if (e.keyCode == 75) { // "k"
-    g_board.cur_piece.translation.x++;
-    draw_board(g_board);
+    attempt_move(1,0,0);
   }
   if (e.keyCode == 78) { // "n"
-    g_board.cur_piece.translation.x--;
-    g_board.cur_piece.translation.y++;
-    draw_board(g_board);
+    attempt_move(-1,1,0);
   }
   if (e.keyCode == 77) { // "m"
-    g_board.cur_piece.translation.y++;
-    draw_board(g_board);
+    attempt_move(0,1,0);
   }
-  if (e.keyCode == 219) { // "["
-    init_piece(g_board, (g_board.cur_piece.unit_id + g_board.units.length- 1) % g_board.units.length);
-    draw_board(g_board);
-  }
-  if (e.keyCode == 221) { // "]"
-    init_piece(g_board, (g_board.cur_piece.unit_id + 1) % g_board.units.length);
-    draw_board(g_board);
-  }
+  // if (e.keyCode == 219) { // "["
+  //   init_piece(g_board, (g_board.cur_piece.unit_id + g_board.units.length- 1) % g_board.units.length);
+  //   draw_board(g_board);
+  // }
+  // if (e.keyCode == 221) { // "]"
+  //   init_piece(g_board, (g_board.cur_piece.unit_id + 1) % g_board.units.length);
+  //   draw_board(g_board);
+  // }
 
 
 });
+
+function attempt_move(dx, dy, drot) {
+  var pc = g_board.cur_piece;
+  var new_piece = {unit_id: pc.unit_id,
+                   translation: {x: pc.translation.x + dx,
+                                 y: pc.translation.y + dy},
+                   rotation: (pc.rotation + 6 + drot) % 6,
+                  }
+  if (valid_piece_placement(g_board, new_piece)) {
+    g_board.cur_piece = new_piece;
+  }
+  else {
+    in_situ(g_board, g_board.cur_piece).forEach(function(pt) {
+      g_board.occup[pt.y][pt.x] = true;
+      clear_lines(g_board);
+      init_piece(g_board, Math.floor(Math.random() * g_board.units.length));
+    });
+  }
+  draw_board(g_board);
+}
+
+function clear_lines(board) {
+  var new_occup = [];
+  for (var y = 0; y < board.occup.length; y++) {
+    if (!_.all(board.occup[y], function(x) { return x; })) {
+      new_occup.push(board.occup[y]);
+    }
+  }
+  var missing = board.height - new_occup.length;
+  for (var i = 0; i < missing; i++) {
+    new_occup.unshift(_.map(_.range(board.width), function() { return false; }));
+  }
+  board.occup = new_occup;
+}
