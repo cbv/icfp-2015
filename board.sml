@@ -17,13 +17,16 @@ struct
   type legalchar = char
 
   (* Vector of members (filled spaces), assuming the pivot is at 0,0 *)
-  (* XXX this should have all the rotations cached. *)
-  type piece =
-    (* Set of (spec) coordinate offsets from pivot *)
-    (int * int) vector
-    (* 6 of them, one for each rotation. 0 is the natural rotation,
-       1 is 1 hexgree clockwise, etc. *)
-    vector
+  datatype piece =
+    Piece of { rotations:
+               (* Set of (spec) coordinate offsets from pivot *)
+               (int * int) vector
+               (* 6 of them, one for each rotation. 0 is the natural rotation,
+                  1 is 1 hexgree clockwise, etc. *)
+               vector,
+
+               (* Start position for pivot in spec coords. *)
+               start: int * int }
 
   (* PERF: Should sort vector and do binary search, etc. *)
   fun oriented_piece_has (v : (int * int) vector) (x, y) =
@@ -143,7 +146,7 @@ struct
       (* TODO: Harden against these being bigger than 2^31, negative, etc. *)
       val seeds = map UnInt (List (j, "sourceSeeds"))
 
-      fun Piece j =
+      fun ExpectPiece j =
         let
           val members = map Coord (List (j, "members"))
           (* We represent all pieces as being centered on their origin.
@@ -154,11 +157,30 @@ struct
           Vector.fromList (map (translate (~px, ~py)) members)
         end
 
+      (* Get the position (in spec coords) of the pivot for where we
+         should start this piece. (We pass in the piece in its natural
+         orientation.) *)
+      fun get_start_coord piece =
+        let
+          (* PERF can just act natively on vectors, though this
+             code is only run at parse time *)
+          val piecel = Vector.foldr op:: nil piece
+          val (_, min_y) = ListUtil.min (ListUtil.bysecond Int.compare) piecel
+        in
+          (0, 0)
+        end
+
       (* Take a single piece (relative to origin) in its natural rotation.
-         Return a 6-place vector of all its rotations *)
-      fun makerotations p =
+         Return a 6-place vector of all its rotations, plus the start
+         position. *)
+      fun makepiece p =
         (* PERF; can iteratively rotate *)
-        Vector.tabulate (6, fn a => Vector.map (rotate a) p)
+        let
+          val rotations = Vector.tabulate (6, fn a => Vector.map (rotate a) p)
+        in
+          Piece { rotations = rotations,
+                  start = get_start_coord p }
+        end
 
       val a = Array.array (width * height, false)
     in
@@ -169,8 +191,8 @@ struct
           sourcelength = sourcelength,
           start = Array.vector a,
           pieces = Vector.fromList
-          (map makerotations
-           (map Piece (List (j, "units")))) }
+          (map makepiece
+           (map ExpectPiece (List (j, "units")))) }
     end
 
   fun clone_array a =
@@ -205,11 +227,10 @@ struct
 
       val (piece_idx, rng) = RNG.next rng
 
-      val piece = Vector.sub (pieces, piece_idx)
+      val piece as Piece { rotations,
+                           start = (startx, starty) } =
+        Vector.sub (pieces, piece_idx)
 
-      (* FIXME *)
-      val startx = 0
-      val starty = 0
       (* should start in this orientation. *)
       val starta = 0
     in
@@ -226,7 +247,7 @@ struct
            (fn x => Vector.sub(start, x))) }
     end
 
-  fun ispiece (S {x, y, piece, a, ...}, xx, yy) =
+  fun ispiece (S {x, y, piece = Piece { rotations, ... }, a, ...}, xx, yy) =
     let
       (* translate (xx, yy) to piece space, and look it up
          within the current rotation. *)
@@ -235,7 +256,7 @@ struct
       val (udx, udy) = uniformize_coord (!x, !y)
       val (px, py) = translate (~udx, ~udy) (xx, yy)
 
-      val oriented_piece = Vector.sub (piece, !a)
+      val oriented_piece = Vector.sub (rotations, !a)
     in
       oriented_piece_has oriented_piece (px, py)
     end
