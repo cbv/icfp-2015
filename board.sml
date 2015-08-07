@@ -34,21 +34,20 @@ struct
     S of { board: bool array,
            problem: problem,
            score: int ref,
-           (* position of pivot *)
-           x: int ref,
-           y: int ref,
+           (* XXX position of pivot *)
+
+           (* XXX history of where we've been*)
            rng: RNG.rng ref }
 
   fun clone_array a =
     (* PERF There must be a faster way to do this?? *)
     Array.tabulate (Array.length a, fn i => Array.sub(a, i))
 
-  fun clone (S { board, problem, score, x, y, rng }) : state =
+  fun clone (S { board, problem, score, rng }) : state =
            S { board = clone_array board,
                problem = problem,
                score = ref (!score),
-               x = ref (!x),
-               y = ref (!y),
+               (* piece = clone_array piece, *)
                rng = ref (!rng) }
 
   fun isfull (S { board, problem = P{ width, height, ... }, ... },
@@ -61,6 +60,10 @@ struct
   fun move_undo _ = raise Board "unimplemented"
   fun move_unwind _ = raise Board "unimplemented"
   fun reset _ = raise Board "unimplemented"
+
+  fun ispiece _ = raise Board "unimplemented"
+  fun ispivot _ = raise Board "unimplemented"
+  fun pivot _ = raise Board "unimplemented"
 
   fun dirstring E = "E"
     | dirstring W = "W"
@@ -100,16 +103,15 @@ struct
     | moveresultstring (Done {reason}) = "Done..."
 
   (* TODO: Use this beauty, but might need to use ansi backgrounds...
-  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/
-  /  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__
-  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/
-  /  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__
-  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/  \__/
-*)
+      \__/  \__/  \__/  \__/  \__/  \__/
+      /  \__/  \__/  \__/  \__/  \__/  \__
+      \__/  \__/  \__/  \__/  \__/  \__/
+      /  \__/  \__/  \__/  \__/  \__/  \__
+      \__/  \__/  \__/  \__/  \__/  \__/      *)
 
   fun toascii (state as
                S { problem = P {width, height, ... },
-                   board, x = px, y = py, ... }) =
+                   board, (* x = px, y = py, *) ... }) =
     let
       (*
          . . . . .

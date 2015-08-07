@@ -83,6 +83,14 @@ sig
   val isfull : state * int * int -> bool
   val isempty : state * int * int -> bool
 
+  (* Does this cell currently contain a member of the piece?
+     This does not necessarily include the pivot. *)
+  val ispiece : state * int * int -> bool
+  (* Is this the pivot of the current piece? Is not necessarily
+     a member of the piece. *)
+  val ispivot : state * int * int -> bool
+  val pivot : state -> int * int
+
   val size : problem -> int * int
   val width : problem -> int
   val height : problem -> int
