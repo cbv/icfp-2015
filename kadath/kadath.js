@@ -1,4 +1,8 @@
 fullscreen(); // sets global variables w, h
+c.width = (w = innerWidth) * devicePixelRatio;
+c.height = (h = innerHeight) * devicePixelRatio;
+c.style.width = innerWidth + "px";
+c.style.height = innerHeight + "px";
 
 var R3 = Math.sqrt(3) / 2;
 var problemNumber = 0;
@@ -106,6 +110,8 @@ function valid_pt(board, pt) {
 }
 function draw_board(board) {
   d.clearRect(0,0,w,h);
+  d.save();
+  d.scale(devicePixelRatio, devicePixelRatio);
   try {
     board.color =
       _.map(_.range(board.height), function(y) {
@@ -145,6 +151,7 @@ function draw_board(board) {
     d.fillStyle = "rgba(0,0,100,0.2)";
     d.font = "100px sans-serif";
     d.fillText(problemNumber, 10, h - 10);
+    d.restore();
   }
 }
 
