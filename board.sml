@@ -592,8 +592,6 @@ struct
             val _ = (x := nx; y := ny)
             val lines = check_lines problem board
           in
-            x := nx;
-            y := ny;
             (* XXX check locking. *)
 
             (* XXX lines should affect score *)
