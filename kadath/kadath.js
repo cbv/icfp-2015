@@ -10,7 +10,7 @@ var problemNumber = 0;
 function init_piece(board, unit_id) {
   g_board.cur_piece = {unit_id: unit_id, rotation:0};
   var members = board.units[unit_id].members;
-  console.log(JSON.stringify(members));
+//  console.log(JSON.stringify(members));
   var xs = members.map(function(z) { return z.x; });
   var ys = members.map(function(z) { return z.y; });
   var minx = _.min(xs);
@@ -18,7 +18,7 @@ function init_piece(board, unit_id) {
   var miny = _.min(ys);
   var maxy = _.max(ys);
   g_board.cur_piece.translation = {x: Math.ceil((board.width - minx - maxx) / 2) - 1, y: -miny }
-  console.log(JSON.stringify(g_board.cur_piece.translation));
+//  console.log(JSON.stringify(g_board.cur_piece.translation));
 }
 
 function load_problem(problemNumber) {
@@ -149,8 +149,9 @@ function draw_board(board) {
   }
   finally {
     d.fillStyle = "rgba(0,0,100,0.2)";
-    d.font = "100px sans-serif";
-    d.fillText(problemNumber, 10, h - 10);
+    d.font = "50px sans-serif";
+    d.fillText("Problem: " + problemNumber + " Unit: " + (board.cur_piece.unit_id + 1) + "/" +
+               board.units.length, 10, h - 10);
     d.restore();
   }
 }
