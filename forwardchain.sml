@@ -1,11 +1,16 @@
 structure ForwardChain :> FORWARD_CHAIN =
 struct
-  open Board
+  datatype PieceLocation = PL of {px: int, py: int, a: int, locked: bool}
 
-  datatype PieceLocation = PL of {px: int, py: int, a: int, fixed: bool}
+  fun piece_location (state, locked) =
+    let val (px, py) = Board.piece_position state;
+         val angle = Board.piece_angle state;
+    in
+        PL {px = px, py = py, a = angle, locked = locked}
+    end
 
-  fun compare (PL {px = px0, py = py0, a = a0, fixed = fixed0},
-               PL {px = px1, py = py1, a = a1, fixed = fixed1}) =
+  fun compare (PL {px = px0, py = py0, a = a0, locked = locked0},
+               PL {px = px1, py = py1, a = a1, locked = locked1}) =
      if px0 < px1
      then LESS
      else if px0 > px1
@@ -18,9 +23,9 @@ struct
      then LESS
      else if a0 > a1
      then GREATER
-     else if (fixed0 andalso not fixed1)
+     else if (locked0 andalso not locked1)
      then LESS
-     else if (not fixed0 andalso fixed1)
+     else if (not locked0 andalso locked1)
      then GREATER
      else EQUAL
 
@@ -29,10 +34,31 @@ struct
                                    val compare = compare
                                    end)
 
+  val moves = [Board.anychar (Board.D Board.E), Board.anychar (Board.D Board.W),
+               Board.anychar (Board.D Board.SE), Board.anychar (Board.D Board.SW),
+               Board.anychar (Board.T Board.CW), Board.anychar (Board.T Board.CCW)
+              ]
+
+
+  fun move_helper state move =
+    let val {result, undo} = Board.move_undo (state);
+        val () =
+        (case result of
+             Board.Continue {scored, lines, locked} =>
+              let (* val pl = piece_location(state, locked) *)
+              in ()
+              end
+          |  Board.Done {reason}  => ())
+    in
+        undo ();
+        ()
+    end
+
+  fun helper (state, visitedSet) =
+    List.app (move_helper state) moves
+
   fun accessible_locations state =
-    let val (px, py) = piece_position state;
-        val angle = piece_angle state;
-        val set = LocSet.singleton (PL {px = px, py = py, a = angle, fixed = false}); (* XXX fixed? *)
+    let val set = LocSet.singleton (piece_location (state, false)); (* XXX locked? *)
     in
         LocSet.listItems set
     end
