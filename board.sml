@@ -52,6 +52,7 @@ struct
            score: int ref,
 
            piece: piece,
+           next_sourceidx: int ref,
 
            (* Position of pivot (spec coords) *)
            x: int ref,
@@ -316,10 +317,12 @@ struct
     (* I think ArraySlice *)
     Array.tabulate (Array.length a, fn i => Array.sub(a, i))
 
-  fun clone (S { board, problem, score, rng, piece, a, x, y }) : state =
+  fun clone (S { board, next_sourceidx,
+                 problem, score, rng, piece, a, x, y }) : state =
            S { board = clone_array board,
                problem = problem,
                score = ref (!score),
+               next_sourceidx = ref (!next_sourceidx),
                a = ref (!a),
                x = ref (!x),
                y = ref (!y),
@@ -333,36 +336,65 @@ struct
     Array.sub (board, y * width + x)
   fun isempty (state, x, y) = not (isfull (state, x, y))
 
+  datatype getpieceresult =
+      GPNoSpace
+    | GPGameOver
+    | GP of { next_sourceidx: int,
+              rng: RNG.rng,
+              piece: piece }
+
+  fun getpiece (problem as P { sourcelength, pieces, ... } : problem,
+                sourceidx : int,
+                rng : RNG.rng) =
+    if sourceidx >= sourcelength
+    then GPNoSpace
+    else
+      let
+        val (piece_idx, rng) = RNG.next rng
+
+        val piece as Piece { rotations,
+                             symmetry = _,
+                             start = (startx, starty) } =
+          Vector.sub (pieces, piece_idx)
+
+      in
+        (* XXX see if it fits *)
+        GP { next_sourceidx = sourceidx + 1,
+             piece = piece,
+             rng = rng }
+      end
+
+
   fun reset (problem as P { seeds, start, pieces, ... },
              seed_idx) : state =
     let
-      val rng =
+      val initial_rng =
         if seed_idx < 0 orelse
            seed_idx >= Vector.length seeds
         then raise Board "Bad seed idx in reset"
         else RNG.fromseed (Vector.sub (seeds, seed_idx))
-
-      val (piece_idx, rng) = RNG.next rng
-
-      val piece as Piece { rotations,
-                           symmetry = _,
-                           start = (startx, starty) } =
-        Vector.sub (pieces, piece_idx)
-
-      (* should start in this orientation. *)
-      val starta = 0
     in
-      S { rng = ref rng,
-          score = ref 0,
-          piece = piece,
-          problem = problem,
-          x = ref startx,
-          y = ref starty,
-          a = ref starta,
-          (* PERF ArraySlice. *)
-          board = Array.tabulate
-          (Vector.length start,
-           (fn x => Vector.sub(start, x))) }
+      case getpiece (problem, 0, initial_rng) of
+        (* TODO: Handle these gracefully if legal? *)
+        GPNoSpace => raise Board "no space in INITIAL CONFIGURATION??"
+      | GPGameOver => raise Board "source length is 0??"
+      | GP { next_sourceidx,
+             piece as Piece { start = (startx, starty), ... },
+             rng } =>
+          S { rng = ref rng,
+              score = ref 0,
+              piece = piece,
+              problem = problem,
+              next_sourceidx = ref next_sourceidx,
+              x = ref startx,
+              y = ref starty,
+              (* always start in natural orientation *)
+              a = ref 0,
+              (* PERF ArraySlice. *)
+              board = Array.tabulate
+              (Vector.length start,
+               (fn x => Vector.sub(start, x))) }
+
     end
 
   fun ispiece (S {x, y, piece = Piece { rotations, ... }, a, ...}, xx, yy) =
@@ -565,7 +597,7 @@ struct
     end
 
   fun move_undo (state as
-                 S { rng, score, piece,
+                 S { rng, score, piece, next_sourceidx,
                      problem = problem as P { width, height, ... },
                      x, y, a, board },
                  ch : legalchar) =
@@ -576,13 +608,15 @@ struct
       fun undo () =
         let
           val S { rng = old_rng, score = old_score, x = old_x, y = old_y,
-                  a = old_a, board = old_board, ... } = old_state
+                  a = old_a, board = old_board,
+                  next_sourceidx = old_next_sourceidx, ... } = old_state
         in
           rng := !old_rng;
           score := !old_score;
           x := !old_x;
           y := !old_y;
           a := !old_a;
+          next_sourceidx := !old_next_sourceidx;
           Array.copy {di = 0, dst = board, src = old_board}
         end
 
