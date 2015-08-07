@@ -306,7 +306,11 @@ struct
            r := !r ^
            (if isfull (state, x, y)
             then "# "
-            else ". "));
+            else (case (ispiece (state, x, y), ispivot (state, x, y)) of
+                    (false, false) => ". "
+                  | (false, true) => "a "
+                  | (true, false) => "O "
+                  | (true, true) => "@ ")));
           !r
         end
 
