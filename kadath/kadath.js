@@ -1,10 +1,14 @@
 fullscreen(); // sets global variables w, h
 
 var R3 = Math.sqrt(3) / 2;
+var problemNumber = 0;
 
-$.ajax("../qualifiers/problem_1.json", {success:function(data) {
-  draw_board(JSON.parse(data));
-}});
+function load_problem(problemNumber) {
+  $.ajax("../qualifiers/problem_" + problemNumber + ".json", {success:function(data) {
+    g_board = JSON.parse(data);
+    draw_board(g_board);
+  }});
+}
 
 function draw_hex(scale, x, y, c) {
   // "scale" is the edge length of the hexagon in pixels
@@ -47,3 +51,18 @@ function draw_board(board) {
     }
   }
 }
+
+load_problem(0);
+
+$(document).on('keydown', function(e) {
+  // can use "," and "." keys to move around problems
+  console.log(e.keyCode);
+  if (e.keyCode == 188) {
+    problemNumber--;
+    load_problem(problemNumber);
+  }
+  if (e.keyCode == 190) {
+    problemNumber++;
+    load_problem(problemNumber);
+  }
+});
