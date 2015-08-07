@@ -4,10 +4,12 @@ var R3 = Math.sqrt(3) / 2;
 var problemNumber = 0;
 
 function load_problem(problemNumber) {
-  $.ajax("../qualifiers/problem_" + problemNumber + ".json", {success:function(data) {
-    g_board = JSON.parse(data);
-    draw_board(g_board);
-  }});
+  $.ajax("../qualifiers/problem_" + problemNumber + ".json",
+         {dataType: "json",
+          success:function(data) {
+            g_board = data;
+            draw_board(g_board);
+          }});
 }
 
 function draw_hex(scale, x, y, c) {
