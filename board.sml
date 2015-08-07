@@ -583,33 +583,50 @@ struct
           a := !old_a;
           Array.copy {di = 0, dst = board, src = old_board}
         end
-    in
-      case charcommand ch of
-        D dir =>
-          let
-            val (dx, dy) = delta dir
-            val (nx, ny) = translate (dx, dy) (!x, !y)
-            val _ = (x := nx; y := ny)
-            val lines = check_lines problem board
-          in
-            (* XXX check locking. *)
 
-            (* XXX lines should affect score *)
-            { result = Continue { scored = 0, lines = lines, locked = false },
-              undo = undo }
-          end
-      | T turn =>
-          let
-            val angle = case turn of CW => 1 | CCW => ~1
-            val new_a = (!a + angle) mod 6
-            val lines = check_lines problem board
-          in
-            a := new_a;
-            (* XXX check locking. *)
-            (* XXX lines should affect score *)
-            { result = Continue { scored = 0, lines = lines, locked = false },
-              undo = undo }
-          end
+      (* Hypothetically, if we moved the pivot to (nx, ny) with angle a,
+         would this be a collision? Then we lock at the OLD location. *)
+      fun is_locked_at (nx, ny, na) =
+        (* XXX implement *)
+        false
+
+      val (nx, ny, na) =
+        case charcommand ch of
+          D dir =>
+            let
+              val (dx, dy) = delta dir
+              val (nx, ny) = translate (dx, dy) (!x, !y)
+            in
+              (nx, ny, !a)
+            end
+        | T turn =>
+            let
+              val angle = case turn of CW => 1 | CCW => ~1
+              val new_a = (!a + angle) mod 6
+            in
+              (!x, !y, new_a)
+            end
+    in
+      if is_locked_at (nx, ny, !a)
+      then
+        let
+          (* XXX update board here. *)
+          val lines = check_lines problem board
+        in
+          (* lines should affect score. *)
+          { result = Continue { scored = 0, lines = lines, locked = true },
+            undo = undo }
+        end
+      else
+        let in
+          (* Don't need to check lines, score, etc. *)
+          x := nx;
+          y := ny;
+          a := na;
+          (* PERF board hasn't changed -- don't need backup of it *)
+          { result = Continue { scored = 0, lines = 0, locked = false },
+            undo = undo }
+        end
     end
 
 
