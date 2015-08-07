@@ -1,5 +1,5 @@
 signature FORWARD_CHAIN = sig
-  datatype PieceLocation = PL of {px: int, py: int, a: int, fixed: bool}
+  datatype PieceLocation = PL of {px: int, py: int, a: int, locked: bool}
 
   val compare : PieceLocation * PieceLocation -> order
 
