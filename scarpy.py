@@ -1,15 +1,19 @@
 #!/usr/bin/env python
 
+import requests
 import json
 import urllib2
     
+api = "https://cmage109g3.execute-api.us-west-2.amazonaws.com/what"
+scarpy_writer = api + "/scarpydb"
+
 data = urllib2.urlopen('https://davar.icfpcontest.org/rankings.js')
 data = data.read()
 start = data.find('{')
 data = data[start:]
 data = json.loads(data)
 
-
+# Description of data
 # data['time']: string, 2015-08-07 17:08:24.785199 UTC
 # data['data']['settings'][n]['setting']: int (= n???)
 # data['data']['settings'][n]['rankings'][m]['power_score']: int
@@ -20,6 +24,7 @@ data = json.loads(data)
 # data['data']['settings'][n]['rankings'][m]['team']: string 
 
 numproblems = len(data['data']['settings'])
+scores = []
 
 for i in range(0,numproblems):
    rankings = data['data']['settings'][i]['rankings']
@@ -29,7 +34,21 @@ for i in range(0,numproblems):
           stats = rankings[j]
           if (stats['score'] != 0 or len(stats['tags']) != 0):
              print rankings[j]['team'] + ", problem #" + str(i)
-             print "   Ranking:" + str(rankings[j]['rank'])
-             print "   Score:" + str(rankings[j]['score'])
-             print "   Tags:" + str(rankings[j]['tags'])
+             print "   Ranking: " + str(rankings[j]['rank'])
+             print "   Score:   " + str(rankings[j]['score'])
+             print "   Tags:    " + str(rankings[j]['tags'])
              print "   "
+             if (len(rankings[j]['tags']) == 1):
+                scores.append({
+                   'tag': rankings[j]['tags'][0],
+                   'problem': j,
+                   'score': rankings[j]['score']
+                })
+
+request = {
+   'time': data['time'],
+   'scores': scores
+}
+response = json.loads(requests.post(scarpy_writer, json.dumps(request)).text)
+if (response['modified'] != 0):
+   print 'Learned about '+str(response['modified'])+' new scores'
