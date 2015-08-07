@@ -19,15 +19,17 @@ data = json.loads(data)
 # data['data']['settings'][n]['rankings'][m]['score']: int
 # data['data']['settings'][n]['rankings'][m]['team']: string 
 
-numproblems = len(data['data'])
+numproblems = len(data['data']['settings'])
 
 for i in range(0,numproblems):
    rankings = data['data']['settings'][i]['rankings']
    numteams = len(rankings)
    for j in range(0,numteams):
       if rankings[j]['teamId'] is 31:
-          print rankings[j]['team'] + ", problem #" + str(i)
-          print "   Ranking:" + str(rankings[j]['rank'])
-          print "   Score:" + str(rankings[j]['score'])
-          print "   Tags:" + str(rankings[j]['tags'])
-          print "   "
+          stats = rankings[j]
+          if (stats['score'] != 0 or len(stats['tags']) != 0):
+             print rankings[j]['team'] + ", problem #" + str(i)
+             print "   Ranking:" + str(rankings[j]['rank'])
+             print "   Score:" + str(rankings[j]['score'])
+             print "   Tags:" + str(rankings[j]['tags'])
+             print "   "
