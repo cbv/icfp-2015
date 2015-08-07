@@ -109,9 +109,9 @@ function valid_pt(board, pt) {
   return pt.x >= 0 && pt.y >= 0 && pt.x < board.width && pt.y < board.height;
 }
 function draw_board(board) {
-  d.clearRect(0,0,w,h);
   d.save();
   d.scale(devicePixelRatio, devicePixelRatio);
+  d.clearRect(0,0,w,h);
   try {
     board.color =
       _.map(_.range(board.height), function(y) {
