@@ -216,9 +216,22 @@ struct
            (fn x => Vector.sub(start, x))) }
     end
 
-  fun move _ = raise Board "unimplemented"
-  fun move_undo _ = raise Board "unimplemented"
-  fun move_unwind _ = raise Board "unimplemented"
+  fun move_undo (S { ... }, ch) =
+    let in
+      { result = raise Board "unimplemented",
+        undo = raise Board "unimplemented" }
+    end
+
+  fun move (s, c) = #result (move_undo (s, c))
+
+  fun move_unwind (s, c, k) =
+    let
+      val {result, undo} = move_undo (s, c)
+      val r = k result
+    in
+      undo ();
+      r
+    end
 
 
   fun ispiece (S {x, y, piece, a, ...}, xx, yy) =

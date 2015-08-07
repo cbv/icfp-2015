@@ -68,7 +68,7 @@ sig
      with the result. When the continuation returns, undo the move
      (assuming it is the ONLY change to the state) and return whatever
      the continuation returned. *)
-  val move_unwind : state * legalchar -> (moveresult -> 'a) -> 'a
+  val move_unwind : state * legalchar * (moveresult -> 'a) -> 'a
 
   (* Also return a function that undoes the change to the state (assuming
      it is the ONLY change); this function should be called at most once. *)
