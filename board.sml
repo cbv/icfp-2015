@@ -25,8 +25,13 @@ struct
                   1 is 1 hexgree clockwise, etc. *)
                vector,
 
+               (* see get_symmetry *)
+               symmetry : int,
+
                (* Start position for pivot in spec coords. *)
                start: int * int }
+
+
 
   (* PERF: Should sort vector and do binary search, etc. *)
   fun oriented_piece_has (v : (int * int) vector) (x, y) =
@@ -125,6 +130,61 @@ struct
       val (ux, uy) = rotate_uniform n (ux, uy)
     in
       deuniformize_coord (ux, uy)
+    end
+
+  fun coordorder ((x, y), (xx, yy)) =
+    case Int.compare (x, xx) of
+      EQUAL => Int.compare (y, yy)
+    | other => other
+
+  structure CoordSet = SplaySetFn(type ord_key = int * int
+                                  val compare = coordorder)
+  structure CoordMap = SplayMapFn(type ord_key = int * int
+                                  val compare = coordorder)
+
+  (* symmetry group; always 1, 2, 3, or 6:
+
+     group 1: symmetric for any angle
+      . . .
+     . @ .
+      . . .
+
+     group 2:
+      . O .     O . .
+     O @ .     . @ O
+      . O .     O . .
+
+     group 3:
+      . . .     O . .     . O .
+     O @ O     . @ .     . @ .
+      . . .     . O .     O . .
+
+     group 6:
+      . . .     . . .     . . .     . . .     O . .     . O .
+     . @ O     . @ .     . @ .     O @ .     . @ .     . @ .
+      . . .     . O .     O . .     . . .     . . .     . . .
+     *)
+  fun get_symmetry (v : (int * int) vector) =
+    let
+      val vs0 = Vector.foldr CoordSet.add' CoordSet.empty v
+
+      val vs1 = CoordSet.map (rotate 1) vs0
+    in
+      if CoordSet.equal (vs0, vs1)
+      then 1
+      else
+        let val vs2 = CoordSet.map (rotate 1) vs1
+        in
+          if CoordSet.equal (vs0, vs2)
+          then 2
+          else
+            let val vs3 = CoordSet.map (rotate 1) vs2
+            in
+              if CoordSet.equal (vs0, vs2)
+              then 3
+              else 6
+            end
+        end
     end
 
   fun fromjson s =
@@ -230,6 +290,7 @@ struct
           val rotations = Vector.tabulate (6, fn a => Vector.map (rotate a) p)
         in
           Piece { rotations = rotations,
+                  symmetry = get_symmetry p,
                   start = get_start_coord p }
         end
 
@@ -279,6 +340,7 @@ struct
       val (piece_idx, rng) = RNG.next rng
 
       val piece as Piece { rotations,
+                           symmetry = _,
                            start = (startx, starty) } =
         Vector.sub (pieces, piece_idx)
 
