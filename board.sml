@@ -25,6 +25,10 @@ struct
        1 is 1 hexgree clockwise, etc. *)
     vector
 
+  (* PERF: Should sort vector and do binary search, etc. *)
+  fun oriented_piece_has (v : (int * int) vector) (x, y) =
+    Vector.exists (fn (xx, yy) => x = xx andalso y = yy) v
+
   datatype problem =
     P of { start: bool vector,
            width: int,
@@ -217,9 +221,20 @@ struct
   fun move_unwind _ = raise Board "unimplemented"
 
 
-  fun ispiece _ = raise Board "unimplemented"
-  fun ispivot _ = raise Board "unimplemented"
-  fun pivot _ = raise Board "unimplemented"
+  fun ispiece (S {x, y, piece, a, ...}, xx, yy) =
+    let
+      (* translate (xx, yy) to piece space, and look it up
+         within the current rotation. *)
+      val (px, py) = translate (~ (!x), ~ (!y)) (xx, yy)
+
+      val oriented_piece = Vector.sub (piece, !a)
+    in
+      oriented_piece_has oriented_piece (px, py)
+    end
+
+  fun ispivot (S {x, y, ...}, xx, yy) = xx = !x andalso yy = !y
+  fun pivot (S { x, y, ... }) = (!x, !y)
+
 
   fun dirstring E = "E"
     | dirstring W = "W"
