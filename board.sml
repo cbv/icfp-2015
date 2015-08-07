@@ -72,11 +72,11 @@ struct
      "east" and "south-east". This is not just pointwise addition
      because the grid is ragged; "down" moves alternatingly SE and
      SW in "spec" coordinates. *)
-  fun translate (dx, dy) (x, y) =
+  fun translate (udx, udy) (x, y) =
     let
       val (ux, uy) = uniformize_coord (x, y)
-      val ux = ux + dx
-      val uy = uy + dy
+      val ux = ux + udx
+      val uy = uy + udy
     in
       deuniformize_coord (ux, uy)
     end
@@ -94,9 +94,11 @@ struct
     in
       Util.for 0 (n - 1)
       (fn _ =>
-       let in
+       let
+         val prev_x = !uxx
+       in
          uxx := ~ (!uyy);
-         uyy := (!uxx + !uyy)
+         uyy := (prev_x + !uyy)
        end);
       (!uxx, !uyy)
     end
@@ -228,7 +230,10 @@ struct
     let
       (* translate (xx, yy) to piece space, and look it up
          within the current rotation. *)
-      val (px, py) = translate (~ (!x), ~ (!y)) (xx, yy)
+
+      (* To translate, coordinates need to be uniform *)
+      val (udx, udy) = uniformize_coord (!x, !y)
+      val (px, py) = translate (~udx, ~udy) (xx, yy)
 
       val oriented_piece = Vector.sub (piece, !a)
     in
@@ -387,12 +392,6 @@ struct
       c
     end
 
-  (*
-  datatype dir = E | W | SE | SW
-  datatype turn = CW | CCW
-  datatype command = D of dir | T of turn
-  *)
-
   fun move_undo (state as
                  S { rng, score, piece, problem, x, y, a, board },
                  ch : legalchar) =
@@ -429,8 +428,9 @@ struct
       | T turn =>
           let
             val angle = case turn of CW => 1 | CCW => ~1
-            val a = (!a + angle) mod 6
+            val new_a = (!a + angle) mod 6
           in
+            a := new_a;
             (* XXX check locking. *)
             (* XXX check lines. *)
             { result = Continue { scored = 0, lines = 0, locked = false },
