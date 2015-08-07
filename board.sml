@@ -184,7 +184,7 @@ struct
           else
             let val vs3 = CoordSet.map (rotate 1) vs2
             in
-              if CoordSet.equal (vs0, vs2)
+              if CoordSet.equal (vs0, vs3)
               then 3
               else 6
             end
@@ -532,27 +532,35 @@ struct
     end
 
   (* Imperatively update board to reflect deleted lines, and return
-  the number of lines so deleted. *)
+     the number of lines so deleted. *)
+  (* XXX actually, it doesn't update the board *)
   fun check_lines (P { width, height, ... }) board =
     let
+      (* PERF: We shouldn't make a new array at least until we know
+         that we are going to do some copying. *)
       val newa = Array.array (width * height, false)
       val newy = ref (height-1)
       val lines = ref 0
     in
       Util.for 0 (height-1)
-               (fn negy =>
-                   let
-                     val y = height - negy - 1
-                     val should_delete = ref true
-                     val _ = Util.for 0 (width-1) (fn x => if Array.sub(board, y * width + x)
-                                                           then ()
-                                                           else should_delete := false)
-                   in
-                     if !should_delete
-                     then lines := !lines + 1
-                     else (Util.for 0 (width-1) (fn x => Array.update(newa, !newy * width + x, Array.sub(board, y * width + x)));
-                           newy := !newy - 1)
-                   end);
+      (fn negy =>
+       let
+         val y = height - negy - 1
+         val should_delete = ref true
+         (* PERF: Exit early. ArraySlice? *)
+         val _ = Util.for 0 (width-1)
+           (fn x => if Array.sub(board, y * width + x)
+                    then ()
+                    else should_delete := false)
+       in
+         if true = !should_delete
+         then lines := !lines + 1
+         else (Util.for 0 (width-1)
+               (fn x => Array.update(newa, !newy * width + x,
+                                     Array.sub(board, y * width + x)));
+               newy := !newy - 1)
+       end);
+
       !lines
     end
 
@@ -588,7 +596,7 @@ struct
             y := ny;
             (* XXX check locking. *)
 
-            (* check lines *)
+            (* XXX lines should affect score *)
             { result = Continue { scored = 0, lines = lines, locked = false },
               undo = undo }
           end
@@ -596,11 +604,12 @@ struct
           let
             val angle = case turn of CW => 1 | CCW => ~1
             val new_a = (!a + angle) mod 6
+            val lines = check_lines problem board
           in
             a := new_a;
             (* XXX check locking. *)
-            (* XXX check lines. *)
-            { result = Continue { scored = 0, lines = 0, locked = false },
+            (* XXX lines should affect score *)
+            { result = Continue { scored = 0, lines = lines, locked = false },
               undo = undo }
           end
     end
