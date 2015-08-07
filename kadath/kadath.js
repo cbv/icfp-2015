@@ -241,14 +241,14 @@ $(document).on('keydown', function(e) {
   if (e.keyCode == 77) { // "m"
     attempt_move(0,1,0,"l");
   }
-  // if (e.keyCode == 219) { // "["
-  //   init_piece(g_board, (g_board.cur_piece.unit_id + g_board.units.length- 1) % g_board.units.length);
-  //   draw_board(g_board);
-  // }
-  // if (e.keyCode == 221) { // "]"
-  //   init_piece(g_board, (g_board.cur_piece.unit_id + 1) % g_board.units.length);
-  //   draw_board(g_board);
-  // }
+  if (e.keyCode == 219) { // "["
+    g_board.cur_piece.unit_id = (g_board.cur_piece.unit_id + g_board.units.length - 1) % g_board.units.length;
+    draw_board(g_board);
+  }
+  if (e.keyCode == 221) { // "]"
+    g_board.cur_piece.unit_id = (g_board.cur_piece.unit_id + 1) % g_board.units.length;
+    draw_board(g_board);
+  }
 
 
 });
