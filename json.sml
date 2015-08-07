@@ -35,7 +35,6 @@ end
 
 functor JSONParser (Callbacks : JSON_CALLBACKS) =
 struct
-  open Callbacks
   type json_data = Callbacks.json_data
 
    exception JSONParseError of string * int

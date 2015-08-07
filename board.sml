@@ -39,27 +39,24 @@ struct
            (* XXX history of where we've been *)
            rng: RNG.rng ref }
 
-  local
-    fun uniformize_coords (x, y) =
-      (x - y div 2, y)
+  fun uniformize_coord (x, y) =
+    (x - y div 2, y)
 
-    fun deuniformize_coords (x, y) =
-      (x + y div 2, y)
-  in
+  fun deuniformize_coord (x, y) =
+    (x + y div 2, y)
 
-    (* Correctly translate a point (x, y) by (dx, dy) where (dx, dy) are
-       "east" and "south-east". This is not just pointwise addition
-       because the grid is ragged; "down" moves alternatingly SE and
-       SW in "spec" coordinates. *)
-    fun translate (dx, dy) (x, y) =
-      let
-        val (ux, uy) = uniformize_coords (x, y)
-        val ux = ux + dx
-        val uy = uy + dy
-      in
-        deuniformize_coords (ux, uy)
-      end
-  end
+  (* Correctly translate a point (x, y) by (dx, dy) where (dx, dy) are
+     "east" and "south-east". This is not just pointwise addition
+     because the grid is ragged; "down" moves alternatingly SE and
+     SW in "spec" coordinates. *)
+  fun translate (dx, dy) (x, y) =
+    let
+      val (ux, uy) = uniformize_coord (x, y)
+      val ux = ux + dx
+      val uy = uy + dy
+    in
+      deuniformize_coord (ux, uy)
+    end
 
   fun fromjson s =
     let
@@ -70,17 +67,18 @@ struct
       fun UnInt (JInt i) = i
         | UnInt _ = raise Board "Not an int"
 
-      fun Int (JMap m, key) =
-        (case ListUtil.Alist.find op= m key of
-           SOME (JInt i) => i
-         | _ => raise Board ("Expected int for key " ^ key))
-        | Int _ = raise Board "Not JMap"
+      fun UnList (JArray a) = a
+        | UnList _ = raise Board "Not a list/array"
 
-      fun List (JMap m, key) =
-        (case ListUtil.Alist.find op= m key of
-           SOME (JArray l) => l
-         | _ => raise Board ("Expected list for key " ^ key))
-        | List _ = raise Board "Not JMap"
+      fun Key (JMap m, k) =
+        (case ListUtil.Alist.find op= m k of
+           SOME (obj) => obj
+         | NONE => raise Board ("Didn't find " ^ k))
+        | Key _ = raise Board "Not JMap"
+
+      fun Int (j, key) = UnInt (Key (j, key))
+
+      fun List (j, key) = UnList (Key (j, key))
 
       fun Coord j = (Int (j, "x"), Int (j, "y"))
 
@@ -92,6 +90,17 @@ struct
       (* TODO: Harden against these being bigger than 2^31, negative, etc. *)
       val seeds = map UnInt (List (j, "sourceSeeds"))
 
+      fun Piece j =
+        let
+          val members = map Coord (List (j, "members"))
+          (* We represent all pieces as being centered on their origin.
+             So we start by translating all members so that the pivot ends
+             up on the origin. *)
+          val (px, py) = uniformize_coord (Coord (Key (j, "pivot")))
+        in
+          Vector.fromList (map (translate (~px, ~py)) members)
+        end
+
       val a = Array.array (width * height, false)
     in
       app (fn (x, y) =>
@@ -100,21 +109,7 @@ struct
           seeds = Vector.fromList (map Word32.fromInt seeds),
           sourcelength = sourcelength,
           start = Array.vector a,
-          pieces = Vector.fromList []
-          }
-          (*
-
-  datatype problem =
-    P of { start: bool vector,
-           width: int,
-           height : int,
-           sourcelength : int,
-           seeds : Word32.word vector,
-           (* aka units, an ml keyword *)
-           pieces : piece vector
-          }
-    *)
-
+          pieces = Vector.fromList (map Piece (List (j, "pieces"))) }
     end
 
   fun clone_array a =
