@@ -19,6 +19,9 @@ function load_problem(problemNumber) {
             });
             g_board.cur_piece = {unit_id: 0, rotation: 1, translation: {x:0, y:4}};
             draw_board(g_board);
+          },
+          error:function(error) {
+            draw_board(g_board);
           }});
 }
 
@@ -89,39 +92,45 @@ function valid_pt(board, pt) {
 }
 function draw_board(board) {
   d.clearRect(0,0,w,h);
+  try {
+    board.color =
+      _.map(_.range(board.height), function(y) {
+        return _.map(_.range(board.width), function(x) {
+          return board.occup[y][x] ? "#fc0" : "#f7f7f7";
+        })
+      });
 
-  board.color =
-    _.map(_.range(board.height), function(y) {
-      return _.map(_.range(board.width), function(x) {
-        return board.occup[y][x] ? "#fc0" : "#f7f7f7";
-      })
+    var unit = board.units[board.cur_piece.unit_id];
+    var upivot = uniformize_coords(unit.pivot);
+    unit.members.forEach(function(member) {
+      var xmember = deuniformize_coords(
+        vadd(
+          board.cur_piece.translation,
+          rotate_about(uniformize_coords(member), upivot, board.cur_piece.rotation)
+        )
+      );
+      if (valid_pt(board, xmember)) {
+        board.color[xmember.y][xmember.x] = "#f54";
+      }
     });
-
-  var unit = board.units[board.cur_piece.unit_id];
-  var upivot = uniformize_coords(unit.pivot);
-  unit.members.forEach(function(member) {
-    var xmember = deuniformize_coords(
-      vadd(
-        board.cur_piece.translation,
-        rotate_about(uniformize_coords(member), upivot, board.cur_piece.rotation)
-      )
-    );
-    if (valid_pt(board, xmember)) {
-      board.color[xmember.y][xmember.x] = "#f54";
+    var xpivot = deuniformize_coords(vadd(board.cur_piece.translation, upivot));
+    if (valid_pt(board, xpivot)) {
+      board.color[xpivot.y][xpivot.x] = board.color[xpivot.y][xpivot.x] == "#f54" ?
+        "#f5f" : "#ff0";
     }
-  });
-  var xpivot = deuniformize_coords(vadd(board.cur_piece.translation, upivot));
-  if (valid_pt(board, xpivot)) {
-    board.color[xpivot.y][xpivot.x] = board.color[xpivot.y][xpivot.x] == "#f54" ?
-      "#f5f" : "#ff0";
+
+    var scale = 0.5 * Math.min(w, h) / Math.max(board.width, board.height);
+
+    for (var i = 0; i < board.width; i++) {
+      for (var j = 0; j < board.height; j++) {
+        draw_hex(scale, i, j, board.color[j][i]);
+      }
+    }
   }
-
-  var scale = 0.5 * Math.min(w, h) / Math.max(board.width, board.height);
-
-  for (var i = 0; i < board.width; i++) {
-    for (var j = 0; j < board.height; j++) {
-      draw_hex(scale, i, j, board.color[j][i]);
-    }
+  finally {
+    d.fillStyle = "rgba(0,0,100,0.2)";
+    d.font = "100px sans-serif";
+    d.fillText(problemNumber, 10, h - 10);
   }
 }
 
