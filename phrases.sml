@@ -9,8 +9,10 @@ struct
     ]
 
   (* Ideas? *)
-  val hypotheses =
-    [ "Yuggoth" (* filled cells in problem 7 *)
-     ]
+  val hypotheses = [
+     (* Filled cells in problem 7. In experiment 'scarpy4' we learned that
+        "ayuggoth" contains a power phrase. *)
+    "Yuggoth"
+  ]
 
 end
