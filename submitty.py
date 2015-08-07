@@ -4,6 +4,7 @@ import argparse
 import json
 import sys
 import requests
+import socket
 
 # Rob's api token, don't HAX
 apitoken = 'IumEctlsTyz6gaGeix2MQ8wHwnChc2u1roJ7NJpHL20='
@@ -55,7 +56,8 @@ if __name__ == "__main__":
       'problemId': problemId,
       'seed': seed,
       'tag': tag,
-      'solution': solution
+      'solution': solution,
+      'submitter': socket.gethostname()
    }
    response = json.loads(requests.post(submitty, json.dumps(info)).text)
    if len(response) != 2 or response[0] is None or response[1] is None:
