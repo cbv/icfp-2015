@@ -533,12 +533,8 @@ struct
 
   (* Imperatively update board to reflect deleted lines, and return
      the number of lines so deleted. *)
-  (* XXX actually, it doesn't update the board *)
   fun check_lines (P { width, height, ... }) board =
     let
-      (* PERF: We shouldn't make a new array at least until we know
-         that we are going to do some copying. *)
-      val newa = Array.array (width * height, false)
       val newy = ref (height-1)
       val lines = ref 0
     in
@@ -546,21 +542,24 @@ struct
       (fn negy =>
        let
          val y = height - negy - 1
-         val should_delete = ref true
-         (* PERF: Exit early. ArraySlice? *)
-         val _ = Util.for 0 (width-1)
-           (fn x => if Array.sub(board, y * width + x)
-                    then ()
-                    else should_delete := false)
        in
-         if true = !should_delete
+         if ArraySlice.all (fn x => x)
+                           (ArraySlice.slice(board, y * width, SOME width))
          then lines := !lines + 1
-         else (Util.for 0 (width-1)
-               (fn x => Array.update(newa, !newy * width + x,
-                                     Array.sub(board, y * width + x)));
+         else ((if !newy <> y
+                then Util.for 0 (width-1)
+                              (fn x => Array.update(board, !newy * width + x,
+                                                    Array.sub(board, y * width + x)))
+                else ());
                newy := !newy - 1)
        end);
-
+      Util.for 0 (!newy) (fn negy =>
+                             let
+                               val y = height - negy - 1
+                             in
+                               Util.for 0 (width-1)
+                                        (fn x => Array.update(board, y * width + x, false))
+                             end);
       !lines
     end
 

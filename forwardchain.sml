@@ -41,11 +41,11 @@ struct
 
 
   fun move_helper state move =
-    let val {result, undo} = Board.move_undo (state);
+    let val {result, undo} = Board.move_undo (state, move);
         val () =
         (case result of
              Board.Continue {scored, lines, locked} =>
-              let (* val pl = piece_location(state, locked) *)
+              let val pl = piece_location(state, locked)
               in ()
               end
           |  Board.Done {reason}  => ())
