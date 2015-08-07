@@ -1,4 +1,3 @@
-open Board
 signature TACTIC = sig
   exception Tactic of string
 

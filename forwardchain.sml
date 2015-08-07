@@ -1,4 +1,8 @@
-structure ForwardChain :> FORWARD_CHAIN = struct
+structure ForwardChain :> FORWARD_CHAIN =
+struct
+
+  exception Unimplemented
+
   datatype PieceLocation = PL of {px: int, py: int, a: int, fixed: bool}
 
   fun compare (PL {px = px0, py = py0, a = a0, fixed = fixed0},
@@ -21,6 +25,9 @@ structure ForwardChain :> FORWARD_CHAIN = struct
      then GREATER
      else EQUAL
 
+
+  fun piece_position _ = raise Unimplemented
+  fun piece_angle _ = raise Unimplemented
 
   structure LocSet = SplaySetFn(struct
                                    type ord_key = PieceLocation
