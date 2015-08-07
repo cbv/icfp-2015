@@ -25,6 +25,7 @@ function init_piece(board, unit_id) {
 }
 
 function load_problem(problemNumber) {
+  g_moves = "";
   $.ajax("../qualifiers/problem_" + problemNumber + ".json",
          {dataType: "json",
           success:function(data) {
@@ -217,28 +218,28 @@ $(document).on('keydown', function(e) {
     load_problem(problemNumber);
   }
   if (e.keyCode == 191) { // "/"
-    attempt_move(0, 0, 1);
+    attempt_move(0, 0, 1, "d");
   }
   if (e.keyCode == 220) { // "\\"
-    attempt_move(0,0,-1);
+    attempt_move(0,0,-1, "k");
   }
   if (e.keyCode == 85) { // "u"
-    attempt_move(0,-1,0);
+    attempt_move(0,-1,0, "=");
   }
   if (e.keyCode == 73) { // "i"
-    attempt_move(1,-1,0);
+    attempt_move(1,-1,0, "=");
   }
   if (e.keyCode == 72) { // "h"
-    attempt_move(-1,0,0);
+    attempt_move(-1,0,0,"p");
   }
   if (e.keyCode == 75) { // "k"
-    attempt_move(1,0,0);
+    attempt_move(1,0,0,"b");
   }
   if (e.keyCode == 78) { // "n"
-    attempt_move(-1,1,0);
+    attempt_move(-1,1,0,"a");
   }
   if (e.keyCode == 77) { // "m"
-    attempt_move(0,1,0);
+    attempt_move(0,1,0,"l");
   }
   // if (e.keyCode == 219) { // "["
   //   init_piece(g_board, (g_board.cur_piece.unit_id + g_board.units.length- 1) % g_board.units.length);
@@ -252,7 +253,8 @@ $(document).on('keydown', function(e) {
 
 });
 
-function attempt_move(dx, dy, drot) {
+function attempt_move(dx, dy, drot, chr) {
+  g_moves += chr;
   var pc = g_board.cur_piece;
   var new_piece = {unit_id: pc.unit_id,
                    translation: {x: pc.translation.x + dx,
