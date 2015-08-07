@@ -44,10 +44,10 @@ sig
   (* legal command characters *)
   eqtype legalchar
 
-  (* Restart the problem, creating the initial state. It's
-     fine to have multiple outstanding states for the same
-     problem. *)
-  val reset : problem -> state
+  (* Restart the problem, creating the initial state. Takes the seed
+     index to use. It's fine to have multiple outstanding states for
+     the same problem and seed. *)
+  val reset : problem * int -> state
 
   (* Make an exact copy of the state with a new identity *)
   val clone : state -> state

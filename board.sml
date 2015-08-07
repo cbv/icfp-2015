@@ -17,8 +17,13 @@ struct
   type legalchar = char
 
   (* Vector of members (filled spaces), assuming the pivot is at 0,0 *)
+  (* XXX this should have all the rotations cached. *)
   type piece =
-    (int * int) Vector.vector
+    (* Set of (spec) coordinate offsets from pivot *)
+    (int * int) vector
+    (* 6 of them, one for each rotation. 0 is the natural rotation,
+       1 is 1 hexgree clockwise, etc. *)
+    vector
 
   datatype problem =
     P of { start: bool vector,
@@ -27,14 +32,21 @@ struct
            sourcelength : int,
            seeds : Word32.word vector,
            (* aka units, an ml keyword *)
-           pieces : piece vector
-          }
+           pieces : piece vector }
 
   datatype state =
     S of { board: bool array,
            problem: problem,
            score: int ref,
-           (* XXX position of pivot *)
+
+           piece: piece,
+
+           (* Position of pivot (spec coords) *)
+           x: int ref,
+           y: int ref,
+
+           (* Angle in hexgrees [0, 5] *)
+           a: int ref,
 
            (* XXX history of where we've been *)
            rng: RNG.rng ref }
@@ -129,6 +141,12 @@ struct
           Vector.fromList (map (translate (~px, ~py)) members)
         end
 
+      (* Take a single piece (relative to origin) in its natural rotation.
+         Return a 6-place vector of all its rotations *)
+      fun makerotations p =
+        (* PERF; can iteratively rotate *)
+        Vector.tabulate (6, fn a => Vector.map (rotate a) p)
+
       val a = Array.array (width * height, false)
     in
       app (fn (x, y) =>
@@ -137,17 +155,23 @@ struct
           seeds = Vector.fromList (map Word32.fromInt seeds),
           sourcelength = sourcelength,
           start = Array.vector a,
-          pieces = Vector.fromList (map Piece (List (j, "units"))) }
+          pieces = Vector.fromList
+          (map makerotations
+           (map Piece (List (j, "units")))) }
     end
 
   fun clone_array a =
     (* PERF There must be a faster way to do this?? *)
     Array.tabulate (Array.length a, fn i => Array.sub(a, i))
 
-  fun clone (S { board, problem, score, rng }) : state =
+  fun clone (S { board, problem, score, rng, piece, a, x, y }) : state =
            S { board = clone_array board,
                problem = problem,
                score = ref (!score),
+               a = ref (!a),
+               x = ref (!x),
+               y = ref (!y),
+               piece = piece,
                (* piece = clone_array piece, *)
                rng = ref (!rng) }
 
@@ -157,10 +181,41 @@ struct
     Array.sub (board, y * width + x)
   fun isempty (state, x, y) = not (isfull (state, x, y))
 
+  fun reset (problem as P { seeds, start, pieces, ... },
+             seed_idx) : state =
+    let
+      val rng =
+        if seed_idx < 0 orelse
+           seed_idx >= Vector.length seeds
+        then raise Board "Bad seed idx in reset"
+        else RNG.fromseed (Vector.sub (seeds, seed_idx))
+
+      val (piece_idx, rng) = RNG.next rng
+
+      val piece = Vector.sub (pieces, piece_idx)
+
+      (* FIXME *)
+      val startx = 0
+      val starty = 0
+      (* should start in this orientation. *)
+      val starta = 0
+    in
+      S { rng = ref rng,
+          score = ref 0,
+          piece = piece,
+          problem = problem,
+          x = ref startx,
+          y = ref starty,
+          a = ref starta,
+          board = Array.tabulate
+          (Vector.length start,
+           (fn x => Vector.sub(start, x))) }
+    end
+
   fun move _ = raise Board "unimplemented"
   fun move_undo _ = raise Board "unimplemented"
   fun move_unwind _ = raise Board "unimplemented"
-  fun reset _ = raise Board "unimplemented"
+
 
   fun ispiece _ = raise Board "unimplemented"
   fun ispivot _ = raise Board "unimplemented"
