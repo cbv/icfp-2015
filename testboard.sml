@@ -11,7 +11,10 @@ struct
     end
 
   fun main() =
-    let in
+    let
+      val problem = Board.fromjson
+        (StringUtil.readfile "qualifiers/problem_11.json")
+    in
       print "There is nothing, only Zuulthuhu.\n";
       loop (RNG.fromseed 0w17, 20)
     end
