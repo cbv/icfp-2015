@@ -565,7 +565,9 @@ struct
     end
 
   fun move_undo (state as
-                 S { rng, score, piece, problem, x, y, a, board },
+                 S { rng, score, piece,
+                     problem = problem as P { width, height, ... },
+                     x, y, a, board },
                  ch : legalchar) =
     let
       (* PERF! Avoid copying the board; the idea here is that we
@@ -587,8 +589,22 @@ struct
       (* Hypothetically, if we moved the pivot to (nx, ny) with angle a,
          would this be a collision? Then we lock at the OLD location. *)
       fun is_locked_at (nx, ny, na) =
-        (* XXX implement *)
-        false
+        let
+          val Piece { rotations, ... } = piece
+          val oriented_piece = Vector.sub(rotations, na)
+
+          (* The displacement applied to every member of the piece. *)
+          val (upx, upy) = uniformize_coord (nx, ny)
+          fun is_collision (px, py) =
+            let val (px, py) = translate (upx, upy) (px, py)
+            in
+              px < 0 orelse py < 0 orelse
+              px >= width orelse py >= height orelse
+              Array.sub (board, py * width + px)
+            end
+        in
+          Vector.exists is_collision oriented_piece
+        end
 
       val (nx, ny, na) =
         case charcommand ch of
