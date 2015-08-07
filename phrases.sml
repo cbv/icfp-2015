@@ -9,8 +9,8 @@ struct
     ]
 
   (* Ideas? *)
-  val hypotheses = [
-                   , "Yuggoth" (* filled cells in problem 7 *)
-                   ]
+  val hypotheses =
+    [ "Yuggoth" (* filled cells in problem 7 *)
+     ]
 
 end
