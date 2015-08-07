@@ -75,6 +75,21 @@ function vadd(p1, p2) {
   return {x:p1.x + p2.x, y:p1.y + p2.y};
 }
 
+function draw_spot(scale, xx, yy, c, r) {
+  r = r || 0.9;
+  var p = uniformize_coords({x:xx, y:yy});
+  var x = p.x;
+  var y = p.y;
+  d.save();
+  d.translate(2 * scale, 3 * scale);
+  d.translate(scale * R3 * (2 * x + y), scale * 2 * y * 0.75);
+  d.beginPath();
+  d.arc(scale * R3, scale * 0.5, scale * R3 * r, 0, 2 * Math.PI);
+  d.fillStyle = c;
+  d.fill();
+  d.restore();
+}
+
 function draw_hex(scale, xx, yy, c) {
   var p = uniformize_coords({x:xx, y:yy});
   var x = p.x;
@@ -97,7 +112,17 @@ function draw_hex(scale, xx, yy, c) {
   d.lineJoin = "round";
   d.lineWidth = 0.5;
   d.stroke();
-  d.fillStyle = "gray";
+  d.restore();
+}
+
+function draw_text(scale, xx, yy, c) {
+  var p = uniformize_coords({x:xx, y:yy});
+  var x = p.x;
+  var y = p.y;
+  d.save();
+  d.translate(2 * scale, 3 * scale);
+  d.translate(scale * R3 * (2 * x + y), scale * 2 * y * 0.75);
+  d.fillStyle = c;
   d.textAlign = "center";
   var font_size = 0.4 * scale;
   d.font = font_size + "px sans-serif";
@@ -108,52 +133,60 @@ function draw_hex(scale, xx, yy, c) {
 function valid_pt(board, pt) {
   return pt.x >= 0 && pt.y >= 0 && pt.x < board.width && pt.y < board.height;
 }
+
+function empty_pt(board, pt) {
+  return valid_pt(board, pt) && !board.occup[pt.y][pt.x];
+}
+
 function draw_board(board) {
   d.save();
   d.scale(devicePixelRatio, devicePixelRatio);
   d.clearRect(0,0,w,h);
-  try {
-    board.color =
-      _.map(_.range(board.height), function(y) {
-        return _.map(_.range(board.width), function(x) {
-          return board.occup[y][x] ? "#fc0" : "#f7f7f7";
-        })
-      });
 
-    var unit = board.units[board.cur_piece.unit_id];
-    var upivot = uniformize_coords(unit.pivot);
-    unit.members.forEach(function(member) {
-      var xmember = deuniformize_coords(
-        vadd(
-          board.cur_piece.translation,
-          rotate_about(uniformize_coords(member), upivot, board.cur_piece.rotation)
-        )
-      );
-      if (valid_pt(board, xmember)) {
-        board.color[xmember.y][xmember.x] = "#f54";
-      }
+  board.color =
+    _.map(_.range(board.height), function(y) {
+      return _.map(_.range(board.width), function(x) {
+        return board.occup[y][x] ? "#fc0" : "#f7f7f7";
+      })
     });
-    var xpivot = deuniformize_coords(vadd(board.cur_piece.translation, upivot));
-    if (valid_pt(board, xpivot)) {
-      board.color[xpivot.y][xpivot.x] = board.color[xpivot.y][xpivot.x] == "#f54" ?
-        "#f5f" : "#ff0";
-    }
 
-    var scale = 0.5 * Math.min(w/board.width, h/board.height);
+  var scale = 0.5 * Math.min(w/board.width, h/board.height);
 
-    for (var i = 0; i < board.width; i++) {
-      for (var j = 0; j < board.height; j++) {
-        draw_hex(scale, i, j, board.color[j][i]);
-      }
+  for (var i = 0; i < board.width; i++) {
+    for (var j = 0; j < board.height; j++) {
+      draw_hex(scale, i, j, board.color[j][i]);
     }
   }
-  finally {
-    d.fillStyle = "rgba(0,0,100,0.2)";
-    d.font = "50px sans-serif";
-    d.fillText("Problem: " + problemNumber + " Unit: " + (board.cur_piece.unit_id + 1) + "/" +
-               board.units.length, 10, h - 10);
-    d.restore();
+
+  var unit = board.units[board.cur_piece.unit_id];
+  var upivot = uniformize_coords(unit.pivot);
+  unit.members.forEach(function(member) {
+    var xmember = deuniformize_coords(
+      vadd(
+        board.cur_piece.translation,
+        rotate_about(uniformize_coords(member), upivot, board.cur_piece.rotation)
+      )
+    );
+    draw_spot(scale, xmember.x, xmember.y, "#f77");
+  });
+
+  var xpivot = deuniformize_coords(vadd(board.cur_piece.translation, upivot));
+  draw_spot(scale, xpivot.x, xpivot.y, "#a00", 0.5);
+
+  for (var i = 0; i < board.width; i++) {
+    for (var j = 0; j < board.height; j++) {
+      draw_text(scale, i, j, "#333");
+    }
   }
+
+
+  d.fillStyle = "rgba(0,0,100,0.2)";
+  d.font = "50px sans-serif";
+  d.fillText("Problem: " + problemNumber + " Unit: " + (board.cur_piece.unit_id + 1) + "/" +
+             board.units.length, 10, h - 10);
+  d.restore();
+
+
 }
 
 load_problem(0);
