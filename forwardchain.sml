@@ -50,7 +50,9 @@ struct
                   then () (* already visited *)
                   else let val () = visitedSetRef := (LocSet.add (!visitedSetRef, pl));
                        in
-                           helper (state, visitedSetRef)
+                           if not locked
+                           then helper (state, visitedSetRef)
+                           else ()
                        end
               end
           |  Board.Done {reason}  => ())
