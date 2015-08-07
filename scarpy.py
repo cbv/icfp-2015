@@ -50,5 +50,8 @@ request = {
    'scores': scores
 }
 response = json.loads(requests.post(scarpy_writer, json.dumps(request)).text)
+if (not 'modified' in response):
+   print "Unexpected response!"
+   print json.dumps(response)
 if (response['modified'] != 0):
    print 'Learned about '+str(response['modified'])+' new scores'
