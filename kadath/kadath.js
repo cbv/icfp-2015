@@ -8,7 +8,7 @@ function init_piece(board, unit_id) {
   var members = board.units[unit_id].members;
   console.log(JSON.stringify(members));
   var xs = members.map(function(z) { return z.x; });
-  var ys = members.map(function(z) { return z.x; });
+  var ys = members.map(function(z) { return z.y; });
   var minx = _.min(xs);
   var maxx = _.max(xs);
   var miny = _.min(ys);
@@ -133,7 +133,7 @@ function draw_board(board) {
         "#f5f" : "#ff0";
     }
 
-    var scale = 0.5 * Math.min(w, h) / Math.max(board.width, board.height);
+    var scale = 0.5 * Math.min(w/board.width, h/board.height);
 
     for (var i = 0; i < board.width; i++) {
       for (var j = 0; j < board.height; j++) {
