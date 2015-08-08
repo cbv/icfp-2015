@@ -38,7 +38,8 @@ struct
                (* Start position for pivot in spec coords. *)
                start: int * int }
 
-  (* PERF: Should sort vector and do binary search, etc. *)
+  (* PERF: Should sort vector and do binary search, etc.
+     Currently only used in printing the board, though. *)
   fun oriented_piece_has (v : (int * int) vector) (x, y) =
     Vector.exists (fn (xx, yy) => x = xx andalso y = yy) v
 
@@ -332,7 +333,6 @@ struct
 
   fun clone_array a =
     (* PERF There must be a faster way to do this?? *)
-    (* I think ArraySlice *)
     Array.tabulate (Array.length a, fn i => Array.sub(a, i))
 
   fun clone (S { board, next_sourceidx, last_lines, stutters,
@@ -347,7 +347,6 @@ struct
                y = ref (!y),
                last_lines = ref (!last_lines),
                piece = ref (!piece),
-               (* piece = clone_array piece, *)
                rng = ref (!rng) }
 
   fun isfull (S { board, problem = P{ width, height, ... }, ... },
@@ -399,7 +398,6 @@ struct
                              start = (startx, starty) } =
           Vector.sub (pieces, piece_idx)
       in
-        (* print ("New piece_idx " ^ Int.toString piece_idx ^ "\n"); *)
         if is_locked_at (problem, board, piece, startx, starty, 0)
         then GPNoSpace
         else GP { next_sourceidx = sourceidx + 1,
@@ -413,7 +411,7 @@ struct
     let
       val initial_rng = RNG.fromseed seed
 
-      (* PERF ArraySlice. *)
+      (* PERF Faster way? *)
       val board = Array.tabulate
         (Vector.length start,
          (fn x => Vector.sub(start, x)))
@@ -540,7 +538,6 @@ struct
            then "" (* empty half *)
            else " ")
         in
-          (* XXX also draw current piece. *)
           Util.for 0 (width - 1)
           (fn x =>
            r := !r ^
@@ -742,6 +739,7 @@ struct
               false
             end
         end
+
     in
       if check_and_add_repeat_at (nx, ny, na)
       then { result = M { scored = 0, lines = 0, locked = NONE, status = ERROR },
