@@ -7,31 +7,23 @@ struct
     ^ Bool.toString(locked) ^ "}"
 
   fun piece_location (state, locked) =
-    let val (px, py) = Board.piece_position state;
-         val angle = Board.piece_angle state;
+    let
+      val (px, py) = Board.piece_position state
+      val angle = Board.piece_angle state
+      val symmetry = Board.piece_symmetry state
     in
-        PL {px = px, py = py, a = angle, locked = locked}
+        PL {px = px, py = py, a = angle mod symmetry, locked = locked}
     end
 
   fun compare (PL {px = px0, py = py0, a = a0, locked = locked0},
                PL {px = px1, py = py1, a = a1, locked = locked1}) =
-     if px0 < px1
-     then LESS
-     else if px0 > px1
-     then GREATER
-     else if py0 < py1
-     then LESS
-     else if py0 > py1
-     then GREATER
-     else if a0 < a1
-     then LESS
-     else if a0 > a1
-     then GREATER
-     else if (locked0 andalso not locked1)
-     then LESS
-     else if (not locked0 andalso locked1)
-     then GREATER
-     else EQUAL
+    case Int.compare (px0, px1) of
+      EQUAL => (case Int.compare (py0, py1) of
+                  EQUAL => (case Int.compare (a0, a1) of
+                              EQUAL => Util.bool_compare (locked0, locked1)
+                            | other => other)
+                | other => other)
+    | other => other
 
   structure LocSet = SplaySetFn(struct
                                    type ord_key = PieceLocation
@@ -55,8 +47,9 @@ struct
               in
                   if LocSet.member (!visitedSetRef, pl)
                   then () (* already visited *)
-                  else let val () = visitedSetRef := (LocSet.add (!visitedSetRef, pl));
+                  else let
                        in
+                           visitedSetRef := (LocSet.add (!visitedSetRef, pl));
                            if not locked
                            then helper (state, visitedSetRef)
                            else ()

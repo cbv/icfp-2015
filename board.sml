@@ -88,6 +88,8 @@ struct
 
   fun piece_position (S {x, y, ...}) = (!x, !y)
   fun piece_angle (S {a, ...}) = !a
+  fun piece_symmetry (S {piece = ref (Piece { symmetry, ... }), ...}) =
+    symmetry
 
   fun delta E = (1, 0)
     | delta W = (~1, 0)

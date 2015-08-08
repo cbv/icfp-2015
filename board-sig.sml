@@ -45,6 +45,11 @@ sig
 
   val piece_position : state -> int * int
   val piece_angle : state -> int
+  (* Get the symmetry group of the piece. Only changes when the piece
+     changes (after lock). The symmetry group is either 1, 2, 3, or 6.
+     Angles can be considered equivalent modulo the symmetry group
+     (they produce the same set of members). *)
+  val piece_symmetry : state -> int
 
   (* legal command characters *)
   eqtype legalchar
