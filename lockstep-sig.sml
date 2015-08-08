@@ -10,6 +10,8 @@ signature LOCK_STEP = sig
                      state: Board.state,
                      (* An example list of commands that could make up this step. *)
                      commands: Board.command list
+                     (* *)
+(*                     scored: int  *)
                  }
 
 
