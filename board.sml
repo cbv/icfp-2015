@@ -423,7 +423,7 @@ struct
          (fn x => Vector.sub(start, x)))
     in
       case getpiece (problem, board, 0, initial_rng) of
-        (* TODO: Handle these gracefully if legal? *)
+        (* TODO: Handle these gracefully if technically legal? *)
         GPNoSpace => raise Board "no space in INITIAL CONFIGURATION??"
       | GPGameOver => raise Board "source length is 0??"
       | GP { next_sourceidx,
@@ -626,10 +626,10 @@ struct
      the number of lines so deleted. *)
   fun check_lines (P { width, height, ... }) board =
     let
-      val newy = ref (height-1)
+      val newy = ref (height - 1)
       val lines = ref 0
     in
-      Util.for 0 (height-1)
+      Util.for 0 (height - 1)
       (fn negy =>
        let
          val y = height - negy - 1
@@ -640,16 +640,16 @@ struct
          if should_delete
          then lines := !lines + 1
          else (if !newy <> y
-                then Util.for 0 (width-1)
-                              (fn x => Array.update(board, !newy * width + x,
-                                                    Array.sub(board, y * width + x)))
+                then Util.for 0 (width - 1)
+                  (fn x => Array.update(board, !newy * width + x,
+                                        Array.sub(board, y * width + x)))
                else ();
                newy := !newy - 1)
        end);
       Util.for 0 (!newy)
-               (fn y =>
-                   Util.for 0 (width-1)
-                            (fn x => Array.update(board, y * width + x, false)));
+      (fn y =>
+       Util.for 0 (width - 1)
+       (fn x => Array.update(board, y * width + x, false)));
       !lines
     end
 
@@ -772,6 +772,8 @@ struct
                 x := startx;
                 y := starty;
                 a := 0;
+                stutters := StutterSet.add (StutterSet.empty,
+                                            (startx, starty, 0));
 
                 (* lines should affect score. *)
                 { result = M { lines = lines, scored = move_score,
