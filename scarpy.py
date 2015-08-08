@@ -56,7 +56,7 @@ request = {
    'time': data['time'],
    'scores': scores
 }
-print json.dumps(request)
+# print json.dumps(request)
 response = json.loads(requests.post(scarpy_writer, json.dumps(request)).text)
 if (not 'modified' in response):
    print "Unexpected response!"
