@@ -12,7 +12,7 @@ signature LOCK_STEP = sig
                        NONE if this step results in gameover. You can assume that this state
                        is not aliased. *)
                      state: Board.state option,
-                     (* An example list of commands that could make up this step. *)
+                     (* An example list of commands that could make up this step, in reverse order. *)
                      commands: Board.command list,
                      (* An example number of points scored for making this step. *)
                      scored: int

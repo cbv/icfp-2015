@@ -11,7 +11,7 @@ structure LockStep :> LOCK_STEP = struct
                      (* An example state that could result from taking this step.
                        NONE if this step results in gameover. *)
                      state: Board.state option,
-                     (* An example list of commands that could make up this step. *)
+                     (* An example list of commands that could make up this step, in reverse order *)
                      commands: Board.command list,
                      (* An example number of points scored for making this step. *)
                      scored: int
