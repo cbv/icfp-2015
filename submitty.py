@@ -73,20 +73,28 @@ if __name__ == "__main__":
       try:
          f = open(args.filename, 'r')
          info = json.loads(f.read())
-         if len(info) != 1: fail("can only handle single-element lists")
-         if len(info[0]) != 4: fail("wrong number of elements in hash")
-         problemId = info[0]['problemId']
-         seed = info[0]['seed']
-         tag = info[0]['tag']
-         solution = info[0]['solution']
+         results = []
+         for i in range(0, len(info)):
+            if len(info[i]) != 4: fail("wrong number of elements in hash")
+            problemId = info[i]['problemId']
+            seed = info[i]['seed']
+            tag = info[i]['tag']
+            solution = info[i]['solution']
       except: fail("Could not read and parse "+args.filename)
+
+      for i in range(0, len(info)):
+         problemId = info[i]['problemId']
+         seed = info[i]['seed']
+         tag = info[i]['tag']
+         solution = info[i]['solution']
+         submitter(problemId, seed, tag, solution, socket.gethostname())
    else:
       problemId = args.prob[0]
       seed = args.seed[0]
       tag = "submitty" if args.tag is None else args.tag[0]
       solution = args.sol[0]
 
-   submitter(problemId, seed, tag, solution, socket.gethostname())
+   
 
    
 

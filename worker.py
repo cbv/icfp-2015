@@ -27,11 +27,15 @@ def workfake(worker):
             print "raw response :" + info
             try:
                 info2 = json.loads(info)
-                info2 = info2[0]
-                tag = submitter(info['problemId'], info['seed'], info['tag'],
-                                info['solution'], group)
+                tags = []
+                for i in range(0, len(info2)):
+                   info3 = info2[i]
+                   tag = submitter(info3['problemId'], info3['seed'], info3['tag'],
+                                   info3['solution'], group)
+                   tags.append(tag)
+
                 response_info = {
-                   'tag': {'S': tag}
+                   'tag': {'SS': tags}
                 }
             except:
                print "It didn't work: "^info
