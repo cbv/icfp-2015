@@ -46,10 +46,11 @@ struct
     Vector.exists (fn (xx, yy) => x = xx andalso y = yy) v
 
   datatype problem =
-    P of { start: bool vector,
-           width: int,
+    P of { start : bool vector,
+           width : int,
            height : int,
            sourcelength : int,
+           power : string vector,
            seeds : Word32.word vector,
            (* aka units, an ml keyword *)
            pieces : piece vector }
@@ -92,7 +93,12 @@ struct
            (* Number of lines we made on the last step *)
            last_lines : int ref,
 
-           (* XXX Need history of commands, for word scoring *)
+           (* Please don't expose these; I want to
+              make this representation more efficient, which
+              will involve not actually storing the command string *)
+           (* commands executed to this point. *)
+           chars: legalchar list ref,
+           power_count: int array,
 
            (* Places we have already been. *)
            stutters: StutterSet.set ref,
@@ -317,6 +323,7 @@ struct
       P { width = width, height = height,
           seeds = Vector.fromList (map Word32.fromInt seeds),
           sourcelength = sourcelength,
+          power = power,
           start = Array.vector a,
           pieces = Vector.fromList
           (map makepiece
