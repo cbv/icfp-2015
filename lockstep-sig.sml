@@ -1,7 +1,7 @@
 signature LOCK_STEP = sig
 
    (* Lock the piece at position `(px, py)` and angle `a` *)
-(*   datatype step = Step of {
+   datatype step = Step of {
                      px: int,
                      py: int,
                      a: int,
@@ -11,5 +11,8 @@ signature LOCK_STEP = sig
                      (* An example list of commands that could make up this step. *)
                      commands: Board.command list
                  }
-*)
+
+
+   val possible_next_steps : step -> step list
+
 end
