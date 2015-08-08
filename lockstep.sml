@@ -17,6 +17,9 @@ structure LockStep :> LOCK_STEP = struct
                      scored: int
                  }
 
+   fun stepstring (Step {px, py, a, ...}) =
+     "{ px = " ^ Int.toString px ^ ", py = " ^ Int.toString py ^ ", a = " ^ Int.toString a ^"}"
+
   fun possible_next_steps state =
     let
         val accessible = ForwardChain.accessible_locations state

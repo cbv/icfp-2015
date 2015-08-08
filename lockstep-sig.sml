@@ -18,6 +18,7 @@ signature LOCK_STEP = sig
                      scored: int
                  }
 
+   val stepstring: step -> string
 
    val possible_next_steps: Board.state -> step list
 
