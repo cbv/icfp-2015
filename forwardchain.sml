@@ -34,8 +34,8 @@ struct
   datatype command = datatype Board.command
   datatype dir = datatype Board.dir
   datatype turn = datatype Board.turn
-  val moves = map Board.anychar [(D E), (D W),
-                                 (D SE), (D SW),
+  val moves = map Board.anychar [(D SE), (D SW),
+                                 (D E),  (D W),
                                  (T CW), (T CCW)]
 
   fun move_helper (state, visitedSetRef, commands) move =
@@ -43,7 +43,8 @@ struct
         val sym = Board.piece_symmetry state
         fun body (Board.M {scored, lines, locked, status}) =
           (case status of
-               Board.CONTINUE =>
+              Board.ERROR => ()
+            |  _ =>
                let val new_commands = (Board.charcommand move)::commands
                    val pl = piece_location(state, sym, locked, scored, new_commands)
                in
@@ -58,9 +59,7 @@ struct
                             |  SOME _ =>  ()
                        end
                end
-             | Board.COMPLETE => ()
-             | Board.NO_SPACE => ()
-             | Board.ERROR => ())
+          )
     in
         Board.move_unwind (state, move, body)
     end

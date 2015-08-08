@@ -46,4 +46,7 @@ board.sml
 forwardchain-sig.sml
 forwardchain.sml
 
+lockstep-sig.sml
+lockstep.sml
+
 david.sml
