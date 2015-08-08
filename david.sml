@@ -1,12 +1,15 @@
 structure David =
 struct
 
+  val problemp = Params.param "14"
+    (SOME("-problem", "Problem number to load."))
+    ("problem")
+
+
 (* favor far-down squares *)
 fun heuristic (x, y) = y
 
-val problemId = 14
-
-fun do_seed (problem, seed_idx, seed) =
+fun do_seed (problemId, problem, seed_idx, seed) =
   let
      val state = Board.reset (problem, seed_idx)
      val commands = ForwardChain.simple_heuristic_solver (state, heuristic)
@@ -26,19 +29,21 @@ fun do_seed (problem, seed_idx, seed) =
 
 fun main () =
   let
-      val problem = Board.fromjson
-                        (StringUtil.readfile ("qualifiers/problem_"^ Int.toString problemId ^".json"))
+    val problemId = Params.asint 1 problemp
+    val problem = Board.fromjson
+          (StringUtil.readfile
+           ("qualifiers/problem_" ^ Int.toString problemId ^".json"))
 
       val seeds = Board.seeds problem
 
   in
      print "[\n";
-     Vector.appi (fn  (idx, seed) => do_seed (problem, idx, seed)) seeds;
+     Vector.appi (fn  (idx, seed) => do_seed (problemId, problem, idx, seed)) seeds;
      print "]\n"
   end
   handle Board.Board s =>
     TextIO.output (TextIO.stdErr, "Uncaught Board: " ^ s ^ "\n")
 
-val () = main ()
-
 end
+
+val () = Params.main0 "No arguments." David.main
