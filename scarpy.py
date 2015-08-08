@@ -45,7 +45,7 @@ for i in range(0,numproblems):
                 tag.sort()
                 newhash = {
                    'tag': string.join(tag, "_"),
-                   'problem': j,
+                   'problem': i,
                    'score': rankings[j]['score'],
                    'power': rankings[j]['power_score'],
                    'alltags': rankings[j]['tags']
