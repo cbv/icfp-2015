@@ -6,14 +6,16 @@ sig
   datatype dir = E | W | SE | SW
   datatype turn = CW | CCW
   datatype command = D of dir | T of turn
-  datatype status =
-    (* Game keeps going *)
-    CONTINUE
+  datatype why =
   (* Gracefully used all pieces *)
-  | COMPLETE
+    COMPLETE
   (* Last move locked a piece, but there's no space
      to place the next one. *)
   | NO_SPACE
+  datatype status =
+    (* Game keeps going *)
+    CONTINUE
+  | GAMEOVER of why
   (* Bad command? *)
   | ERROR
 

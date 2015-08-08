@@ -10,11 +10,13 @@ struct
 
   fun piece_location (state, sym, locked, score, commands) =
     let
-      val ((px, py), angle, locked_state) = case locked of
-                                             SOME (x,y,a) => ((x,y), a, SOME(Board.clone state))
-                                           | NONE => (Board.piece_position state, Board.piece_angle state, NONE)
+      val ((px, py), angle, locked_state) =
+        case locked of
+          SOME (x,y,a) => ((x,y), a, SOME(Board.clone state))
+        | NONE => (Board.piece_position state, Board.piece_angle state, NONE)
     in
-        PL {px = px, py = py, a = angle mod sym, locked = locked_state, score = score, commands = commands}
+      PL {px = px, py = py, a = angle mod sym, locked = locked_state,
+          score = score, commands = commands}
     end
 
   fun compare (PL {px = px0, py = py0, a = a0, locked = locked0, ...},
