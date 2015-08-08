@@ -93,6 +93,14 @@ sig
      the continuation returned. *)
   val move_unwind : state * legalchar * (moveresult -> 'a) -> 'a
 
+  (* Apply many moves, updating the state, and then call the
+     continuation with a boolean, which is whether all moves succeeded
+     without GAMEOVER, ERROR, or locking. This is just a minimal
+     amount of feedback and we could do better by accumulating
+     move_results into one big one. *)
+  val move_unwind_many :
+      state * legalchar list * (bool -> 'a) -> 'a
+
   (* Also return a function that undoes the change to the state (assuming
      it is the ONLY change); this function should be called at most once. *)
   val move_undo : state * legalchar -> { result: moveresult,

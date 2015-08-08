@@ -146,4 +146,7 @@ struct
           (helper (state, setRef, [], tgt))
     end
 
+  fun find_with_power state (Target tgt) power =
+    raise Match
+
 end

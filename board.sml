@@ -997,6 +997,14 @@ struct
       r
     end
 
+  fun move_unwind_many (s, [], k) = k true
+    | move_unwind_many (s, c::cs, k) =
+      move_unwind (s, c,
+                         fn (M {locked, status, ...}) =>
+                            (case (locked, status) of
+                                 (NONE, CONTINUE) => move_unwind_many (s, cs, k)
+                               | _ => k false))
+
   fun piecesleft (S { problem = P { sourcelength, ... },
                       valid = ref true,
                       next_sourceidx, ... }) =
