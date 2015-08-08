@@ -47,7 +47,7 @@ struct
   fun main () =
     let
       val problem = Board.fromjson
-        (StringUtil.readfile "qualifiers/problem_17.json")
+        (StringUtil.readfile "qualifiers/problem_11.json")
 
       val state = Board.reset (problem, 0)
     in
