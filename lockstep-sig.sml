@@ -7,7 +7,8 @@ signature LOCK_STEP = sig
                      a: int,
 
                      (* An example state that could result from taking this step.
-                       NONE if this step results in gameover. *)
+                       NONE if this step results in gameover. You can assume that this state
+                       is not aliased. *)
                      state: Board.state option,
                      (* An example list of commands that could make up this step. *)
                      commands: Board.command list
@@ -16,6 +17,6 @@ signature LOCK_STEP = sig
                  }
 
 
-   val possible_next_steps : step -> step list
+   val possible_next_steps: Board.state -> step list
 
 end

@@ -13,7 +13,7 @@ structure LockStep :> LOCK_STEP = struct
                      commands: Board.command list
                  }
 
-  fun possible_next_steps (Step { state = SOME(state), ...}) =
+  fun possible_next_steps state =
     let
         val accessible = ForwardChain.accessible_locations state
         fun mapper (ForwardChain.PL {locked = NONE, ... }) = NONE
@@ -26,6 +26,5 @@ structure LockStep :> LOCK_STEP = struct
     in
         List.mapPartial mapper accessible
     end
-    | possible_next_steps (Step {state = NONE, ...}) = []
 
 end
