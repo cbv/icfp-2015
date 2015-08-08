@@ -18,7 +18,7 @@ struct
   | ERROR
 
   datatype moveresult =
-    M of { scored: int, lines: int, locked: bool, status: status }
+    M of { scored: int, lines: int, locked: (int * int * int) option, status: status }
 
   type legalchar = char
 
@@ -715,13 +715,15 @@ struct
             then ((!last_lines - 1) * points) div 10
             else 0
           val move_score = points + line_bonus
+          val locked = SOME (!x, !y, !a)
         in
           (* Now, try to place the next piece (if any) in the updated board. *)
           case getpiece (problem, board, !next_sourceidx, !rng) of
             GP { next_sourceidx = new_ns,
                  piece = new_piece as Piece { start = (startx, starty), ... },
                  rng = new_rng } =>
-              let in
+              let
+              in
                 (* print "New piece!\n"; *)
                 next_sourceidx := new_ns;
                 piece := new_piece;
@@ -733,21 +735,21 @@ struct
 
                 (* lines should affect score. *)
                 { result = M { lines = lines, scored = move_score,
-                               locked = true, status = CONTINUE },
+                               locked = locked, status = CONTINUE },
                   undo = undo }
               end
           | GPNoSpace =>
               (* XXX should we be updating the state here, if there
                  are accessors that people might call? cuz, we did
                  give them an undo function... *)
-              { result = M { lines = lines, scored = 0, locked = true,
+              { result = M { lines = lines, scored = 0, locked = locked,
                              status = NO_SPACE },
                 undo = undo }
           | GPGameOver =>
               (* XXX should we be updating the state here, if there
                  are accessors that people might call? cuz, we did
                  give them an undo function... *)
-              { result = M { lines = lines, scored = 0, locked = true,
+              { result = M { lines = lines, scored = 0, locked = locked,
                              status = COMPLETE },
                 undo = undo }
         end
@@ -759,7 +761,7 @@ struct
           a := na;
           last_lines := 0;
           (* PERF board hasn't changed -- don't need backup of it *)
-          { result = M { scored = 0, lines = 0, locked = false,
+          { result = M { scored = 0, lines = 0, locked = NONE,
                          status = CONTINUE },
             undo = undo }
         end

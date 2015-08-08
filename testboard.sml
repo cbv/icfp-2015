@@ -71,7 +71,7 @@ struct
     in
       print ("Pieces left: " ^ itos (Board.piecesleft state) ^ "\n");
       print ("Scored " ^ itos scored ^ " in " ^ itos lines ^ " lines " ^
-             " and locked: " ^ Bool.toString locked ^ "\n");
+             " and locked: " ^ Bool.toString (Option.isSome locked) ^ "\n");
       (case status of
          Board.CONTINUE => interactive (script, state)
        | Board.COMPLETE => print "COMPLETE.\n"

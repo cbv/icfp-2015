@@ -7,13 +7,13 @@ struct
     "{(" ^ (Int.toString px) ^ ", " ^ (Int.toString py) ^ ") a:" ^ (Int.toString a) ^ ", locked: "
     ^ Bool.toString(locked) ^ "}"
 
-  fun piece_location (state, locked, score, commands) =
+  fun piece_location (state, sym, locked, score, commands) =
     let
-      val (px, py) = Board.piece_position state
-      val angle = Board.piece_angle state
-      val symmetry = Board.piece_symmetry state
+      val ((px, py), angle, is_locked) = case locked of
+                                             SOME (x,y,a) => ((x,y), a, true)
+                                           | NONE => (Board.piece_position state, Board.piece_angle state, false)
     in
-        PL {px = px, py = py, a = angle mod symmetry, locked = locked, score = 0, commands = commands}
+        PL {px = px, py = py, a = angle mod sym, locked = is_locked, score = 0, commands = commands}
     end
 
   fun compare (PL {px = px0, py = py0, a = a0, locked = locked0, ...},
@@ -41,20 +41,21 @@ struct
   fun move_helper (state, visitedSetRef, commands) move =
     let val {result = Board.M {scored, lines, locked, status}, undo} =
           Board.move_undo (state, move)
+        val sym = Board.piece_symmetry state
         val () =
         (case status of
              Board.CONTINUE =>
               let val new_commands = (Board.charcommand move)::commands
-                  val pl = piece_location(state, locked, scored, new_commands)
+                  val pl = piece_location(state, sym, locked, scored, new_commands)
               in
                   if LocSet.member (!visitedSetRef, pl)
                   then () (* already visited *)
                   else let
                        in
                            visitedSetRef := (LocSet.add (!visitedSetRef, pl));
-                           if not locked
-                           then helper (state, visitedSetRef, new_commands)
-                           else ()
+                           case locked of
+                               NONE => helper (state, visitedSetRef, new_commands)
+                            |  SOME _ =>  ()
                        end
               end
           | Board.COMPLETE => ()
@@ -68,7 +69,8 @@ struct
     List.app (move_helper (state, visitedSetRef, commands)) moves
 
   fun accessible_locations state =
-    let val setRef = ref (LocSet.singleton (piece_location (state, false, 0, []))); (* XXX locked? *)
+    let val setRef = ref (LocSet.singleton (piece_location (state, Board.piece_symmetry state,
+                                                            NONE, 0, []))); (* can't be locked on first turn *)
         val () = helper (state, setRef, []);
     in
         LocSet.listItems (!setRef)
