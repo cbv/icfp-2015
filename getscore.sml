@@ -62,6 +62,12 @@ struct
 
       val { score, lines, phrases, leftover, fate } =
         replay { score = 0, lines = 0, phrases = 0, script = full_script }
+        handle Board.Board s =>
+          let in
+            TextIO.output(TextIO.stdErr, "Board exn: " ^ s ^ "\n");
+            { score = 0, lines = 0, phrases = 0, leftover = 0,
+              fate = "EXCEPTION" }
+          end
 
       fun jsonline (k, v) = "\"" ^ k ^ "\": " ^ v
     in

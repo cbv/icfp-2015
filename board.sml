@@ -620,7 +620,8 @@ struct
       val c = Char.toLower c
     in
       (* For side effect of raising exception *)
-      ignore (charcommand c);
+      ignore (charcommand c) handle Board _ => raise Board ("bad legalchar [" ^
+                                                            implode [c] ^ "]");
       c
     end
 
