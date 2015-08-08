@@ -7,4 +7,6 @@ signature FORWARD_CHAIN = sig
 
   val accessible_locations : Board.state -> PieceLocation list
 
+  val simple_heuristic_solver : Board.state -> Board.command list
+
 end
