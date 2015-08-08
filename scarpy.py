@@ -50,16 +50,3 @@ for i in range(0,numproblems):
                    'alltags': rankings[j]['tags']
                    }
                 scores.append(newhash)
-
-import requests
-request = {
-   'time': data['time'],
-   'scores': scores
-}
-# print json.dumps(request)
-response = json.loads(requests.post(scarpy_writer, json.dumps(request)).text)
-if (not 'modified' in response):
-   print "Unexpected response!"
-   print json.dumps(response)
-if (response['modified'] != 0):
-   print 'Learned about '+str(response['modified'])+' new scores'
