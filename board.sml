@@ -37,8 +37,6 @@ struct
                (* Start position for pivot in spec coords. *)
                start: int * int }
 
-
-
   (* PERF: Should sort vector and do binary search, etc. *)
   fun oriented_piece_has (v : (int * int) vector) (x, y) =
     Vector.exists (fn (xx, yy) => x = xx andalso y = yy) v
@@ -66,6 +64,9 @@ struct
 
            (* Angle in hexgrees [0, 5] *)
            a: int ref,
+
+           (* Number of lines we made on the last step *)
+           last_lines : int ref,
 
            (* XXX Need history of commands, for word scoring *)
 
@@ -325,7 +326,7 @@ struct
     (* I think ArraySlice *)
     Array.tabulate (Array.length a, fn i => Array.sub(a, i))
 
-  fun clone (S { board, next_sourceidx,
+  fun clone (S { board, next_sourceidx, last_lines,
                  problem, score, rng, piece, a, x, y }) : state =
            S { board = clone_array board,
                problem = problem,
@@ -334,6 +335,7 @@ struct
                a = ref (!a),
                x = ref (!x),
                y = ref (!y),
+               last_lines = ref (!last_lines),
                piece = ref (!piece),
                (* piece = clone_array piece, *)
                rng = ref (!rng) }
@@ -394,6 +396,7 @@ struct
               piece = ref piece,
               problem = problem,
               next_sourceidx = ref next_sourceidx,
+              last_lines = ref 0,
               x = ref startx,
               y = ref starty,
               (* always start in natural orientation *)
@@ -609,7 +612,7 @@ struct
     end
 
   fun move_undo (state as
-                 S { rng, score, piece, next_sourceidx,
+                 S { rng, score, piece, next_sourceidx, last_lines,
                      problem = problem as P { width, height, ... },
                      x, y, a, board },
                  ch : legalchar) =
@@ -621,6 +624,7 @@ struct
         let
           val S { rng = old_rng, score = old_score, x = old_x, y = old_y,
                   a = old_a, board = old_board, piece = old_piece,
+                  last_lines = old_last_lines,
                   next_sourceidx = old_next_sourceidx, ... } = old_state
         in
           rng := !old_rng;
@@ -629,6 +633,7 @@ struct
           y := !old_y;
           a := !old_a;
           piece := !old_piece;
+          last_lines := !old_last_lines;
           next_sourceidx := !old_next_sourceidx;
           Array.copy {di = 0, dst = board, src = old_board}
         end
@@ -694,9 +699,18 @@ struct
       if is_locked_at (nx, ny, na)
       then
         let
-          (* TODO: get score from freezing *)
           val () = freeze()
           val lines = check_lines problem board
+
+          val Piece { rotations, ... } = !piece
+          val oriented_piece = Vector.sub(rotations, !a)
+          val points = Vector.length oriented_piece + 100 *
+            ((1 + lines) * lines) div 2
+          val line_bonus =
+            if !last_lines > 1
+            then ((!last_lines - 1) * points) div 10
+            else 0
+          val move_score = points + line_bonus
         in
           case getpiece (problem, !next_sourceidx, !rng) of
             GP { next_sourceidx = new_ns, piece = new_piece, rng = new_rng } =>
@@ -704,27 +718,35 @@ struct
                 next_sourceidx := new_ns;
                 piece := new_piece;
                 rng := new_rng;
+                last_lines := lines;
 
                 (* lines should affect score. *)
-                { result = M { lines = lines, scored = 0, locked = true,
-                               status = CONTINUE },
+                { result = M { lines = lines, scored = move_score,
+                               locked = true, status = CONTINUE },
                   undo = undo }
               end
           | GPNoSpace =>
+              (* XXX should we be updating the state here, if there
+                 are accessors that people might call? cuz, we did
+                 give them an undo function... *)
               { result = M { lines = lines, scored = 0, locked = true,
                              status = NO_SPACE },
                 undo = undo }
           | GPGameOver =>
+              (* XXX should we be updating the state here, if there
+                 are accessors that people might call? cuz, we did
+                 give them an undo function... *)
               { result = M { lines = lines, scored = 0, locked = true,
                              status = COMPLETE },
                 undo = undo }
         end
       else
         let in
-          (* Don't need to check lines, score, etc. *)
+          (* No locking. Don't need to check lines, score, etc. *)
           x := nx;
           y := ny;
           a := na;
+          last_lines := 0;
           (* PERF board hasn't changed -- don't need backup of it *)
           { result = M { scored = 0, lines = 0, locked = false,
                          status = CONTINUE },

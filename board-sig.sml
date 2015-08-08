@@ -18,6 +18,10 @@ sig
   | ERROR
 
   datatype moveresult =
+    (* scored is the points scored as a result of this move;
+       lines is the number of lines created;
+       locked is whether the move caused the piece to be locked;
+       status tells us whether the game ended, etc. *)
     M of { scored: int, lines: int, locked: bool, status: status }
 
   val dirstring : dir -> string
