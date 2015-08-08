@@ -20,7 +20,7 @@ struct
 
   fun choice_order (PTP {ux,uy,a}) =
     let
-      val turns = if a = 1 orelse a = 2 orelse a = 3
+      val turns = if a < 3
                   then [T CW, T CCW]
                   else [T CCW, T CW]
       val horiz = if ux > 0
