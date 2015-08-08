@@ -810,15 +810,15 @@ struct
               (* XXX should we be updating the state here, if there
                  are accessors that people might call? cuz, we did
                  give them an undo function... *)
-              { result = M { lines = lines, scored = 0, locked = locked,
-                             status = NO_SPACE },
+              { result = M { lines = lines, scored = move_score,
+                             locked = locked, status = NO_SPACE },
                 undo = full_undo }
           | GPGameOver =>
               (* XXX should we be updating the state here, if there
                  are accessors that people might call? cuz, we did
                  give them an undo function... *)
-              { result = M { lines = lines, scored = 0, locked = locked,
-                             status = COMPLETE },
+              { result = M { lines = lines, scored = move_score,
+                             locked = locked, status = COMPLETE },
                 undo = full_undo }
         end
       else
