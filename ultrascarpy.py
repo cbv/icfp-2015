@@ -24,11 +24,16 @@ def checkscore(problem, seed, solution):
       
 
 if __name__ == "__main__":
-   data = urllib2.urlopen('https://davar.icfpcontest.org/rankings.js')
-   data = data.read()
-   start = data.find('{')
-   data = data[start:]
-   data = json.loads(data)
+   try:
+      data = urllib2.urlopen('https://davar.icfpcontest.org/rankings.js')
+      data = data.read()
+      start = data.find('{')
+      data = data[start:]
+      data = json.loads(data)
+   except ValueError as e:
+      print "Failed to load the contest server's screen so I could ultrascarp it"
+      print "Error message: "+str(e)
+      sys.exit(1)
 
    # Description of data
    # data['time']: string, 2015-08-07 17:08:24.785199 UTC

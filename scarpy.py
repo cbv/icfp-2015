@@ -3,15 +3,21 @@
 import json
 import urllib2
 import string
+import sys
     
 api = "https://cmage109g3.execute-api.us-west-2.amazonaws.com/what"
 scarpy_writer = api + "/scarpydb"
 
-data = urllib2.urlopen('https://davar.icfpcontest.org/rankings.js')
-data = data.read()
-start = data.find('{')
-data = data[start:]
-data = json.loads(data)
+try:
+   data = urllib2.urlopen('https://davar.icfpcontest.org/rankings.js')
+   data = data.read()
+   start = data.find('{')
+   data = data[start:]
+   data = json.loads(data)
+except ValueError as e:
+   print "Failed to load the contest server's screen so I could scarp it"
+   print "Error message: "+str(e)
+   sys.exit(1)
 
 # Description of data
 # data['time']: string, 2015-08-07 17:08:24.785199 UTC
@@ -50,3 +56,16 @@ for i in range(0,numproblems):
                    'alltags': rankings[j]['tags']
                    }
                 scores.append(newhash)
+
+import requests
+request = {
+   'time': data['time'],
+   'scores': scores
+}
+# print json.dumps(request)
+response = json.loads(requests.post(scarpy_writer, json.dumps(request)).text)
+if (not 'modified' in response):
+   print "Unexpected response!"
+   print json.dumps(response)
+if (response['modified'] != 0):
+   print 'Learned about '+str(response['modified'])+' new scores'
