@@ -612,7 +612,9 @@ struct
     | charcommand _ = raise Board "impossible (bad legalchar)"
 
   fun legalize (c : char) : legalchar =
-    let in
+    let
+      val c = Char.toLower c
+    in
       (* For side effect of raising exception *)
       ignore (charcommand c);
       c
