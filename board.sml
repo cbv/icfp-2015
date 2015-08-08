@@ -449,7 +449,7 @@ struct
                   (* always start in natural orientation *)
                   a = ref 0,
                   chars = ref nil,
-                  power_count = Array.array (Vector.size power, 0),
+                  power_count = Array.array (Vector.length power, 0),
                   stutters = ref initial_stutters,
                   board = board }
           end
