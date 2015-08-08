@@ -571,11 +571,26 @@ struct
                   | (true, true) => "@ ")));
           !r
         end
-
     in
       (if false = !valid then "INVALID!\n" else "") ^
       StringUtil.delimit "\n" (List.tabulate (height, oneline))
     end
+
+  fun powerinfostring (state as
+                       S { problem = P { power, ... },
+                           chars, power_count, valid, ... }) =
+    let
+      val s = ref ""
+    in
+      Util.for 0 (Vector.length power - 1)
+      (fn i =>
+       s := !s ^
+       Int.toString i ^ ". x" ^ Int.toString (Array.sub(power_count, i)) ^
+       " = " ^ StringUtil.reverse (Vector.sub (power, i)) ^ "\n");
+      (if false = !valid then "INVALID!\n" else "") ^
+      !s
+    end
+
 
   val dw   : legalchar vector = Vector.fromList (explode "p'!.03")
   val de   : legalchar vector = Vector.fromList (explode "bcefy2")
