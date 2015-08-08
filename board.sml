@@ -217,39 +217,22 @@ struct
 
       val j = JSON.parse s
 
-      fun UnInt (JInt i) = i
-        | UnInt _ = raise Board "Not an int"
-
-      fun UnList (JArray a) = a
-        | UnList _ = raise Board "Not a list/array"
-
-      fun Key (JMap m, k) =
-        (case ListUtil.Alist.find op= m k of
-           SOME (obj) => obj
-         | NONE => raise Board ("Didn't find " ^ k))
-        | Key _ = raise Board "Not JMap"
-
-      fun Int (j, key) = UnInt (Key (j, key))
-
-      fun List (j, key) = UnList (Key (j, key))
-
-      fun Coord j = (Int (j, "x"), Int (j, "y"))
-
-      val width = Int (j, "width")
-      val height = Int (j, "height")
-      val id = Int (j, "id")
-      val filled = map Coord (List (j, "filled"))
-      val sourcelength = Int (j, "sourceLength")
+      val width = JSONUtils.Int (j, "width")
+      val height = JSONUtils.Int (j, "height")
+      val id = JSONUtils.Int (j, "id")
+      val filled = map JSONUtils.Coord (JSONUtils.List (j, "filled"))
+      val sourcelength = JSONUtils.Int (j, "sourceLength")
       (* TODO: Harden against these being bigger than 2^31, negative, etc. *)
-      val seeds = map UnInt (List (j, "sourceSeeds"))
+      val seeds = map JSONUtils.UnInt (JSONUtils.List (j, "sourceSeeds"))
 
       fun ExpectPiece j =
         let
-          val members = map Coord (List (j, "members"))
+          val members = map JSONUtils.Coord (JSONUtils.List (j, "members"))
           (* We represent all pieces as being centered on their origin.
              So we start by translating all members so that the pivot ends
              up on the origin. *)
-          val (px, py) = uniformize_coord (Coord (Key (j, "pivot")))
+          val (px, py) = uniformize_coord (JSONUtils.Coord
+                                               (JSONUtils.Key (j, "pivot")))
         in
           Vector.fromList (map (translate (~px, ~py)) members)
         end
@@ -328,7 +311,7 @@ struct
           start = Array.vector a,
           pieces = Vector.fromList
           (map makepiece
-           (map ExpectPiece (List (j, "units")))) }
+           (map ExpectPiece (JSONUtils.List (j, "units")))) }
     end
 
   fun clone_array a =
