@@ -26,7 +26,8 @@ structure LockStep :> LOCK_STEP = struct
         fun mapper (ForwardChain.PL {locked = NONE, ... }) = NONE
           | mapper (ForwardChain.PL {locked = (SOME (ForwardChain.NEW_PIECE state)),
                                      px, py, a, commands, score, ... }) =
-            SOME (Step {px = px, py = py, a = a, commands = commands, state = SOME(state), scored = score})
+            SOME (Step {px = px, py = py, a = a, commands = commands,
+                        state = SOME(Board.clone state), scored = score})
           | mapper (ForwardChain.PL {locked = (SOME ForwardChain.ALL_DONE),
                                      px, py, a, commands, score, ... }) =
             SOME (Step {px = px, py = py, a = a, commands = commands, state = NONE, scored = score })
@@ -83,8 +84,9 @@ structure LockStep :> LOCK_STEP = struct
         val () = search_steps (3, best, heuristic, state, [])
     in
         case !best of
-            SOME((score, (step as Step { state = SOME(state), ...})::steps)) =>
+            SOME((score, all_steps as (step as Step { state = SOME(state), ...})::steps)) =>
             (print ("best score: " ^ Int.toString score ^ "\n");
+             List.app (fn s => print (stepstring s ^ "\n")) all_steps;
             accumulate_best (state, heuristic, step::accumulator))
          |  SOME((score, (step as Step { state = NONE, ...})::steps)) => step::accumulator
          |  _ => raise LockStep "impossible"
