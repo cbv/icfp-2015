@@ -53,8 +53,8 @@ if __name__ == "__main__":
    for prob in db.keys():
       if db[prob] is not None:
          for seed in db[prob].keys():
+            print "Problem "+str(prob)+" seed "+str(seed)+":"
             for i in range(0, len(db[prob][seed])):
-               print "Problem "+str(prob)+" seed "+str(prob)+":"
                tag = db[prob][seed][i]['tag']
                solution = db[prob][seed][i]['solution']
                text = "   "+tag+" "*(maxtag + 1 - len(tag))+solution
