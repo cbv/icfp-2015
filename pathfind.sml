@@ -141,7 +141,9 @@ struct
     let val setRef = ref (LocSet.singleton
                               (piece_location (state, Board.piece_symmetry state, [])));
     in
-      Option.map rev (helper (state, setRef, [], tgt))
+      Option.map
+          (fn rcmds => map Board.anychar (rev rcmds))
+          (helper (state, setRef, [], tgt))
     end
 
 end
