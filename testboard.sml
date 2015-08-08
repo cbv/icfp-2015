@@ -85,11 +85,9 @@ struct
         (StringUtil.readfile ("qualifiers/problem_" ^ !problemp ^ ".json"))
 
       val state = Board.reset (problem, 0)
-      (* val commands = ForwardChain.simple_heuristic_solver state *)
     in
       print "There is nothing, only Zuulthuhu.\n";
       interactive (explode (!scriptp), state)
-(*      print (implode (List.map (Board.forgetlegal o Board.anychar) commands)) *)
     end
   handle Board.Board s =>
     TextIO.output (TextIO.stdErr, "Uncaught Board: " ^ s ^ "\n")

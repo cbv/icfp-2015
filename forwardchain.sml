@@ -107,7 +107,7 @@ struct
                           (List.rev rev_commands)
         val acc' = rev_commands::accumulator
     in
-        if continue
+        if false
         then (stepper (state, acc'))
         else List.rev (List.concat accumulator)
     end
