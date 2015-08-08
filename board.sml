@@ -589,25 +589,23 @@ struct
       (fn negy =>
        let
          val y = height - negy - 1
+         val should_delete =
+             ArraySlice.all (fn x => x)
+                            (ArraySlice.slice(board, y * width, SOME width))
        in
-         if ArraySlice.all (fn x => x)
-                           (ArraySlice.slice(board, y * width, SOME width))
+         if should_delete
          then lines := !lines + 1
-         else ((if !newy <> y
+         else (if !newy <> y
                 then Util.for 0 (width-1)
-                  (fn x => Array.update(board, !newy * width + x,
-                                        Array.sub(board, y * width + x)))
-                else ());
+                              (fn x => Array.update(board, !newy * width + x,
+                                                    Array.sub(board, y * width + x)))
+               else ();
                newy := !newy - 1)
        end);
       Util.for 0 (!newy)
-      (fn negy =>
-       let
-         val y = height - negy - 1
-       in
-         Util.for 0 (width-1)
-         (fn x => Array.update(board, y * width + x, false))
-       end);
+               (fn y =>
+                   Util.for 0 (width-1)
+                            (fn x => Array.update(board, y * width + x, false)));
       !lines
     end
 
