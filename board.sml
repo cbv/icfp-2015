@@ -829,5 +829,6 @@ struct
   fun width (P { width, ... }) = width
   fun height (P { height, ... }) = height
   fun pieces (P { pieces, ... }) = pieces
+  fun seeds (P { seeds, ... }) = seeds
 
 end

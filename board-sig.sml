@@ -115,6 +115,7 @@ sig
   val width : problem -> int
   val height : problem -> int
   val pieces : problem -> piece vector
+  val seeds : problem -> Word32.word vector
 
   (* TODO: functional versions *)
   (*
