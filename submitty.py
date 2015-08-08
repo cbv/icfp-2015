@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# Script for submitting and remembering what we submitted
 
 import argparse
 import json
@@ -12,6 +13,40 @@ apitoken = 'IumEctlsTyz6gaGeix2MQ8wHwnChc2u1roJ7NJpHL20='
 url = 'https://davar.icfpcontest.org/teams/31/solutions'
 api = "https://cmage109g3.execute-api.us-west-2.amazonaws.com/what"
 submitty = api + "/submittydb"
+
+def submitter(problemId, seed, tag, solution, host):
+   print "Obtaining unique tag..."
+   info = {
+      'problemId': problemId,
+      'seed': seed,
+      'tag': tag,
+      'solution': solution,
+      'submitter': host
+   }
+   response = json.loads(requests.post(submitty, json.dumps(info)).text)
+   if len(response) != 2 or response[0] is None or response[1] is None:
+      fail("Unexpected output\n\n"+json.dumps(response))
+   unique_tag = response[0]
+   attempts = response[1]
+
+   submission = json.dumps([{
+      'problemId': problemId,
+      'seed': seed,
+      'tag': unique_tag,
+      'solution': solution
+   }])
+
+   print "Submitting with tag "+unique_tag,
+   if attempts is 1: print ""
+   else: print "("+str(attempts)+" attempts)"
+
+   print "\tProblem:  "+str(problemId)
+   print "\tSeed:     "+str(seed)
+   print "\tSolution: "+str(solution)
+   headers = {'Content-Type':'application/json'}
+   print requests.post(url, submission, auth=('',apitoken), headers=headers)
+   return unique_tag
+
 
 def fail(msg):
    print msg
@@ -51,36 +86,8 @@ if __name__ == "__main__":
       tag = "submitty" if args.tag is None else args.tag[0]
       solution = args.sol[0]
 
-   print "Obtaining unique tag..."
-   info = {
-      'problemId': problemId,
-      'seed': seed,
-      'tag': tag,
-      'solution': solution,
-      'submitter': socket.gethostname()
-   }
-   response = json.loads(requests.post(submitty, json.dumps(info)).text)
-   if len(response) != 2 or response[0] is None or response[1] is None:
-      fail("Unexpected output\n\n"+json.dumps(response))
-   unique_tag = response[0]
-   attempts = response[1]
+   submitter(problemId, seed, tag, solution, socket.gethostname())
 
-   submission = json.dumps([{
-      'problemId': problemId,
-      'seed': seed,
-      'tag': unique_tag,
-      'solution': solution
-   }])
-
-   print "Submitting with tag "+unique_tag,
-   if attempts is 1: print ""
-   else: print "("+str(attempts)+" attempts)"
-
-   print "\tProblem:  "+str(problemId)
-   print "\tSeed:     "+str(seed)
-   print "\tSolution: "+str(solution)
-   headers = {'Content-Type':'application/json'}
-   print requests.post(url, submission, auth=('',apitoken), headers=headers)
    
 
 # json = json.dumps({'problemId': 0, 'seed': 0, 'tag', 'submitty', 'solution': 'Ei!'})
