@@ -36,7 +36,7 @@ for i in range(0,numproblems):
              print rankings[j]['team'] + ", problem #" + str(i)
              print "   Ranking: " + str(rankings[j]['rank'])
              print "   Score:   " + str(rankings[j]['score']),
-             print " ("+str(rankings[j]['power_score'])+" power word(s))"
+             print "("+str(rankings[j]['power_score'])+" power word(s))"
              print "   Tags:    " + str(rankings[j]['tags'])
              print "   "
              if (len(rankings[j]['tags']) == 1):

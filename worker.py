@@ -26,21 +26,23 @@ def workfake(worker):
             info = response['requestinfo']
             print "raw response :" + info
             try:
-                info = json.loads(info)
-                info = info[0]
+                info2 = json.loads(info)
+                info2 = info2[0]
                 tag = submitter(info['problemId'], info['seed'], info['tag'],
                                 info['solution'], group)
                 response_info = {
                    'tag': {'S': tag}
                 }
+            except:
+               print "It didn't work: "^info
 
          else:         
-             print 'version '+response['version']
-             time.sleep(15)
-             response_info = {
-                'Greeting': {'S': 'hello'},
-                'Random': {'S': str(random.random())}
-             }
+            print 'version '+response['version']
+            time.sleep(15)
+            response_info = {
+               'Greeting': {'S': 'hello'},
+               'Random': {'S': str(random.random())}
+            }
 
          response = requests.post(worker_done, json.dumps({
             'name': worker,
