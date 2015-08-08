@@ -47,5 +47,7 @@ board.sml
 pathfind-sig.sml
 pathfind.sml
 
+powerize-sig.sml
 powerize.sml
+
 jcreed.sml

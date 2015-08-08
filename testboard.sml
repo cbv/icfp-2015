@@ -11,17 +11,6 @@ struct
 
   val itos = Int.toString
 
-  fun testrng (rng, 0) = ()
-    | testrng (rng, n) =
-    let
-      val (x, rng) = RNG.next rng
-    in
-      print (itos x ^ "\n");
-      testrng (rng, n - 1)
-    end
-
-  val () = testrng (RNG.fromseed 0w17, 20)
-
   (* Amazing! use stty -icanon to make this not wait for a return
      character before sending input. It even works on windows
      in cygwin! *)
@@ -67,6 +56,7 @@ struct
                   end)
          end
       val () = print (Board.toascii state ^ "\n")
+      val () = print (Board.powerinfostring state ^ "\n")
       val (Board.M { scored, lines, locked, status }, script) = commandloop()
     in
       print ("Pieces left: " ^ itos (Board.piecesleft state) ^ "\n");

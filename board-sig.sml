@@ -100,6 +100,7 @@ sig
 
   (* Human-readable for interactivity *)
   val toascii : state -> string
+  val powerinfostring : state -> string
 
   (* Is the cell full/empty? Doesn't count the current active piece.
      Anything outside the valid bounds of the board counts as "full." *)

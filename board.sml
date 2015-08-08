@@ -571,11 +571,26 @@ struct
                   | (true, true) => "@ ")));
           !r
         end
-
     in
       (if false = !valid then "INVALID!\n" else "") ^
       StringUtil.delimit "\n" (List.tabulate (height, oneline))
     end
+
+  fun powerinfostring (state as
+                       S { problem = P { power, ... },
+                           chars, power_count, valid, ... }) =
+    let
+      val s = ref ""
+    in
+      Util.for 0 (Vector.length power - 1)
+      (fn i =>
+       s := !s ^
+       Int.toString i ^ ". x" ^ Int.toString (Array.sub(power_count, i)) ^
+       " = " ^ StringUtil.reverse (Vector.sub (power, i)) ^ "\n");
+      (if false = !valid then "INVALID!\n" else "") ^
+      !s
+    end
+
 
   val dw   : legalchar vector = Vector.fromList (explode "p'!.03")
   val de   : legalchar vector = Vector.fromList (explode "bcefy2")
@@ -683,7 +698,7 @@ struct
                  S { rng, score, piece as ref (Piece { symmetry, ... }),
                      next_sourceidx, last_lines, chars, power_count,
                      stutters, valid = valid as ref true,
-                     problem = problem as P { width, height, ... },
+                     problem = problem as P { width, height, power, ... },
                      x, y, a, board },
                  ch : legalchar) =
     let
@@ -746,7 +761,40 @@ struct
 
       (* PERF! *)
       fun get_powerlist revchars =
-        nil
+        let
+          (* does the word w (which is reversed) match the
+             end of the revchars list (which is reversed?) *)
+          fun oneword w =
+            let
+              fun loop (idx, l) =
+                if idx = size w
+                then true
+                else
+                  case l of
+                    nil => false
+                  | h :: t =>
+                      if h = String.sub(w, idx)
+                      then loop (idx + 1, t)
+                      else false
+            in
+              loop (0, revchars)
+            end
+
+          val res = ref nil
+          fun loop n =
+            if n = Vector.length power
+            then nil
+            else
+              let in
+                (if oneword (Vector.sub (power, n))
+                 then res := n :: !res
+                 else ());
+                loop (n + 1)
+              end
+        in
+          loop 0;
+          !res
+        end
 
       (* check_and_add_repeat_at may modify this, so save the old set *)
       val old_stutters = !stutters
@@ -762,6 +810,25 @@ struct
       fun subtract_power r =
         List.app (fn word_idx =>
                   Array.update(r, word_idx, Array.sub(r, word_idx) - 1)) powerlist
+
+      (* Compute the power score for this char. Doesn't modify the
+         power counts yet. *)
+      val power_score = ref 0
+      val () =
+        (* All the power words (indices) we just made. *)
+        app (fn i =>
+             let
+               val revw = Vector.sub(power, i)
+               val power_base = 2 * size revw
+               (* Bonus only the first time *)
+               val power_bonus = if Array.sub(power_count, i) = 0
+                                 then 300
+                                 else 0
+             in
+               power_score := !power_score + power_base + power_bonus
+             end) powerlist
+      val power_score = !power_score
+
     in
       if check_and_add_repeat_at (nx, ny, na)
       then
@@ -831,6 +898,7 @@ struct
             then ((!last_lines - 1) * points) div 10
             else 0
           val move_score = points + line_bonus
+
           val locked = SOME (!x, !y, !a)
         in
           (* Now, try to place the next piece (if any) in the updated board. *)
@@ -855,7 +923,7 @@ struct
                                             (startx, starty, 0));
 
                 (* lines should affect score. *)
-                { result = M { lines = lines, scored = move_score,
+                { result = M { lines = lines, scored = move_score + power_score,
                                locked = locked, status = CONTINUE },
                   undo = full_undo }
               end
@@ -863,7 +931,7 @@ struct
               let in
                 (* Additionally mark invalid. *)
                 valid := false;
-                { result = M { lines = lines, scored = move_score,
+                { result = M { lines = lines, scored = move_score + power_score,
                                locked = locked, status = GAMEOVER why },
                   undo = full_undo }
               end
@@ -907,7 +975,7 @@ struct
           add_power power_count;
 
           (* PERF board hasn't changed -- don't need backup of it *)
-          { result = M { scored = 0, lines = 0, locked = NONE,
+          { result = M { scored = power_score, lines = 0, locked = NONE,
                          status = CONTINUE },
             undo = positional_undo }
         end
