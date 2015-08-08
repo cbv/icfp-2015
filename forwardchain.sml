@@ -76,17 +76,24 @@ struct
         LocSet.listItems (!setRef)
     end
 
+  fun combine_score (score, heur_score) = 10000 * score + heur_score
+
   (* Board.state -> (list of commands (reversed), bool indicating whether to continue) *)
-  fun simple_heuristic_step state =
+  fun simple_heuristic_step (state, heuristic) =
     let
         val locs = accessible_locations state
         val best_score = ref (~1)
         val best_loc = ref NONE
-        val () = List.app (fn (loc as PL {score, ...}) =>
-                              if score > (!best_score)
-                              then ((best_score := score);
-                                    (best_loc := (SOME loc)))
-                              else ())
+        val () = List.app (fn (loc as PL {score, px, py, ...}) =>
+                              let
+                                  val combined_score = combine_score(score, heuristic (px, py))
+                              in
+                                  if combined_score > (!best_score)
+                                  then ((best_score := combined_score);
+                                        (best_loc := (SOME loc)))
+                                  else ()
+                              end
+                          )
                           locs
     in
         case !best_loc of
@@ -99,9 +106,9 @@ struct
             end
     end
 
-  fun stepper (state, accumulator) =
+  fun stepper (state, heuristic, accumulator) =
     let
-        val (rev_commands, continue) = simple_heuristic_step state
+        val (rev_commands, continue) = simple_heuristic_step (state, heuristic)
         val () = List.app (fn c =>
                               let
                                  val result =  Board.move (state, Board.anychar c)
@@ -112,11 +119,11 @@ struct
         val acc' = rev_commands::accumulator
     in
         if continue
-        then (stepper (state, acc'))
+        then (stepper (state, heuristic, acc'))
         else List.rev (List.concat accumulator)
     end
 
-  fun simple_heuristic_solver state =
-    stepper (state, [])
+  fun simple_heuristic_solver (state, heuristic) =
+    stepper (state, heuristic, [])
 
 end
