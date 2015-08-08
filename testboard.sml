@@ -12,13 +12,15 @@ struct
 
   val () = testrng (RNG.fromseed 0w17, 20)
 
+  fun get_command () = TextIO.input1 TextIO.stdIn
+
   fun interactive state =
     let
       fun commandloop () =
         (* Amazing! use stty -icanon to make this not wait for a return
            character before sending input. It even works on windows
            in cygwin! *)
-        (case TextIO.input1 TextIO.stdIn of
+        (case get_command() of
            SOME #"h" => Board.move (state, Board.anychar (Board.D Board.W))
          | SOME #"k" => Board.move (state, Board.anychar (Board.D Board.E))
          | SOME #"m" => Board.move (state, Board.anychar (Board.D Board.SE))
@@ -44,7 +46,7 @@ struct
       interactive state
     end
 
-  fun main () =
+  fun main args =
     let
       val problem = Board.fromjson
         (StringUtil.readfile "qualifiers/problem_17.json")
@@ -57,6 +59,9 @@ struct
   handle Board.Board s =>
     TextIO.output (TextIO.stdErr, "Uncaught Board: " ^ s ^ "\n")
 
-end
+  fun smlnj_entry (name, args) =
+      let val _ = main args
+      in 0
+      end
 
-val () = TestBoard.main()
+end
