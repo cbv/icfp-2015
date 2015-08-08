@@ -19,6 +19,9 @@ sml-lib/util/listutil.sml
 sml-lib/util/stringutil-sig.sml
 sml-lib/util/stringutil.sml
 
+sml-lib/util/vectorutil-sig.sml
+sml-lib/util/vectorutil.sml
+
 sml-lib/util/simplestream-sig.sml
 sml-lib/util/simplestream.sml
 
