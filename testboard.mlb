@@ -28,6 +28,9 @@ sml-lib/util/script.sml
 sml-lib/algo/heap-sig.sml
 sml-lib/algo/heap.sml
 
+sml-lib/misc/params-sig.sml
+sml-lib/misc/params.sml
+
 json.sml
 
 ansi.sml

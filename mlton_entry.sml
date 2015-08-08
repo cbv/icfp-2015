@@ -1,1 +1,2 @@
-val _ = TestBoard.main (CommandLine.arguments())
+
+val _ = Params.main0 "This program takes no arguments." TestBoard.main
