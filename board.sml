@@ -7,20 +7,16 @@ struct
   datatype turn = CW | CCW
   datatype command = D of dir | T of turn
   datatype why =
-  (* Gracefully used all pieces *)
     COMPLETE
-  (* Last move locked a piece, but there's no space
-     to place the next one. *)
   | NO_SPACE
   datatype status =
-    (* Game keeps going *)
     CONTINUE
   | GAMEOVER of why
-  (* Bad command? *)
   | ERROR
 
   datatype moveresult =
-    M of { scored: int, lines: int, locked: (int * int * int) option,
+    M of { scored: int, lines: int, new_phrases: int,
+           locked: (int * int * int) option,
            status: status }
 
   type legalchar = char
@@ -528,7 +524,7 @@ struct
     | statusstring (GAMEOVER NO_SPACE) = "NO_SPACE"
     | statusstring ERROR = "ERROR"
 
-  fun moveresultstring (M {scored, lines, locked, status }) =
+  fun moveresultstring (M {scored, lines, new_phrases, locked, status }) =
     "{ scored: " ^ Int.toString scored ^ ", status: " ^ statusstring status ^" }"
 
   (* TODO: Use this beauty, but might need to use ansi backgrounds...
@@ -814,6 +810,7 @@ struct
       (* Compute the power score for this char. Doesn't modify the
          power counts yet. *)
       val power_score = ref 0
+      val new_phrases = ref 0
       val () =
         (* All the power words (indices) we just made. *)
         app (fn i =>
@@ -821,20 +818,24 @@ struct
                val revw = Vector.sub(power, i)
                val power_base = 2 * size revw
                (* Bonus only the first time *)
-               val power_bonus = if Array.sub(power_count, i) = 0
+               val is_new = Array.sub(power_count, i) = 0
+               val power_bonus = if is_new
                                  then 300
                                  else 0
              in
+               (if is_new then new_phrases := !new_phrases + 1 else ());
                power_score := !power_score + power_base + power_bonus
              end) powerlist
       val power_score = !power_score
+      val new_phrases = !new_phrases
 
     in
       if check_and_add_repeat_at (nx, ny, na)
       then
         (* Here, we haven't even modified the stutter set, so
            there is nothing to undo. *)
-        { result = M { scored = 0, lines = 0, locked = NONE, status = ERROR },
+        { result = M { scored = 0, lines = 0, new_phrases = new_phrases,
+                       locked = NONE, status = ERROR },
           undo = fn () => () }
       else
       if is_locked_at (problem, board, !piece, nx, ny, na)
@@ -924,6 +925,7 @@ struct
 
                 (* lines should affect score. *)
                 { result = M { lines = lines, scored = move_score + power_score,
+                               new_phrases = new_phrases,
                                locked = locked, status = CONTINUE },
                   undo = full_undo }
               end
@@ -932,6 +934,7 @@ struct
                 (* Additionally mark invalid. *)
                 valid := false;
                 { result = M { lines = lines, scored = move_score + power_score,
+                               new_phrases = new_phrases,
                                locked = locked, status = GAMEOVER why },
                   undo = full_undo }
               end
@@ -976,6 +979,7 @@ struct
 
           (* PERF board hasn't changed -- don't need backup of it *)
           { result = M { scored = power_score, lines = 0, locked = NONE,
+                         new_phrases = new_phrases,
                          status = CONTINUE },
             undo = positional_undo }
         end

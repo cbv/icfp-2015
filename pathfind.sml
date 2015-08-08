@@ -101,7 +101,7 @@ struct
       fun move_helper commands move =
         let
           val sym = Board.piece_symmetry state
-          fun body (Board.M {scored, lines, locked, status}) =
+          fun body (Board.M {scored, lines, locked, new_phrases = _, status}) =
             (case status of
                  Board.CONTINUE =>
                  let val new_commands = (Board.charcommand move)::commands

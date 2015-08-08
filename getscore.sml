@@ -30,18 +30,18 @@ struct
       fun replay { score, lines, phrases, script : char list } =
         case script of
           nil => { score = score, lines = lines, phrases = phrases,
-                   leftover = 0,
-                   fate = "SCRIPT_EXHAUSTED" }
+                   leftover = 0, fate = "SCRIPT_EXHAUSTED" }
         | c :: rest =>
             let
               val legalchar : Board.legalchar = Board.legalize c
 
-              val Board.M { scored, lines = newlines, locked = _, status } =
+              val Board.M { scored, lines = new_lines, locked = _,
+                            new_phrases, status } =
                 Board.move (state, legalchar)
 
               val score = score + scored
-              val lines = lines + newlines
-              val phrases = phrases (* XXX *)
+              val lines = lines + new_lines
+              val phrases = phrases + new_phrases
               datatype status = datatype Board.status
             in
               case status of

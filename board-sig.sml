@@ -24,7 +24,7 @@ sig
        lines is the number of lines created;
        locked is whether the move caused the piece to be locked;
        status tells us whether the game ended, etc. *)
-    M of { scored: int, lines: int,
+    M of { scored: int, lines: int, new_phrases: int,
            locked: (int * int * int) option,
            status: status }
 

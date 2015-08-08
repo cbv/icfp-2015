@@ -55,7 +55,7 @@ struct
   fun move_helper (state, visitedSetRef, score, commands) move =
     let
         val sym = Board.piece_symmetry state
-        fun body (Board.M {scored, lines, locked, status}) =
+        fun body (Board.M {scored, lines, locked, status, new_phrases = _}) =
           (case status of
               Board.ERROR => ()
             |  _ =>

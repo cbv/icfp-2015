@@ -57,10 +57,12 @@ struct
          end
       val () = print (Board.toascii state ^ "\n")
       val () = print (Board.powerinfostring state ^ "\n")
-      val (Board.M { scored, lines, locked, status }, script) = commandloop()
+      val (Board.M { scored, lines, locked, status, new_phrases }, script) =
+        commandloop ()
     in
       print ("Pieces left: " ^ itos (Board.piecesleft state) ^ "\n");
       print ("Scored " ^ itos scored ^ " in " ^ itos lines ^ " lines " ^
+             " and new phrases: " ^ itos new_phrases ^
              " and locked: " ^ Bool.toString (Option.isSome locked) ^ "\n");
       (case status of
          Board.CONTINUE => interactive (script, state)

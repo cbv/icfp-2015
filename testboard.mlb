@@ -35,6 +35,7 @@ sml-lib/misc/params-sig.sml
 sml-lib/misc/params.sml
 
 json.sml
+json_utils.sml
 
 ansi.sml
 
@@ -43,13 +44,18 @@ rng.sml
 
 phrases.sml
 
-json_utils.sml
-
 board-sig.sml
 board.sml
 
-tactic-sig.sml
+(* tactic-sig.sml *)
 (* astar.sml *) (* unresolved flex record blech *)
+
+pathfind-sig.sml
+pathfind.sml
+
+powerize-sig.sml
+powerize.sml
+
 
 forwardchain-sig.sml
 forwardchain.sml
