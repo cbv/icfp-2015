@@ -14,6 +14,7 @@ struct
 
   fun interactive state =
     let
+      val () = print (ANSI.CLS ^ "\n")
       fun commandloop () =
         (* Amazing! use stty -icanon to make this not wait for a return
            character before sending input. It even works on windows
@@ -38,7 +39,6 @@ struct
                  commandloop()
                end)
     in
-      print ANSI.CLS;
       print (Board.toascii state ^ "\n");
       commandloop ();
       interactive state

@@ -353,25 +353,48 @@ struct
               rng: RNG.rng,
               piece: piece }
 
+  (* Hypothetically, if we moved the pivot to (nx, ny) with angle a,
+     would this be a collision? Then we lock at the OLD location. *)
+  fun is_locked_at (P { width, height, ... },
+                    board, Piece { rotations, ... }, nx, ny, na) =
+    let
+      val oriented_piece = Vector.sub(rotations, na)
+
+      (* The displacement applied to every member of the piece. *)
+      val (upx, upy) = uniformize_coord (nx, ny)
+      fun is_collision (px, py) =
+        let val (px, py) = translate (upx, upy) (px, py)
+        in
+          px < 0 orelse py < 0 orelse
+          px >= width orelse py >= height orelse
+          Array.sub (board, py * width + px)
+        end
+    in
+      Vector.exists is_collision oriented_piece
+    end
+
   fun getpiece (problem as P { sourcelength, pieces, ... } : problem,
+                board,
                 sourceidx : int,
                 rng : RNG.rng) =
     if sourceidx >= sourcelength
-    then GPNoSpace
+    then GPGameOver
     else
       let
         val (piece_idx, rng) = RNG.next rng
+        val piece_idx = piece_idx mod Vector.length pieces
 
         val piece as Piece { rotations,
                              symmetry = _,
                              start = (startx, starty) } =
           Vector.sub (pieces, piece_idx)
-
       in
-        (* XXX see if it fits *)
-        GP { next_sourceidx = sourceidx + 1,
-             piece = piece,
-             rng = rng }
+        (* print ("New piece_idx " ^ Int.toString piece_idx ^ "\n"); *)
+        if is_locked_at (problem, board, piece, startx, starty, 0)
+        then GPNoSpace
+        else GP { next_sourceidx = sourceidx + 1,
+                  piece = piece,
+                  rng = rng }
       end
 
 
@@ -383,8 +406,13 @@ struct
            seed_idx >= Vector.length seeds
         then raise Board "Bad seed idx in reset"
         else RNG.fromseed (Vector.sub (seeds, seed_idx))
+
+      (* PERF ArraySlice. *)
+      val board = Array.tabulate
+        (Vector.length start,
+         (fn x => Vector.sub(start, x)))
     in
-      case getpiece (problem, 0, initial_rng) of
+      case getpiece (problem, board, 0, initial_rng) of
         (* TODO: Handle these gracefully if legal? *)
         GPNoSpace => raise Board "no space in INITIAL CONFIGURATION??"
       | GPGameOver => raise Board "source length is 0??"
@@ -401,10 +429,7 @@ struct
               y = ref starty,
               (* always start in natural orientation *)
               a = ref 0,
-              (* PERF ArraySlice. *)
-              board = Array.tabulate
-              (Vector.length start,
-               (fn x => Vector.sub(start, x))) }
+              board = board }
 
     end
 
@@ -638,26 +663,6 @@ struct
           Array.copy {di = 0, dst = board, src = old_board}
         end
 
-      (* Hypothetically, if we moved the pivot to (nx, ny) with angle a,
-         would this be a collision? Then we lock at the OLD location. *)
-      fun is_locked_at (nx, ny, na) =
-        let
-          val Piece { rotations, ... } = !piece
-          val oriented_piece = Vector.sub(rotations, na)
-
-          (* The displacement applied to every member of the piece. *)
-          val (upx, upy) = uniformize_coord (nx, ny)
-          fun is_collision (px, py) =
-            let val (px, py) = translate (upx, upy) (px, py)
-            in
-              px < 0 orelse py < 0 orelse
-              px >= width orelse py >= height orelse
-              Array.sub (board, py * width + px)
-            end
-        in
-          Vector.exists is_collision oriented_piece
-        end
-
       fun freeze () =
         let
           val Piece { rotations, ... } = !piece
@@ -696,7 +701,7 @@ struct
               (!x, !y, new_a)
             end
     in
-      if is_locked_at (nx, ny, na)
+      if is_locked_at (problem, board, !piece, nx, ny, na)
       then
         let
           val () = freeze()
@@ -712,13 +717,20 @@ struct
             else 0
           val move_score = points + line_bonus
         in
-          case getpiece (problem, !next_sourceidx, !rng) of
-            GP { next_sourceidx = new_ns, piece = new_piece, rng = new_rng } =>
+          (* Now, try to place the next piece (if any) in the updated board. *)
+          case getpiece (problem, board, !next_sourceidx, !rng) of
+            GP { next_sourceidx = new_ns,
+                 piece = new_piece as Piece { start = (startx, starty), ... },
+                 rng = new_rng } =>
               let in
+                (* print "New piece!\n"; *)
                 next_sourceidx := new_ns;
                 piece := new_piece;
                 rng := new_rng;
                 last_lines := lines;
+                x := startx;
+                y := starty;
+                a := 0;
 
                 (* lines should affect score. *)
                 { result = M { lines = lines, scored = move_score,
