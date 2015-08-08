@@ -91,7 +91,12 @@ struct
     in
         case !best_loc of
             NONE => ([], false)
-          | SOME (PL {commands, ...}) => (commands, true)
+          | SOME (PL {commands, ...}) =>
+            let
+            in if List.length commands > 0
+               then (commands, true)
+               else ([], false)
+            end
     end
 
   fun stepper (state, accumulator) =
@@ -100,14 +105,13 @@ struct
         val () = List.app (fn c =>
                               let
                                  val result =  Board.move (state, Board.anychar c)
-                                 val () = print ((Board.moveresultstring result) ^ "\n")
                               in
                                   ()
                               end)
                           (List.rev rev_commands)
         val acc' = rev_commands::accumulator
     in
-        if false
+        if continue
         then (stepper (state, acc'))
         else List.rev (List.concat accumulator)
     end
