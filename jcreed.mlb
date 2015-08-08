@@ -32,6 +32,7 @@ sml-lib/misc/params-sig.sml
 sml-lib/misc/params.sml
 
 json.sml
+json_utils.sml
 
 ansi.sml
 
