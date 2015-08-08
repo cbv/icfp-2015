@@ -60,7 +60,7 @@ structure LockStep :> LOCK_STEP = struct
                               | NONE => ~1
            val combined_score = 10000 * scored + heuristic_score
            val () = if combined_score > best_score
-                    then best := (SOME((combined_score, steps)))
+                    then best := (SOME((combined_score, List.rev steps)))
                     else ()
        in
            ()
@@ -87,9 +87,7 @@ structure LockStep :> LOCK_STEP = struct
     in
         case !best of
             SOME((score, all_steps as (step as Step { state = SOME(state), ...})::steps)) =>
-            (print ("best score: " ^ Int.toString score ^ "\n");
-             List.app (fn s => print (stepstring s ^ "\n")) all_steps;
-            accumulate_best (Board.clone state, heuristic, step::accumulator))
+            accumulate_best (Board.clone state, heuristic, step::accumulator)
          |  SOME((score, (step as Step { state = NONE, ...})::steps)) => step::accumulator
          |  _ => raise LockStep "impossible"
     end
