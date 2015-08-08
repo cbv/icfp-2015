@@ -38,7 +38,7 @@ structure LockStep :> LOCK_STEP = struct
 
      heuristic: Board.state -> int
   *)
-  fun search (max_depth, best, heuristic, heuristic_score, prev_steps) (step as Step {scored, state = state_opt, ...}) =
+  fun search (max_depth, best, heuristic, heuristic_score, prev_steps) (step as Step {state = state_opt, ...}) =
     case (state_opt, max_depth <= 1 + (List.length prev_steps))
      of (SOME(state), false) =>
         let
@@ -47,12 +47,14 @@ structure LockStep :> LOCK_STEP = struct
         end
      | _ => (* don't go deeper *)
        let
+           val steps = step::prev_steps
+           val scored = List.foldr (fn (Step {scored,...}, s) => scored + s) 0 steps
            val best_score = case !best of
                                 SOME((score, _)) => score
                               | NONE => ~1
-           val combined_score = 10000 * heuristic_score
+           val combined_score = 10000 * heuristic_score + scored
            val () = if combined_score > best_score
-                    then best := (SOME((combined_score, step::prev_steps)))
+                    then best := (SOME((combined_score, steps)))
                     else ()
        in
            ()
