@@ -4,13 +4,16 @@ struct
 (* favor far-down squares *)
 fun heuristic (x, y) = y
 
-val problemId = 0;
+val problemId = 17;
 
 fun do_seed (problem, seed_idx, seed) =
   let
      val state = Board.reset (problem, seed_idx)
      val commands = ForwardChain.simple_heuristic_solver (state, heuristic)
   in
+   (if seed_idx > 0
+   then print ",\n"
+   else ());
    print "{\n";
    print ("\"problemId\": " ^ Int.toString problemId ^ ",\n");
    print ("\"seed\": " ^ Int.toString (Word32.toInt seed) ^ ",\n");
@@ -18,7 +21,7 @@ fun do_seed (problem, seed_idx, seed) =
    print ("\"solution\": \"");
    print (implode (List.map (Board.forgetlegal o Board.anychar) commands));
    print "\"\n";
-   print "},\n"
+   print "}\n"
   end
 
 fun main () =
