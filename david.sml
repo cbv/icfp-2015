@@ -4,7 +4,7 @@ struct
 (* favor far-down squares *)
 fun heuristic (x, y) = y
 
-val problemId = 23;
+val problemId = 17;
 
 fun do_seed (problem, seed_idx, seed) =
   let
@@ -17,7 +17,7 @@ fun do_seed (problem, seed_idx, seed) =
    print "{\n";
    print ("\"problemId\": " ^ Int.toString problemId ^ ",\n");
    print ("\"seed\": " ^ Int.toString (Word32.toInt seed) ^ ",\n");
-   print ("\"tag\": \"david_insomniac\",\n");
+   print ("\"tag\": \"david_morning\",\n");
    print ("\"solution\": \"");
    print (implode (List.map (Board.forgetlegal o Board.anychar) commands));
    print "\"\n";

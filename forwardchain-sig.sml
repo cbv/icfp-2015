@@ -2,6 +2,7 @@ signature FORWARD_CHAIN = sig
   datatype PieceLocation = PL of {px: int, py: int, a: int,
                                   (* If the last move was a lock, a cloned copy of the resulting state. *)
                                   locked: Board.state option,
+                                  (* Points accumulated up to here. *)
                                   score: int,
                                   commands: Board.command list}
 
