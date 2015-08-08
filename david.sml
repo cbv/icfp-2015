@@ -1,6 +1,10 @@
 structure David =
 struct
 
+  val tagp = Params.param "[ERROR NO TAG FOUND]"
+    (SOME("-tag", "Value to put in the tag field."))
+    "tag"
+
   val problemp = Params.param "14"
     (SOME("-problem", "Problem number to load."))
     ("problem")
@@ -20,7 +24,7 @@ fun do_seed (problemId, problem, seed_idx, seed) =
    print "{\n";
    print ("\"problemId\": " ^ Int.toString problemId ^ ",\n");
    print ("\"seed\": " ^ Int.toString (Word32.toInt seed) ^ ",\n");
-   print ("\"tag\": \"david_morning\",\n");
+   print ("\"tag\": \"" ^ (!tagp) ^ "\",\n");
    print ("\"solution\": \"");
    print (implode (List.map (Board.forgetlegal o Board.anychar) commands));
    print "\"\n";
