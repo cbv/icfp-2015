@@ -62,13 +62,15 @@ if __name__ == "__main__":
             if (stats['score'] != 0 or len(stats['tags']) != 0):
                print rankings[j]['team'] + ", problem #" + str(i)
                print "   Ranking: " + str(rankings[j]['rank'])
-               print "   Score:   " + str(rankings[j]['score']),
+               print "   Official score: " + str(rankings[j]['score']),
                print "("+str(rankings[j]['power_score'])+" power word(s))"
                for tag in rankings[j]['tags']:
                   if tag not in solutiondb:
                      print "      Tag: "+tag+" not in database"
                   elif 'score' not in solutiondb[tag]:
-                     print "      Tag: "+tag+" had an error when analyzed"
+                     print "      Tag: "+tag+" had an error when analyzed",
+                     print "(script length ",
+                     print str(len(solutiondb[tag]['solution']))+")"
                   else: 
                      analysis = solutiondb[tag]
                      print "      Tag: "+tag+" known! Analysis follows:"

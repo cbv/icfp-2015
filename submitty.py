@@ -7,50 +7,7 @@ import sys
 import requests
 import socket
 
-# Rob's api token, don't HAX
-apitoken = 'IumEctlsTyz6gaGeix2MQ8wHwnChc2u1roJ7NJpHL20='
-
-url = 'https://davar.icfpcontest.org/teams/31/solutions'
-api = "https://cmage109g3.execute-api.us-west-2.amazonaws.com/what"
-submitty = api + "/submittydb"
-
-def submitter(problemId, seed, tag, solution, host):
-   print "Obtaining unique tag..."
-   info = {
-      'problemId': problemId,
-      'seed': seed,
-      'tag': tag,
-      'solution': solution,
-      'submitter': host
-   }
-   done = False
-   while(not done):
-      response = json.loads(requests.post(submitty, json.dumps(info)).text)
-      if len(response) != 2 or response[0] is None or response[1] is None:
-         fail("Unexpected output\n\n"+json.dumps(response))
-      else: done = True
-
-   unique_tag = response[0]
-   attempts = response[1]
-
-   submission = json.dumps([{
-      'problemId': problemId,
-      'seed': seed,
-      'tag': unique_tag,
-      'solution': solution
-   }])
-
-   print "Submitting with tag "+unique_tag,
-   if attempts is 1: print ""
-   else: print "("+str(attempts)+" attempts)"
-
-   print "\tProblem:  "+str(problemId)
-   print "\tSeed:     "+str(seed)
-   print "\tSolution: "+str(solution)
-   headers = {'Content-Type':'application/json'}
-   print requests.post(url, submission, auth=('',apitoken), headers=headers)
-   return unique_tag
-
+from tools import save_get_unique_tag, raw_submitter
 
 def fail(msg):
    print msg
@@ -74,6 +31,7 @@ if __name__ == "__main__":
       if args.seed is not None: fail("Both filename and seed given")
       if args.sol is not None: fail("Both filename and solution given")
       if args.tag is not None: fail("Both filename and tag given")
+
       try:
          f = open(args.filename, 'r')
          info = json.loads(f.read())
@@ -91,13 +49,19 @@ if __name__ == "__main__":
          seed = info[i]['seed']
          tag = info[i]['tag']
          solution = info[i]['solution']
-         submitter(problemId, seed, tag, solution, socket.gethostname())
+         host = socket.gethostname()
+
+         unique_tag = save_get_unique_tag(problemId, seed, tag, solution, host)
+         raw_submitter(problemId, seed, unique_tag, solution)
    else:
       problemId = args.prob[0]
       seed = args.seed[0]
       tag = "submitty" if args.tag is None else args.tag[0]
       solution = args.sol[0]
+      host = socket.gethostname()
 
+      unique_tag = save_get_unique_tag(problemId, seed, tag, solution, host)
+      raw_submitter(problemId, seed, unique_tag, solution)
    
 
    

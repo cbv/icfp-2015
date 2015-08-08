@@ -6,6 +6,7 @@ import json
 import sys
 import requests
 import socket
+from tools import checkscore
 
 # Rob's api token, don't HAX
 apitoken = 'IumEctlsTyz6gaGeix2MQ8wHwnChc2u1roJ7NJpHL20='
@@ -58,6 +59,8 @@ if __name__ == "__main__":
    response = json.loads(requests.post(api, json.dumps(request)).text)
    info = response['Items']
    db = {}
+   maxtag_len = 0
+   maxscore_len = 0 
    for i in range(0, len(info)):
       problem = int(info[i]['problem']['N'])
       #submitter = info[i]['submitter']['S']
@@ -66,15 +69,19 @@ if __name__ == "__main__":
       solution = info[i]['solution']['S']
       if problem not in db.keys(): db[problem] = {}
       if seed not in db[problem].keys(): db[problem][seed] = []
-      db[problem][seed].append({'tag': tag, 'solution': solution})
+
+      analysis = checkscore(problem, seed, solution)
+      score = '???' if analysis is None else str(analysis['score'])
+
+      maxtag_len = max(maxtag_len, len(tag))
+      maxscore_len = max(maxscore_len, len(score))
+      db[problem][seed].append({
+         'tag': tag, 
+         'solution': solution,
+         'score': score,
+      })
 
    sorted(db, key = db.get)
-   maxtag = 0
-   for prob in db.keys():
-      if db[prob] is not None:
-         for seed in db[prob].keys():
-            for i in range(0, len(db[prob][seed])):
-               maxtag = max(maxtag, len(db[prob][seed][i]['tag']))
 
    for prob in db.keys():
       if db[prob] is not None:
@@ -83,7 +90,9 @@ if __name__ == "__main__":
             for i in range(0, len(db[prob][seed])):
                tag = db[prob][seed][i]['tag']
                solution = db[prob][seed][i]['solution']
-               text = "   "+tag+" "*(maxtag + 1 - len(tag))+solution
+               score = db[prob][seed][i]['score']
+               text = "   "+tag+" "*(maxtag_len + 1 - len(tag))
+               text = text+score+" "*(maxscore_len + 1 - len(score))+solution
                if len(text) > LIMIT: text = text[:(LIMIT-3)]+"..."
                print text
             
