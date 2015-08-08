@@ -49,7 +49,7 @@ structure LockStep :> LOCK_STEP = struct
      of (SOME(state), false) =>
         let
         in
-            search_steps (max_depth, best, heuristic, Board.clone state, step::prev_steps)
+            search_steps (max_depth, best, heuristic, state, step::prev_steps)
         end
      | _ => (* don't go deeper *)
        let
@@ -87,7 +87,7 @@ structure LockStep :> LOCK_STEP = struct
     in
         case !best of
             SOME((score, all_steps as (step as Step { state = SOME(state), ...})::steps)) =>
-            accumulate_best (Board.clone state, heuristic, step::accumulator)
+            accumulate_best (state, heuristic, step::accumulator)
          |  SOME((score, (step as Step { state = NONE, ...})::steps)) => step::accumulator
          |  _ => raise LockStep "impossible"
     end
