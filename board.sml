@@ -18,7 +18,8 @@ struct
   | ERROR
 
   datatype moveresult =
-    M of { scored: int, lines: int, locked: (int * int * int) option, status: status }
+    M of { scored: int, lines: int, locked: (int * int * int) option,
+           status: status }
 
   type legalchar = char
 
@@ -50,6 +51,26 @@ struct
            (* aka units, an ml keyword *)
            pieces : piece vector }
 
+
+  (* This is a place that we've been in the past; we need to keep a set
+     of these so that we don't ever repeat a configuration. Contest
+     people have confirmed that the identity of the pivot matters, and
+     the identity of the members does not. Since we have already
+     pre-computed the symmetry group, it suffices to store here just the
+     position of the pivot and the angle modulo the symmetry size. *)
+  (* x, y, angle mod symmetry *)
+  type stutter = int * int * int
+
+  fun stutterorder ((x, y, a), (xx, yy, aa)) =
+    case Int.compare (x, xx) of
+      EQUAL => (case Int.compare (y, yy) of
+                  EQUAL => Int.compare (a, aa)
+                | other => other)
+    | other => other
+
+  structure StutterSet = SplaySetFn(type ord_key = stutter
+                                     val compare = stutterorder)
+
   datatype state =
     S of { board: bool array,
            problem: problem,
@@ -70,22 +91,10 @@ struct
 
            (* XXX Need history of commands, for word scoring *)
 
-           (* XXX history of where we've been *)
+           (* Places we have already been. *)
+           stutters: StutterSet.set ref,
 
            rng: RNG.rng ref }
-
-    (*
-
-       XXX todo: just keep pivot x,y and angle MOD SYMMETRY GROUP PRECOMPUTED
-
-  (* This is a place that we've been in the past; we need to keep a set
-     of these so that we don't ever repeat a configuration. Contest
-     people have confirmed that the identity of the pivot matters, and
-     the identity of the
-*)
- type
-     presence
-     *)
 
   fun piece_position (S {x, y, ...}) = (!x, !y)
   fun piece_angle (S {a, ...}) = !a
@@ -326,12 +335,13 @@ struct
     (* I think ArraySlice *)
     Array.tabulate (Array.length a, fn i => Array.sub(a, i))
 
-  fun clone (S { board, next_sourceidx, last_lines,
+  fun clone (S { board, next_sourceidx, last_lines, stutters,
                  problem, score, rng, piece, a, x, y }) : state =
            S { board = clone_array board,
                problem = problem,
                score = ref (!score),
                next_sourceidx = ref (!next_sourceidx),
+               stutters = ref (!stutters),
                a = ref (!a),
                x = ref (!x),
                y = ref (!y),
@@ -419,18 +429,24 @@ struct
       | GP { next_sourceidx,
              piece as Piece { start = (startx, starty), ... },
              rng } =>
-          S { rng = ref rng,
-              score = ref 0,
-              piece = ref piece,
-              problem = problem,
-              next_sourceidx = ref next_sourceidx,
-              last_lines = ref 0,
-              x = ref startx,
-              y = ref starty,
-              (* always start in natural orientation *)
-              a = ref 0,
-              board = board }
-
+          let
+            val initial_stutters =
+              (* angle is 0 mod symmetry, which is always 0 *)
+              StutterSet.add (StutterSet.empty, (startx, starty, 0))
+          in
+              S { rng = ref rng,
+                  score = ref 0,
+                  piece = ref piece,
+                  problem = problem,
+                  next_sourceidx = ref next_sourceidx,
+                  last_lines = ref 0,
+                  x = ref startx,
+                  y = ref starty,
+                  (* always start in natural orientation *)
+                  a = ref 0,
+                  stutters = ref initial_stutters,
+                  board = board }
+          end
     end
 
   fun ispiece (S {x, y, piece = ref (Piece { rotations, ... }), a, ...},
@@ -636,7 +652,9 @@ struct
     end
 
   fun move_undo (state as
-                 S { rng, score, piece, next_sourceidx, last_lines,
+                 S { rng, score, piece as ref (Piece { symmetry, ... }),
+                     next_sourceidx, last_lines,
+                     stutters,
                      problem = problem as P { width, height, ... },
                      x, y, a, board },
                  ch : legalchar) =
@@ -648,7 +666,7 @@ struct
         let
           val S { rng = old_rng, score = old_score, x = old_x, y = old_y,
                   a = old_a, board = old_board, piece = old_piece,
-                  last_lines = old_last_lines,
+                  last_lines = old_last_lines, stutters = old_stutters,
                   next_sourceidx = old_next_sourceidx, ... } = old_state
         in
           rng := !old_rng;
@@ -656,6 +674,7 @@ struct
           x := !old_x;
           y := !old_y;
           a := !old_a;
+          stutters := !old_stutters;
           piece := !old_piece;
           last_lines := !old_last_lines;
           next_sourceidx := !old_next_sourceidx;
@@ -699,7 +718,26 @@ struct
             in
               (!x, !y, new_a)
             end
+
+      (* Check if we have a stutter. If not, add to the stutter
+         set. *)
+      fun check_and_add_repeat_at (nx, ny, na) : bool =
+        let
+          val na = na mod symmetry
+        in
+          if StutterSet.member (!stutters, (nx, ny, na))
+          then true
+          else
+            let in
+              stutters := StutterSet.add (!stutters, (nx, ny, na));
+              false
+            end
+        end
     in
+      if check_and_add_repeat_at (nx, ny, na)
+      then { result = M { scored = 0, lines = 0, locked = NONE, status = ERROR },
+             undo = undo }
+      else
       if is_locked_at (problem, board, !piece, nx, ny, na)
       then
         let
