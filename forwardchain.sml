@@ -74,4 +74,35 @@ struct
         LocSet.listItems (!setRef)
     end
 
+  (* Board.state -> (list of commands (reversed), bool indicating whether to continue) *)
+  fun simple_heuristic_step state =
+    let
+        val locs = accessible_locations state
+        val best_score = ref (~1)
+        val best_loc = ref NONE
+        val () = List.app (fn (loc as PL {score, ...}) =>
+                              if score > (!best_score)
+                              then ((best_score := score);
+                                    (best_loc := (SOME loc)))
+                              else ())
+                          locs
+    in
+        case !best_loc of
+            NONE => ([], false)
+          | SOME (PL {commands, ...}) => (commands, true)
+    end
+
+  fun stepper (state, accumulator) =
+    let
+        val (commands, continue) = simple_heuristic_step state
+        val acc' = commands::accumulator
+    in
+        if continue
+        then stepper (state, acc')
+        else List.concat (List.map List.rev accumulator)
+    end
+
+  fun simple_heuristic_solver state =
+    stepper (state, [])
+
 end
