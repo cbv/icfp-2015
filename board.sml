@@ -96,8 +96,9 @@ struct
            (* Please don't expose these; I want to
               make this representation more efficient, which
               will involve not actually storing the command string *)
-           (* commands executed to this point. *)
+           (* commands executed to this point; head is the most recent *)
            chars: legalchar list ref,
+           (* how many times each power word has been used so far. *)
            power_count: int array,
 
            (* Places we have already been. *)
@@ -337,8 +338,9 @@ struct
     Array.tabulate (Array.length a, fn i => Array.sub(a, i))
 
   (* OK to clone invalid boards, I guess. *)
-  fun clone (S { board, next_sourceidx, last_lines, stutters,
-                 valid, problem, score, rng, piece, a, x, y }) : state =
+  fun clone (S { board, next_sourceidx, last_lines, stutters, chars,
+                 power_count, valid, problem, score, rng, piece,
+                 a, x, y }) : state =
            S { board = clone_array board,
                problem = problem,
                score = ref (!score),
@@ -348,6 +350,8 @@ struct
                x = ref (!x),
                y = ref (!y),
                valid = ref (!valid),
+               chars = ref (!chars),
+               power_count = clone_array power_count,
                last_lines = ref (!last_lines),
                piece = ref (!piece),
                rng = ref (!rng) }
@@ -409,7 +413,7 @@ struct
                   rng = rng }
       end
 
-  fun resetwithseed (problem as P { seeds, start, pieces, ... },
+  fun resetwithseed (problem as P { seeds, start, pieces, power, ... },
                      seed : Word32.word) : state =
     let
       val initial_rng = RNG.fromseed seed
@@ -444,6 +448,8 @@ struct
                   valid = ref true,
                   (* always start in natural orientation *)
                   a = ref 0,
+                  chars = ref nil,
+                  power_count = Array.array (Vector.size power, 0),
                   stutters = ref initial_stutters,
                   board = board }
           end
@@ -671,7 +677,7 @@ struct
 
   fun move_undo (state as
                  S { rng, score, piece as ref (Piece { symmetry, ... }),
-                     next_sourceidx, last_lines,
+                     next_sourceidx, last_lines, chars, power_count,
                      stutters, valid = valid as ref true,
                      problem = problem as P { width, height, ... },
                      x, y, a, board },
@@ -734,9 +740,24 @@ struct
             end
         end
 
+      (* PERF! *)
+      fun get_powerlist revchars =
+        nil
+
       (* check_and_add_repeat_at may modify this, so save the old set *)
       val old_stutters = !stutters
 
+      (* need this no matter what. *)
+      val old_chars = !chars
+      val newchars = ch :: old_chars
+      val powerlist = get_powerlist newchars
+
+      fun add_power r =
+        List.app (fn word_idx =>
+                  Array.update(r, word_idx, Array.sub(r, word_idx) + 1)) powerlist
+      fun subtract_power r =
+        List.app (fn word_idx =>
+                  Array.update(r, word_idx, Array.sub(r, word_idx) - 1)) powerlist
     in
       if check_and_add_repeat_at (nx, ny, na)
       then
@@ -768,6 +789,7 @@ struct
           val old_y = !y
           val old_a = !a
           (* old_stutters above *)
+          (* old_chars above *)
           val old_piece = !piece
           val old_last_lines = !last_lines
           val old_next_sourceidx = !next_sourceidx
@@ -784,6 +806,10 @@ struct
               last_lines := old_last_lines;
               next_sourceidx := old_next_sourceidx;
               valid := true;
+              (* or just pop? *)
+              chars := old_chars;
+              subtract_power power_count;
+
               Array.copy {di = 0, dst = board, src = old_board}
             end
 
@@ -818,6 +844,9 @@ struct
                 x := startx;
                 y := starty;
                 a := 0;
+                chars := newchars;
+                add_power power_count;
+
                 stutters := StutterSet.add (StutterSet.empty,
                                             (startx, starty, 0));
 
@@ -828,6 +857,7 @@ struct
               end
           | GPGameOver why =>
               let in
+                (* Additionally mark invalid. *)
                 valid := false;
                 { result = M { lines = lines, scored = move_score,
                                locked = locked, status = GAMEOVER why },
@@ -844,6 +874,7 @@ struct
           val old_a = !a
           val old_last_lines = !last_lines
           (* old_stutters above *)
+          (* old_chars above *)
 
           (* These can't change. *)
           (* val old_piece = !piece
@@ -857,7 +888,9 @@ struct
               y := old_y;
               a := old_a;
               stutters := old_stutters;
-              last_lines := old_last_lines
+              last_lines := old_last_lines;
+              chars := old_chars;
+              subtract_power power_count
             end
         in
           (* No locking. Don't need to check lines, score, etc. *)
@@ -866,6 +899,8 @@ struct
           a := na;
           last_lines := 0;
           (* stays valid... *)
+          chars := newchars;
+          add_power power_count;
 
           (* PERF board hasn't changed -- don't need backup of it *)
           { result = M { scored = 0, lines = 0, locked = NONE,
