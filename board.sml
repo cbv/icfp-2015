@@ -408,14 +408,10 @@ struct
       end
 
 
-  fun reset (problem as P { seeds, start, pieces, ... },
-             seed_idx) : state =
+  fun resetwithseed (problem as P { seeds, start, pieces, ... },
+                     seed : Word32.word) : state =
     let
-      val initial_rng =
-        if seed_idx < 0 orelse
-           seed_idx >= Vector.length seeds
-        then raise Board "Bad seed idx in reset"
-        else RNG.fromseed (Vector.sub (seeds, seed_idx))
+      val initial_rng = RNG.fromseed seed
 
       (* PERF ArraySlice. *)
       val board = Array.tabulate
@@ -447,6 +443,17 @@ struct
                   stutters = ref initial_stutters,
                   board = board }
           end
+    end
+
+  fun reset (problem as P { seeds, ... }, seed_idx : int) : state =
+    let
+      val seed =
+        if seed_idx < 0 orelse
+           seed_idx >= Vector.length seeds
+        then raise Board "Bad seed idx in reset"
+        else Vector.sub (seeds, seed_idx)
+    in
+      resetwithseed (problem, seed)
     end
 
   fun ispiece (S {x, y, piece = ref (Piece { rotations, ... }), a, ...},

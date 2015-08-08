@@ -63,6 +63,9 @@ sig
      index to use. It's fine to have multiple outstanding states for
      the same problem and seed. *)
   val reset : problem * int -> state
+  (* Start the problem with a specific seed, which need not be
+     in the problem description. *)
+  val resetwithseed : problem * Word32.word -> state
 
   (* Make an exact copy of the state with a new identity *)
   val clone : state -> state
