@@ -114,12 +114,8 @@ struct
     in
         case !best_loc of
             NONE => ([], false)
-          | SOME (PL {commands, ...}) =>
-            let
-            in if List.length commands > 0
-               then (commands, true)
-               else ([], false)
-            end
+          | SOME (PL {commands, locked = SOME(ALL_DONE), ...}) => (commands, false)
+          | SOME (PL {commands, locked = _ , ...}) => (commands, true)
     end
 
   fun stepper (state, heuristic, accumulator) =
@@ -136,7 +132,7 @@ struct
     in
         if continue
         then (stepper (state, heuristic, acc'))
-        else List.rev (List.concat accumulator)
+        else List.rev (List.concat acc')
     end
 
   fun simple_heuristic_solver (state, heuristic) =
