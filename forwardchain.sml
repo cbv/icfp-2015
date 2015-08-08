@@ -1,6 +1,11 @@
 structure ForwardChain :> FORWARD_CHAIN =
 struct
-  datatype PieceLocation = PL of {px: int, py: int, a: int, locked: Board.state option,
+
+  exception ForwardChain of string
+
+  datatype LockedState = NEW_PIECE of Board.state | ALL_DONE
+  datatype PieceLocation = PL of {px: int, py: int, a: int,
+                                  locked: LockedState option,
                                   score: int,
                                   commands: Board.command list (* TODO(perf) track this somewhere else? *)}
 
@@ -8,12 +13,14 @@ struct
     "{(" ^ (Int.toString px) ^ ", " ^ (Int.toString py) ^ ") a:" ^ (Int.toString a) ^ ", locked: "
     ^ Bool.toString(Option.isSome locked) ^ "}"
 
-  fun piece_location (state, sym, locked, score, commands) =
+  fun piece_location (state, sym, locked, status, score, commands) =
     let
       val ((px, py), angle, locked_state) =
-        case locked of
-          SOME (x,y,a) => ((x,y), a, SOME(Board.clone state))
-        | NONE => (Board.piece_position state, Board.piece_angle state, NONE)
+        case (locked, status) of
+            (SOME (x,y,a), Board.CONTINUE) => ((x,y), a, SOME(NEW_PIECE(Board.clone state)))
+          | (SOME (x,y,a), (Board.GAMEOVER _)) => ((x,y), a, SOME(ALL_DONE))
+          | (NONE, _) => (Board.piece_position state, Board.piece_angle state, NONE)
+          | _ => raise ForwardChain "impossible"
     in
       PL {px = px, py = py, a = angle mod sym, locked = locked_state,
           score = score, commands = commands}
@@ -54,7 +61,7 @@ struct
             |  _ =>
                let val new_commands = (Board.charcommand move)::commands
                    val new_score = score + scored
-                   val pl = piece_location(state, sym, locked, new_score, new_commands)
+                   val pl = piece_location(state, sym, locked, status, new_score, new_commands)
                in
                    if LocSet.member (!visitedSetRef, pl)
                    then () (* already visited *)
@@ -76,8 +83,10 @@ struct
     List.app (move_helper (state, visitedSetRef, score, commands)) moves
 
   fun accessible_locations state =
-    let val setRef = ref (LocSet.singleton (piece_location (state, Board.piece_symmetry state,
-                                                            NONE, 0, []))); (* can't be locked on first turn *)
+    let val setRef = ref (LocSet.singleton
+                              (piece_location
+                                   (state, Board.piece_symmetry state,
+                                    NONE, Board.CONTINUE, 0, []))); (* can't be locked on first turn *)
         val () = helper (state, setRef, 0, []);
     in
         LocSet.listItems (!setRef)
