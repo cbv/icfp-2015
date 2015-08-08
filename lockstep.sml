@@ -81,7 +81,8 @@ structure LockStep :> LOCK_STEP = struct
     in
         case !best of
             SOME((score, (step as Step { state = SOME(state), ...})::steps)) =>
-            accumulate_best (state, heuristic, step::accumulator)
+            (print ("best score: " ^ Int.toString score ^ "\n");
+            accumulate_best (state, heuristic, step::accumulator))
          |  SOME((score, (step as Step { state = NONE, ...})::steps)) => step::accumulator
          |  _ => raise LockStep "impossible"
     end
