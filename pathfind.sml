@@ -1,5 +1,7 @@
 structure Pathfind :> PATHFIND =
 struct
+  fun cmds_to_string cmds = StringUtil.delimit "-" (List.map (Board.commandstring) cmds)
+
   datatype ptpos = PTP of {ux:int, uy:int, a:int}
   datatype command = datatype Board.command
   datatype dir = datatype Board.dir
@@ -38,6 +40,11 @@ struct
       else moves @ turns
     end
 
+  fun choice_order_for state target =
+    [(D SE), (D SW),
+     (D E),  (D W),
+     (T CW), (T CCW)]
+
   datatype PieceLocation = PL of {px: int, py: int, a: int,
                                   commands: Board.command list (* TODO(perf) track this somewhere else? *)}
 
@@ -71,37 +78,38 @@ struct
 
   fun helper (state, visitedSetRef, commands, target) =
     let
-      val moves = map Board.anychar [(D SE), (D SW),
-                                     (D E),  (D W),
-                                     (T CW), (T CCW)]
+      val moves = map Board.anychar (choice_order_for state target)
       fun move_helper commands move =
         let
           val sym = Board.piece_symmetry state
           fun body (Board.M {scored, lines, locked, status}) =
             (case status of
-                 Board.ERROR => NONE
-              |  _ =>
+                 Board.CONTINUE =>
                  let val new_commands = (Board.charcommand move)::commands
                      val pl = piece_location(state, sym, new_commands)
+                     val {px=tx,py=ty,a=ta} = target
+                     val ((px, py), pa) = (Board.piece_position state, Board.piece_angle state)
+                 (*
+                     val _ = print("piece at " ^ (Int.toString px) ^ " " ^ (Int.toString py) ^ "\n")
+                     val _ = print("commands " ^ (cmds_to_string new_commands) ^ "\n")
+                 *)
                  in
-                   if
-                     let val {px,py,a} = target in
-                       Board.piece_angle state = a
-                       andalso Board.piece_position state = (px, py)
-                     end
+                   if py > ty
+                   then NONE
+                   else if (pa, px, py) = (ta, tx, ty)
                    then SOME new_commands
+                   else if LocSet.member (!visitedSetRef, pl)
+                   then NONE (* already visited *)
                    else
-                     if LocSet.member (!visitedSetRef, pl)
-                     then NONE (* already visited *)
-                     else
-                       let
-                       in
-                         visitedSetRef := (LocSet.add (!visitedSetRef, pl));
-                         case locked of
-                             NONE => helper (state, visitedSetRef, new_commands, target)
-                          |  SOME _ => NONE
-                       end
+                     let
+                     in
+                       visitedSetRef := (LocSet.add (!visitedSetRef, pl));
+                       case locked of
+                           NONE => helper (state, visitedSetRef, new_commands, target)
+                        |  SOME _ => NONE
+                     end
                  end
+               | _ => NONE
             )
         in
           Board.move_unwind (state, move, body)
