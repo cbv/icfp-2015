@@ -23,9 +23,13 @@ def submitter(problemId, seed, tag, solution, host):
       'solution': solution,
       'submitter': host
    }
-   response = json.loads(requests.post(submitty, json.dumps(info)).text)
-   if len(response) != 2 or response[0] is None or response[1] is None:
-      fail("Unexpected output\n\n"+json.dumps(response))
+   done = False
+   while(not done):
+      response = json.loads(requests.post(submitty, json.dumps(info)).text)
+      if len(response) != 2 or response[0] is None or response[1] is None:
+         fail("Unexpected output\n\n"+json.dumps(response))
+      else: done = True
+
    unique_tag = response[0]
    attempts = response[1]
 

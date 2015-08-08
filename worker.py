@@ -17,6 +17,10 @@ def workfake(worker):
       response = requests.post(worker_ready, json.dumps({'name': worker})).text
       response = json.loads(response)
 
+      if ('work' not in response.keys()):
+         print "Error: "+json.dumps(response)
+         time.sleep(10)
+         continue
       if (response['work']):
          group = response['group']
          version = response['version']
