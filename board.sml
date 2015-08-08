@@ -6,14 +6,16 @@ struct
   datatype dir = E | W | SE | SW
   datatype turn = CW | CCW
   datatype command = D of dir | T of turn
-  datatype status =
-    (* Game keeps going *)
-    CONTINUE
+  datatype why =
   (* Gracefully used all pieces *)
-  | COMPLETE
+    COMPLETE
   (* Last move locked a piece, but there's no space
      to place the next one. *)
   | NO_SPACE
+  datatype status =
+    (* Game keeps going *)
+    CONTINUE
+  | GAMEOVER of why
   (* Bad command? *)
   | ERROR
 
@@ -44,10 +46,11 @@ struct
     Vector.exists (fn (xx, yy) => x = xx andalso y = yy) v
 
   datatype problem =
-    P of { start: bool vector,
-           width: int,
+    P of { start : bool vector,
+           width : int,
            height : int,
            sourcelength : int,
+           power : string vector,
            seeds : Word32.word vector,
            (* aka units, an ml keyword *)
            pieces : piece vector }
@@ -90,17 +93,30 @@ struct
            (* Number of lines we made on the last step *)
            last_lines : int ref,
 
-           (* XXX Need history of commands, for word scoring *)
+           (* Please don't expose these; I want to
+              make this representation more efficient, which
+              will involve not actually storing the command string *)
+           (* commands executed to this point; head is the most recent *)
+           chars: legalchar list ref,
+           (* how many times each power word has been used so far. *)
+           power_count: int array,
 
            (* Places we have already been. *)
            stutters: StutterSet.set ref,
 
+           valid: bool ref,
+
            rng: RNG.rng ref }
 
-  fun piece_position (S {x, y, ...}) = (!x, !y)
-  fun piece_angle (S {a, ...}) = !a
-  fun piece_symmetry (S {piece = ref (Piece { symmetry, ... }), ...}) =
+  fun piece_position (S {x, y, valid = ref true, ...}) = (!x, !y)
+    | piece_position _ = raise Board "invalid board in piece_position"
+  fun piece_angle (S {a, valid = ref true, ...}) = !a
+    | piece_angle _ = raise Board "invalid board in piece_angle"
+
+  fun piece_symmetry (S {piece = ref (Piece { symmetry, ... }),
+                         valid = ref true, ...}) =
     symmetry
+    | piece_symmetry _ = raise Board "invalid board in piece_symmetry"
 
   fun delta E = (1, 0)
     | delta W = (~1, 0)
@@ -211,45 +227,28 @@ struct
         end
     end
 
-  fun fromjson s =
+  fun fromjsonwithpower (s, power) =
     let
       datatype json = datatype JSONDatatypeCallbacks.json
 
       val j = JSON.parse s
 
-      fun UnInt (JInt i) = i
-        | UnInt _ = raise Board "Not an int"
-
-      fun UnList (JArray a) = a
-        | UnList _ = raise Board "Not a list/array"
-
-      fun Key (JMap m, k) =
-        (case ListUtil.Alist.find op= m k of
-           SOME (obj) => obj
-         | NONE => raise Board ("Didn't find " ^ k))
-        | Key _ = raise Board "Not JMap"
-
-      fun Int (j, key) = UnInt (Key (j, key))
-
-      fun List (j, key) = UnList (Key (j, key))
-
-      fun Coord j = (Int (j, "x"), Int (j, "y"))
-
-      val width = Int (j, "width")
-      val height = Int (j, "height")
-      val id = Int (j, "id")
-      val filled = map Coord (List (j, "filled"))
-      val sourcelength = Int (j, "sourceLength")
+      val width = JSONUtils.Int (j, "width")
+      val height = JSONUtils.Int (j, "height")
+      val id = JSONUtils.Int (j, "id")
+      val filled = map JSONUtils.Coord (JSONUtils.List (j, "filled"))
+      val sourcelength = JSONUtils.Int (j, "sourceLength")
       (* TODO: Harden against these being bigger than 2^31, negative, etc. *)
-      val seeds = map UnInt (List (j, "sourceSeeds"))
+      val seeds = map JSONUtils.UnInt (JSONUtils.List (j, "sourceSeeds"))
 
       fun ExpectPiece j =
         let
-          val members = map Coord (List (j, "members"))
+          val members = map JSONUtils.Coord (JSONUtils.List (j, "members"))
           (* We represent all pieces as being centered on their origin.
              So we start by translating all members so that the pivot ends
              up on the origin. *)
-          val (px, py) = uniformize_coord (Coord (Key (j, "pivot")))
+          val (px, py) = uniformize_coord (JSONUtils.Coord
+                                               (JSONUtils.Key (j, "pivot")))
         in
           Vector.fromList (map (translate (~px, ~py)) members)
         end
@@ -325,18 +324,23 @@ struct
       P { width = width, height = height,
           seeds = Vector.fromList (map Word32.fromInt seeds),
           sourcelength = sourcelength,
+          power = power,
           start = Array.vector a,
           pieces = Vector.fromList
           (map makepiece
-           (map ExpectPiece (List (j, "units")))) }
+           (map ExpectPiece (JSONUtils.List (j, "units")))) }
     end
+
+  fun fromjson s = fromjsonwithpower (s, Vector.fromList Phrases.power)
 
   fun clone_array a =
     (* PERF There must be a faster way to do this?? *)
     Array.tabulate (Array.length a, fn i => Array.sub(a, i))
 
-  fun clone (S { board, next_sourceidx, last_lines, stutters,
-                 problem, score, rng, piece, a, x, y }) : state =
+  (* OK to clone invalid boards, I guess. *)
+  fun clone (S { board, next_sourceidx, last_lines, stutters, chars,
+                 power_count, valid, problem, score, rng, piece,
+                 a, x, y }) : state =
            S { board = clone_array board,
                problem = problem,
                score = ref (!score),
@@ -345,19 +349,23 @@ struct
                a = ref (!a),
                x = ref (!x),
                y = ref (!y),
+               valid = ref (!valid),
+               chars = ref (!chars),
+               power_count = clone_array power_count,
                last_lines = ref (!last_lines),
                piece = ref (!piece),
                rng = ref (!rng) }
 
-  fun isfull (S { board, problem = P{ width, height, ... }, ... },
+  fun isfull (S { board, problem = P{ width, height, ... },
+                  valid = ref true, ... },
               x, y) =
     x < 0 orelse y < 0 orelse x >= width orelse y >= height orelse
     Array.sub (board, y * width + x)
+    | isfull _ = raise Board "invalid board in isfull/isempty"
   fun isempty (state, x, y) = not (isfull (state, x, y))
 
   datatype getpieceresult =
-      GPNoSpace
-    | GPGameOver
+      GPGameOver of why
     | GP of { next_sourceidx: int,
               rng: RNG.rng,
               piece: piece }
@@ -387,7 +395,7 @@ struct
                 sourceidx : int,
                 rng : RNG.rng) =
     if sourceidx >= sourcelength
-    then GPGameOver
+    then GPGameOver COMPLETE
     else
       let
         val (piece_idx, rng) = RNG.next rng
@@ -399,14 +407,13 @@ struct
           Vector.sub (pieces, piece_idx)
       in
         if is_locked_at (problem, board, piece, startx, starty, 0)
-        then GPNoSpace
+        then GPGameOver NO_SPACE
         else GP { next_sourceidx = sourceidx + 1,
                   piece = piece,
                   rng = rng }
       end
 
-
-  fun resetwithseed (problem as P { seeds, start, pieces, ... },
+  fun resetwithseed (problem as P { seeds, start, pieces, power, ... },
                      seed : Word32.word) : state =
     let
       val initial_rng = RNG.fromseed seed
@@ -418,8 +425,8 @@ struct
     in
       case getpiece (problem, board, 0, initial_rng) of
         (* TODO: Handle these gracefully if technically legal? *)
-        GPNoSpace => raise Board "no space in INITIAL CONFIGURATION??"
-      | GPGameOver => raise Board "source length is 0??"
+        GPGameOver NO_SPACE => raise Board "no space in INITIAL CONFIGURATION??"
+      | GPGameOver COMPLETE => raise Board "source length is 0??"
       | GP { next_sourceidx,
              piece as Piece { start = (startx, starty), ... },
              rng } =>
@@ -436,8 +443,13 @@ struct
                   last_lines = ref 0,
                   x = ref startx,
                   y = ref starty,
+                  (* start valid; we checked the invalid conditions
+                     above and raised an exception *)
+                  valid = ref true,
                   (* always start in natural orientation *)
                   a = ref 0,
+                  chars = ref nil,
+                  power_count = Array.array (Vector.length power, 0),
                   stutters = ref initial_stutters,
                   board = board }
           end
@@ -454,7 +466,8 @@ struct
       resetwithseed (problem, seed)
     end
 
-  fun ispiece (S {x, y, piece = ref (Piece { rotations, ... }), a, ...},
+  fun ispiece (S {x, y, piece = ref (Piece { rotations, ... }), a,
+                  valid = ref true, ...},
                xx, yy) =
     let
       (* translate (xx, yy) to piece space, and look it up
@@ -468,9 +481,12 @@ struct
     in
       oriented_piece_has oriented_piece (px, py)
     end
+    | ispiece _ = raise Board "invalid board in ispiece"
 
-  fun ispivot (S {x, y, ...}, xx, yy) = xx = !x andalso yy = !y
-  fun pivot (S { x, y, ... }) = (!x, !y)
+  fun ispivot (S {x, y, valid = ref true, ...}, xx, yy) = xx = !x andalso yy = !y
+    | ispivot _ = raise Board "invalid board in ispivot"
+  fun pivot (S { x, y, valid = ref true, ... }) = (!x, !y)
+    | pivot _ = raise Board "invalid board in pivot"
 
   fun dirstring E = "E"
     | dirstring W = "W"
@@ -504,8 +520,8 @@ struct
     | commandorder (T t, T tt) = turnorder (t, tt)
 
   fun statusstring CONTINUE = "CONTINUE"
-    | statusstring COMPLETE = "COMPLETE"
-    | statusstring NO_SPACE = "NO_SPACE"
+    | statusstring (GAMEOVER COMPLETE) = "COMPLETE"
+    | statusstring (GAMEOVER NO_SPACE) = "NO_SPACE"
     | statusstring ERROR = "ERROR"
 
   fun moveresultstring (M {scored, lines, locked, status }) =
@@ -522,6 +538,7 @@ struct
 
   fun toascii (state as
                S { problem = P {width, height, ... },
+                   valid,
                    board, (* x = px, y = py, *) ... }) =
     let
       (*
@@ -552,6 +569,7 @@ struct
         end
 
     in
+      (if false = !valid then "INVALID!\n" else "") ^
       StringUtil.delimit "\n" (List.tabulate (height, oneline))
     end
 
@@ -659,8 +677,8 @@ struct
 
   fun move_undo (state as
                  S { rng, score, piece as ref (Piece { symmetry, ... }),
-                     next_sourceidx, last_lines,
-                     stutters,
+                     next_sourceidx, last_lines, chars, power_count,
+                     stutters, valid = valid as ref true,
                      problem = problem as P { width, height, ... },
                      x, y, a, board },
                  ch : legalchar) =
@@ -722,9 +740,24 @@ struct
             end
         end
 
+      (* PERF! *)
+      fun get_powerlist revchars =
+        nil
+
       (* check_and_add_repeat_at may modify this, so save the old set *)
       val old_stutters = !stutters
 
+      (* need this no matter what. *)
+      val old_chars = !chars
+      val newchars = ch :: old_chars
+      val powerlist = get_powerlist newchars
+
+      fun add_power r =
+        List.app (fn word_idx =>
+                  Array.update(r, word_idx, Array.sub(r, word_idx) + 1)) powerlist
+      fun subtract_power r =
+        List.app (fn word_idx =>
+                  Array.update(r, word_idx, Array.sub(r, word_idx) - 1)) powerlist
     in
       if check_and_add_repeat_at (nx, ny, na)
       then
@@ -756,6 +789,7 @@ struct
           val old_y = !y
           val old_a = !a
           (* old_stutters above *)
+          (* old_chars above *)
           val old_piece = !piece
           val old_last_lines = !last_lines
           val old_next_sourceidx = !next_sourceidx
@@ -771,6 +805,11 @@ struct
               piece := old_piece;
               last_lines := old_last_lines;
               next_sourceidx := old_next_sourceidx;
+              valid := true;
+              (* or just pop? *)
+              chars := old_chars;
+              subtract_power power_count;
+
               Array.copy {di = 0, dst = board, src = old_board}
             end
 
@@ -805,6 +844,9 @@ struct
                 x := startx;
                 y := starty;
                 a := 0;
+                chars := newchars;
+                add_power power_count;
+
                 stutters := StutterSet.add (StutterSet.empty,
                                             (startx, starty, 0));
 
@@ -813,20 +855,14 @@ struct
                                locked = locked, status = CONTINUE },
                   undo = full_undo }
               end
-          | GPNoSpace =>
-              (* XXX should we be updating the state here, if there
-                 are accessors that people might call? cuz, we did
-                 give them an undo function... *)
-              { result = M { lines = lines, scored = move_score,
-                             locked = locked, status = NO_SPACE },
-                undo = full_undo }
-          | GPGameOver =>
-              (* XXX should we be updating the state here, if there
-                 are accessors that people might call? cuz, we did
-                 give them an undo function... *)
-              { result = M { lines = lines, scored = move_score,
-                             locked = locked, status = COMPLETE },
-                undo = full_undo }
+          | GPGameOver why =>
+              let in
+                (* Additionally mark invalid. *)
+                valid := false;
+                { result = M { lines = lines, scored = move_score,
+                               locked = locked, status = GAMEOVER why },
+                  undo = full_undo }
+              end
         end
       else
         let
@@ -838,6 +874,7 @@ struct
           val old_a = !a
           val old_last_lines = !last_lines
           (* old_stutters above *)
+          (* old_chars above *)
 
           (* These can't change. *)
           (* val old_piece = !piece
@@ -851,7 +888,9 @@ struct
               y := old_y;
               a := old_a;
               stutters := old_stutters;
-              last_lines := old_last_lines
+              last_lines := old_last_lines;
+              chars := old_chars;
+              subtract_power power_count
             end
         in
           (* No locking. Don't need to check lines, score, etc. *)
@@ -859,13 +898,17 @@ struct
           y := ny;
           a := na;
           last_lines := 0;
+          (* stays valid... *)
+          chars := newchars;
+          add_power power_count;
+
           (* PERF board hasn't changed -- don't need backup of it *)
           { result = M { scored = 0, lines = 0, locked = NONE,
                          status = CONTINUE },
             undo = positional_undo }
         end
     end
-
+    | move_undo _ = raise Board "invalid board in move(_undo,_unwind)"
 
   fun move (s, c) = #result (move_undo (s, c))
 
@@ -879,8 +922,10 @@ struct
     end
 
   fun piecesleft (S { problem = P { sourcelength, ... },
+                      valid = ref true,
                       next_sourceidx, ... }) =
     sourcelength - !next_sourceidx
+    | piecesleft _ = raise Board "invalid board in piecesleft"
 
   fun size (P { width, height, ... }) = (width, height)
   fun width (P { width, ... }) = width

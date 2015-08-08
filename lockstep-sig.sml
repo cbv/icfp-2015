@@ -6,8 +6,9 @@ signature LOCK_STEP = sig
                      py: int,
                      a: int,
 
-                     (* An example state that could result from taking this step. *)
-                     state: Board.state,
+                     (* An example state that could result from taking this step.
+                       NONE if this step results in gameover. *)
+                     state: Board.state option,
                      (* An example list of commands that could make up this step. *)
                      commands: Board.command list
                      (* *)

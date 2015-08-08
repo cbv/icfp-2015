@@ -74,8 +74,8 @@ struct
              " and locked: " ^ Bool.toString (Option.isSome locked) ^ "\n");
       (case status of
          Board.CONTINUE => interactive (script, state)
-       | Board.COMPLETE => print "COMPLETE.\n"
-       | Board.NO_SPACE => print "NO_SPACE.\n"
+       | Board.GAMEOVER Board.COMPLETE => print "COMPLETE.\n"
+       | Board.GAMEOVER Board.NO_SPACE => print "NO_SPACE.\n"
        | Board.ERROR => print "ERROR!\n")
     end
 

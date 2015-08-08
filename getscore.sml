@@ -2,6 +2,10 @@
 structure GetScore =
 struct
 
+  val file = Params.param ""
+    (SOME("-file", "A file containing JSON input as sent to the server."))
+    "file"
+
   val scriptp = Params.param ""
     (SOME("-script", "The command sequence (as characters) to run."))
     "script"
@@ -14,15 +18,15 @@ struct
     (SOME("-seed", "Seed *value* to use. Not an index."))
     "seed"
 
-  fun main () =
+  fun get_score problema scripta seeda =
     let
-      val seed = Word32.fromInt (Params.asint 0 seedp)
+      val seed = Word32.fromInt seeda
       val problem = Board.fromjson
-        (StringUtil.readfile ("qualifiers/problem_" ^ !problemp ^ ".json"))
+        (StringUtil.readfile ("qualifiers/problem_" ^ problema ^ ".json"))
 
       val state = Board.resetwithseed (problem, seed)
 
-      val full_script = explode (!scriptp)
+      val full_script = explode (scripta)
       fun replay { score, lines, phrases, script : char list } =
         case script of
           nil => { score = score, lines = lines, phrases = phrases,
@@ -43,16 +47,13 @@ struct
               case status of
                 CONTINUE => replay { score = score, lines = lines,
                                      phrases = phrases, script = rest }
-              | COMPLETE => { score = score,
-                              lines = lines,
-                              phrases = phrases,
-                              leftover = length rest,
-                              fate = "COMPLETE" }
-              | NO_SPACE => { score = score,
-                              lines = lines,
-                              phrases = phrases,
-                              leftover = length rest,
-                              fate = "NO_SPACE" }
+              | GAMEOVER why => { score = score,
+                                  lines = lines,
+                                  phrases = phrases,
+                                  leftover = length rest,
+                                  fate = (case why of
+                                            Board.COMPLETE => "COMPLETE"
+                                          | Board.NO_SPACE => "NO_SPACE") }
               | ERROR => { score = 0,
                            lines = lines,
                            phrases = phrases,
@@ -60,7 +61,7 @@ struct
                            fate = "ERROR_STUTTER" }
             end
 
-      val { score, lines, phrases, leftover, fate } =
+    in
         replay { score = 0, lines = 0, phrases = 0, script = full_script }
         handle Board.Board s =>
           let in
@@ -68,20 +69,60 @@ struct
             { score = 0, lines = 0, phrases = 0, leftover = 0,
               fate = "EXCEPTION" }
           end
-
-      fun jsonline (k, v) = "\"" ^ k ^ "\": " ^ v
-    in
-      print
-      ("{\n  " ^
-       StringUtil.delimit ",\n  "
-       (map jsonline
-        [("score", Int.toString score),
-         ("distinct_phrases", Int.toString phrases),
-         ("fate", "\"" ^ fate ^ "\""),
-         ("commands_left", Int.toString leftover)]) ^
-       "\n}\n")
     end
 
+  fun fromjson s =
+    let
+      datatype json = datatype JSONDatatypeCallbacks.json
+
+      fun error_handle (msg,pos,data) =
+          raise Fail ("Error: " ^ msg ^ " near " ^ Int.toString pos)
+
+      val j =
+          (JSON.inputData := s ;
+           JSON.inputPosition := 0 ;
+           JSON.parseArray ()) handle JSON.JSONParseError (m,p) =>
+                                      error_handle (m,p,!JSON.inputData)
+
+      fun entry e =
+          (Int.toString (JSONUtils.Int (e, "problemId")),
+           JSONUtils.String (e, "solution"),
+           JSONUtils.Int (e, "seed"))
+    in
+        List.map entry (JSONUtils.UnList j)
+        handle JSONUtils.JSONUtils s =>
+               (TextIO.output (TextIO.stdErr,
+                              "Uncaught JSON parse error: " ^ s ^ "\n");
+                [])
+    end
+
+  fun main () =
+    let
+      fun jsonline (k, v) = "\"" ^ k ^ "\": " ^ v
+      fun print_score { score, lines, phrases, leftover, fate } =
+        ("{\n  " ^
+         StringUtil.delimit ",\n  "
+         (map jsonline
+          [("score", Int.toString score),
+           ("distinct_phrases", Int.toString phrases),
+           ("fate", "\"" ^ fate ^ "\""),
+           ("commands_left", Int.toString leftover)]) ^
+         "\n}\n")
+    in
+        (if !file = "" then
+             print (print_score (get_score (!problemp) (!scriptp)
+                                           (Params.asint 0 seedp)))
+         else
+             (print "[";
+              print
+                  (String.concatWith ",\n"
+                  (List.map
+                      (fn (p, sc, sd) => print_score (get_score p sc sd))
+                      (fromjson (StringUtil.readfile (!file)))));
+             print "]\n")
+        );
+        print "]"
+    end
 end
 
 val () = Params.main0

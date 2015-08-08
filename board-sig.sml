@@ -6,14 +6,16 @@ sig
   datatype dir = E | W | SE | SW
   datatype turn = CW | CCW
   datatype command = D of dir | T of turn
-  datatype status =
-    (* Game keeps going *)
-    CONTINUE
+  datatype why =
   (* Gracefully used all pieces *)
-  | COMPLETE
+    COMPLETE
   (* Last move locked a piece, but there's no space
      to place the next one. *)
   | NO_SPACE
+  datatype status =
+    (* Game keeps going *)
+    CONTINUE
+  | GAMEOVER of why
   (* Bad command? *)
   | ERROR
 
@@ -22,7 +24,8 @@ sig
        lines is the number of lines created;
        locked is whether the move caused the piece to be locked;
        status tells us whether the game ended, etc. *)
-    M of { scored: int, lines: int, locked: (int * int * int) option,
+    M of { scored: int, lines: int,
+           locked: (int * int * int) option,
            status: status }
 
   val dirstring : dir -> string
@@ -42,7 +45,9 @@ sig
      can occur *)
   type piece
 
+  (* Give it a json string. Assumes phrases of power from phrases.sml. *)
   val fromjson : string -> problem
+  val fromjsonwithpower : string * string vector -> problem
 
   (* mutable version *)
   type state
