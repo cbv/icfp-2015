@@ -52,6 +52,10 @@ struct
            (* aka units, an ml keyword *)
            pieces : piece vector }
 
+  fun setPower (P {start, width, height, sourcelength, seeds, pieces, ...}, newPower) =
+    P { start = start, width = width, height = height, sourcelength = sourcelength,
+        seeds = seeds, pieces = pieces,
+        power = Vector.map (StringUtil.reverse o StringUtil.lcase) newPower }
 
   (* This is a place that we've been in the past; we need to keep a set
      of these so that we don't ever repeat a configuration. Contest

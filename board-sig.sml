@@ -49,6 +49,10 @@ sig
   val fromjson : string -> problem
   val fromjsonwithpower : string * string vector -> problem
 
+  (* Create a new problem which is like the given one, but with different
+     phrases of power.  Useful for trying out different power phrase sets. *)
+  val setPower : problem * string vector -> problem
+
   (* mutable version *)
   type state
 
