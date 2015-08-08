@@ -674,4 +674,11 @@ struct
       SOME (implode (dec (explode s)))
     end handle _ => NONE
 
+  fun reverse v =
+    let val len = CharVector.length v
+    in
+      CharVector.tabulate (len,
+                           (fn i => CharVector.sub(v, len - 1 - i)))
+    end
+
 end
