@@ -1,19 +1,20 @@
 structure ForwardChain :> FORWARD_CHAIN =
 struct
-  datatype PieceLocation = PL of {px: int, py: int, a: int, locked: bool, score: int,
+  datatype PieceLocation = PL of {px: int, py: int, a: int, locked: Board.state option,
+                                  score: int,
                                   commands: Board.command list (* TODO(perf) track this somewhere else? *)}
 
   fun toascii (PL {px, py, a, locked, ...}) =
     "{(" ^ (Int.toString px) ^ ", " ^ (Int.toString py) ^ ") a:" ^ (Int.toString a) ^ ", locked: "
-    ^ Bool.toString(locked) ^ "}"
+    ^ Bool.toString(Option.isSome locked) ^ "}"
 
   fun piece_location (state, sym, locked, score, commands) =
     let
-      val ((px, py), angle, is_locked) = case locked of
-                                             SOME (x,y,a) => ((x,y), a, true)
-                                           | NONE => (Board.piece_position state, Board.piece_angle state, false)
+      val ((px, py), angle, locked_state) = case locked of
+                                             SOME (x,y,a) => ((x,y), a, SOME(Board.clone state))
+                                           | NONE => (Board.piece_position state, Board.piece_angle state, NONE)
     in
-        PL {px = px, py = py, a = angle mod sym, locked = is_locked, score = score, commands = commands}
+        PL {px = px, py = py, a = angle mod sym, locked = locked_state, score = score, commands = commands}
     end
 
   fun compare (PL {px = px0, py = py0, a = a0, locked = locked0, ...},
@@ -21,7 +22,11 @@ struct
     case Int.compare (px0, px1) of
       EQUAL => (case Int.compare (py0, py1) of
                   EQUAL => (case Int.compare (a0, a1) of
-                              EQUAL => Util.bool_compare (locked0, locked1)
+                              EQUAL => (case (locked0, locked1) of
+                                            (SOME(_), NONE) => GREATER
+                                         | (NONE, SOME(_)) => LESS
+                                         | _ => EQUAL
+                                       )
                             | other => other)
                 | other => other)
     | other => other
