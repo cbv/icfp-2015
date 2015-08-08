@@ -683,7 +683,7 @@ struct
                  S { rng, score, piece as ref (Piece { symmetry, ... }),
                      next_sourceidx, last_lines, chars, power_count,
                      stutters, valid = valid as ref true,
-                     problem = problem as P { width, height, ... },
+                     problem = problem as P { width, height, power, ... },
                      x, y, a, board },
                  ch : legalchar) =
     let
@@ -746,7 +746,40 @@ struct
 
       (* PERF! *)
       fun get_powerlist revchars =
-        nil
+        let
+          (* does the word w (which is reversed) match the
+             end of the revchars list (which is reversed?) *)
+          fun oneword w =
+            let
+              fun loop (idx, l) =
+                if idx = size w
+                then true
+                else
+                  case l of
+                    nil => false
+                  | h :: t =>
+                      if h = String.sub(w, idx)
+                      then loop (idx + 1, t)
+                      else false
+            in
+              loop (0, revchars)
+            end
+
+          val res = ref nil
+          fun loop n =
+            if n = Vector.length power
+            then nil
+            else
+              let in
+                (if oneword (Vector.sub (power, n))
+                 then res := n :: !res
+                 else ());
+                loop (n + 1)
+              end
+        in
+          loop 0;
+          !res
+        end
 
       (* check_and_add_repeat_at may modify this, so save the old set *)
       val old_stutters = !stutters
