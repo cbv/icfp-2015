@@ -1,7 +1,4 @@
-(* Use this for SML/NJ. You should be able to copy/paste the stuff from the mlb file. *)
-
-Group is
-$/basis.cm
+$(SML_LIB)/basis/basis.mlb
 
 sml-lib/njlib/lib-base-sig.sml
 sml-lib/njlib/lib-base.sml
@@ -28,11 +25,11 @@ sml-lib/util/simplestream.sml
 sml-lib/util/script-sig.sml
 sml-lib/util/script.sml
 
-sml-lib/misc/params-sig.sml
-sml-lib/misc/params.sml
-
 sml-lib/algo/heap-sig.sml
 sml-lib/algo/heap.sml
+
+sml-lib/misc/params-sig.sml
+sml-lib/misc/params.sml
 
 json.sml
 
@@ -46,13 +43,5 @@ phrases.sml
 board-sig.sml
 board.sml
 
-tactic-sig.sml
-(* astar.sml *)
-
-forwardchain-sig.sml
-forwardchain.sml
-
 perturbation-sig.sml
 perturbation.sml
-
-testboard.sml
