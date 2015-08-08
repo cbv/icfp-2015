@@ -47,16 +47,13 @@ struct
               case status of
                 CONTINUE => replay { score = score, lines = lines,
                                      phrases = phrases, script = rest }
-              | COMPLETE => { score = score,
-                              lines = lines,
-                              phrases = phrases,
-                              leftover = length rest,
-                              fate = "COMPLETE" }
-              | NO_SPACE => { score = score,
-                              lines = lines,
-                              phrases = phrases,
-                              leftover = length rest,
-                              fate = "NO_SPACE" }
+              | GAMEOVER why => { score = score,
+                                  lines = lines,
+                                  phrases = phrases,
+                                  leftover = length rest,
+                                  fate = (case why of
+                                            Board.COMPLETE => "COMPLETE"
+                                          | Board.NO_SPACE => "NO_SPACE") }
               | ERROR => { score = 0,
                            lines = lines,
                            phrases = phrases,

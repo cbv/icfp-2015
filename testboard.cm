@@ -52,7 +52,7 @@ tactic-sig.sml
 forwardchain-sig.sml
 forwardchain.sml
 
-perturbation-sig.sml
-perturbation.sml
+pathfind-sig.sml
+pathfind.sml
 
 testboard.sml

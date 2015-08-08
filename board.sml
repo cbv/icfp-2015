@@ -6,14 +6,16 @@ struct
   datatype dir = E | W | SE | SW
   datatype turn = CW | CCW
   datatype command = D of dir | T of turn
-  datatype status =
-    (* Game keeps going *)
-    CONTINUE
+  datatype why =
   (* Gracefully used all pieces *)
-  | COMPLETE
+    COMPLETE
   (* Last move locked a piece, but there's no space
      to place the next one. *)
   | NO_SPACE
+  datatype status =
+    (* Game keeps going *)
+    CONTINUE
+  | GAMEOVER of why
   (* Bad command? *)
   | ERROR
 
@@ -95,12 +97,19 @@ struct
            (* Places we have already been. *)
            stutters: StutterSet.set ref,
 
+           valid: bool ref,
+
            rng: RNG.rng ref }
 
-  fun piece_position (S {x, y, ...}) = (!x, !y)
-  fun piece_angle (S {a, ...}) = !a
-  fun piece_symmetry (S {piece = ref (Piece { symmetry, ... }), ...}) =
+  fun piece_position (S {x, y, valid = ref true, ...}) = (!x, !y)
+    | piece_position _ = raise Board "invalid board in piece_position"
+  fun piece_angle (S {a, valid = ref true, ...}) = !a
+    | piece_angle _ = raise Board "invalid board in piece_angle"
+
+  fun piece_symmetry (S {piece = ref (Piece { symmetry, ... }),
+                         valid = ref true, ...}) =
     symmetry
+    | piece_symmetry _ = raise Board "invalid board in piece_symmetry"
 
   fun delta E = (1, 0)
     | delta W = (~1, 0)
@@ -211,7 +220,7 @@ struct
         end
     end
 
-  fun fromjson s =
+  fun fromjsonwithpower (s, power) =
     let
       datatype json = datatype JSONDatatypeCallbacks.json
 
@@ -314,12 +323,15 @@ struct
            (map ExpectPiece (JSONUtils.List (j, "units")))) }
     end
 
+  fun fromjson s = fromjsonwithpower (s, Vector.fromList Phrases.power)
+
   fun clone_array a =
     (* PERF There must be a faster way to do this?? *)
     Array.tabulate (Array.length a, fn i => Array.sub(a, i))
 
+  (* OK to clone invalid boards, I guess. *)
   fun clone (S { board, next_sourceidx, last_lines, stutters,
-                 problem, score, rng, piece, a, x, y }) : state =
+                 valid, problem, score, rng, piece, a, x, y }) : state =
            S { board = clone_array board,
                problem = problem,
                score = ref (!score),
@@ -328,19 +340,21 @@ struct
                a = ref (!a),
                x = ref (!x),
                y = ref (!y),
+               valid = ref (!valid),
                last_lines = ref (!last_lines),
                piece = ref (!piece),
                rng = ref (!rng) }
 
-  fun isfull (S { board, problem = P{ width, height, ... }, ... },
+  fun isfull (S { board, problem = P{ width, height, ... },
+                  valid = ref true, ... },
               x, y) =
     x < 0 orelse y < 0 orelse x >= width orelse y >= height orelse
     Array.sub (board, y * width + x)
+    | isfull _ = raise Board "invalid board in isfull/isempty"
   fun isempty (state, x, y) = not (isfull (state, x, y))
 
   datatype getpieceresult =
-      GPNoSpace
-    | GPGameOver
+      GPGameOver of why
     | GP of { next_sourceidx: int,
               rng: RNG.rng,
               piece: piece }
@@ -370,7 +384,7 @@ struct
                 sourceidx : int,
                 rng : RNG.rng) =
     if sourceidx >= sourcelength
-    then GPGameOver
+    then GPGameOver COMPLETE
     else
       let
         val (piece_idx, rng) = RNG.next rng
@@ -382,12 +396,11 @@ struct
           Vector.sub (pieces, piece_idx)
       in
         if is_locked_at (problem, board, piece, startx, starty, 0)
-        then GPNoSpace
+        then GPGameOver NO_SPACE
         else GP { next_sourceidx = sourceidx + 1,
                   piece = piece,
                   rng = rng }
       end
-
 
   fun resetwithseed (problem as P { seeds, start, pieces, ... },
                      seed : Word32.word) : state =
@@ -401,8 +414,8 @@ struct
     in
       case getpiece (problem, board, 0, initial_rng) of
         (* TODO: Handle these gracefully if technically legal? *)
-        GPNoSpace => raise Board "no space in INITIAL CONFIGURATION??"
-      | GPGameOver => raise Board "source length is 0??"
+        GPGameOver NO_SPACE => raise Board "no space in INITIAL CONFIGURATION??"
+      | GPGameOver COMPLETE => raise Board "source length is 0??"
       | GP { next_sourceidx,
              piece as Piece { start = (startx, starty), ... },
              rng } =>
@@ -419,6 +432,9 @@ struct
                   last_lines = ref 0,
                   x = ref startx,
                   y = ref starty,
+                  (* start valid; we checked the invalid conditions
+                     above and raised an exception *)
+                  valid = ref true,
                   (* always start in natural orientation *)
                   a = ref 0,
                   stutters = ref initial_stutters,
@@ -437,7 +453,8 @@ struct
       resetwithseed (problem, seed)
     end
 
-  fun ispiece (S {x, y, piece = ref (Piece { rotations, ... }), a, ...},
+  fun ispiece (S {x, y, piece = ref (Piece { rotations, ... }), a,
+                  valid = ref true, ...},
                xx, yy) =
     let
       (* translate (xx, yy) to piece space, and look it up
@@ -451,9 +468,12 @@ struct
     in
       oriented_piece_has oriented_piece (px, py)
     end
+    | ispiece _ = raise Board "invalid board in ispiece"
 
-  fun ispivot (S {x, y, ...}, xx, yy) = xx = !x andalso yy = !y
-  fun pivot (S { x, y, ... }) = (!x, !y)
+  fun ispivot (S {x, y, valid = ref true, ...}, xx, yy) = xx = !x andalso yy = !y
+    | ispivot _ = raise Board "invalid board in ispivot"
+  fun pivot (S { x, y, valid = ref true, ... }) = (!x, !y)
+    | pivot _ = raise Board "invalid board in pivot"
 
   fun dirstring E = "E"
     | dirstring W = "W"
@@ -487,8 +507,8 @@ struct
     | commandorder (T t, T tt) = turnorder (t, tt)
 
   fun statusstring CONTINUE = "CONTINUE"
-    | statusstring COMPLETE = "COMPLETE"
-    | statusstring NO_SPACE = "NO_SPACE"
+    | statusstring (GAMEOVER COMPLETE) = "COMPLETE"
+    | statusstring (GAMEOVER NO_SPACE) = "NO_SPACE"
     | statusstring ERROR = "ERROR"
 
   fun moveresultstring (M {scored, lines, locked, status }) =
@@ -505,6 +525,7 @@ struct
 
   fun toascii (state as
                S { problem = P {width, height, ... },
+                   valid,
                    board, (* x = px, y = py, *) ... }) =
     let
       (*
@@ -535,9 +556,9 @@ struct
         end
 
     in
+      (if false = !valid then "INVALID!\n" else "") ^
       StringUtil.delimit "\n" (List.tabulate (height, oneline))
     end
-
 
   val dw   : legalchar vector = Vector.fromList (explode "p'!.03")
   val de   : legalchar vector = Vector.fromList (explode "bcefy2")
@@ -644,7 +665,7 @@ struct
   fun move_undo (state as
                  S { rng, score, piece as ref (Piece { symmetry, ... }),
                      next_sourceidx, last_lines,
-                     stutters,
+                     stutters, valid = valid as ref true,
                      problem = problem as P { width, height, ... },
                      x, y, a, board },
                  ch : legalchar) =
@@ -724,7 +745,15 @@ struct
              modified yet except for the stutter set. *)
           (* PERF! Avoid copying the board if for example we don't have
              any lines. The idea is that undo can just un-fill the cells
-             that are locked. *)
+             that are locked.
+
+             It's a little tricky because we'd like to avoid copying
+             the board at all unless we make a line, but we need to
+             modify the board to add frozen cells before looking
+             whether we created lines. (or, make the line code be
+             capable of reinserting a line; it's actually pretty easy
+             since we know what the contents of the line was (all
+             full). *)
           val old_board = clone_array board
           val old_rng = !rng
           val old_score = !score
@@ -747,6 +776,7 @@ struct
               piece := old_piece;
               last_lines := old_last_lines;
               next_sourceidx := old_next_sourceidx;
+              valid := true;
               Array.copy {di = 0, dst = board, src = old_board}
             end
 
@@ -789,20 +819,13 @@ struct
                                locked = locked, status = CONTINUE },
                   undo = full_undo }
               end
-          | GPNoSpace =>
-              (* XXX should we be updating the state here, if there
-                 are accessors that people might call? cuz, we did
-                 give them an undo function... *)
-              { result = M { lines = lines, scored = 0, locked = locked,
-                             status = NO_SPACE },
-                undo = full_undo }
-          | GPGameOver =>
-              (* XXX should we be updating the state here, if there
-                 are accessors that people might call? cuz, we did
-                 give them an undo function... *)
-              { result = M { lines = lines, scored = 0, locked = locked,
-                             status = COMPLETE },
-                undo = full_undo }
+          | GPGameOver why =>
+              let in
+                valid := false;
+                { result = M { lines = lines, scored = move_score,
+                               locked = locked, status = GAMEOVER why },
+                  undo = full_undo }
+              end
         end
       else
         let
@@ -835,13 +858,15 @@ struct
           y := ny;
           a := na;
           last_lines := 0;
+          (* stays valid... *)
+
           (* PERF board hasn't changed -- don't need backup of it *)
           { result = M { scored = 0, lines = 0, locked = NONE,
                          status = CONTINUE },
             undo = positional_undo }
         end
     end
-
+    | move_undo _ = raise Board "invalid board in move(_undo,_unwind)"
 
   fun move (s, c) = #result (move_undo (s, c))
 
@@ -855,8 +880,10 @@ struct
     end
 
   fun piecesleft (S { problem = P { sourcelength, ... },
+                      valid = ref true,
                       next_sourceidx, ... }) =
     sourcelength - !next_sourceidx
+    | piecesleft _ = raise Board "invalid board in piecesleft"
 
   fun size (P { width, height, ... }) = (width, height)
   fun width (P { width, ... }) = width
