@@ -51,13 +51,23 @@ if __name__ == "__main__":
       sys.exit(0)
       #except:
 
+   done = False
+   info = []
    request = {
       'operation': 'list',
       'TableName': 'submittydb'
    }
 
-   response = json.loads(requests.post(api, json.dumps(request)).text)
-   info = response['Items']
+   while (not done):
+      response = json.loads(requests.post(api, json.dumps(request)).text)
+      info = info + response['Items']
+      if ('LastEvaluatedKey' in response):
+         print "[recall] loaded "+str(len(info))+" total, there are more!"
+         request['ExclusiveStartKey'] = response['LastEvaluatedKey']
+      else: 
+         print "[recall] loaded "+str(len(info))+", done"
+         done = True
+
    db = {}
    maxtag_len = 0
    maxscore_len = 0 
@@ -95,6 +105,9 @@ if __name__ == "__main__":
                text = text+score+" "*(maxscore_len + 1 - len(score))+solution
                if len(text) > LIMIT: text = text[:(LIMIT-3)]+"..."
                print text
-            
+
+   if 'LastEvaluatedKey' in response:
+      print "WARNING: does not contain all results!"
+      print "This is because of database limits, get Rob to fix it"
 
 # json = json.dumps({'problemId': 0, 'seed': 0, 'tag', 'submitty', 'solution': 'Ei!'})

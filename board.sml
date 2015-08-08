@@ -598,6 +598,7 @@ struct
   val dse  : legalchar vector = Vector.fromList (explode "lmno 5") (* ell *)
   val tcw  : legalchar vector = Vector.fromList (explode "dqrvz1") (* one *)
   val tccw : legalchar vector = Vector.fromList (explode "kstuwx")
+  val legalchars = Vector.concat [dw, de, dsw, dse, tcw, tccw]
   fun getchars (D W) = dw
     | getchars (D E) = de
     | getchars (D SW) = dsw
@@ -1000,6 +1001,14 @@ struct
       undo ();
       r
     end
+
+  fun move_unwind_many (s, [], k) = k true
+    | move_unwind_many (s, c::cs, k) =
+      move_unwind (s, c,
+                         fn (M {locked, status, ...}) =>
+                            (case (locked, status) of
+                                 (NONE, CONTINUE) => move_unwind_many (s, cs, k)
+                               | _ => k false))
 
   fun piecesleft (S { problem = P { sourcelength, ... },
                       valid = ref true,

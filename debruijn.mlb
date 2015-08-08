@@ -50,19 +50,4 @@ phrases.sml
 board-sig.sml
 board.sml
 
-(* tactic-sig.sml *)
-(* astar.sml *) (* unresolved flex record blech *)
-
-pathfind-sig.sml
-pathfind.sml
-
-powerize-sig.sml
-powerize.sml
-
-
-forwardchain-sig.sml
-forwardchain.sml
-
-testboard.sml
-
-testboard-main.sml
+debruijn.sml

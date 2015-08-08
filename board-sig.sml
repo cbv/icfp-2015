@@ -85,9 +85,12 @@ sig
   (* Just check that the char is legal, returning it.
      Otherwise, raise an exception. *)
   val legalize : char -> legalchar
+  (* Get the underlying char (always lowercase if a letter) *)
   val forgetlegal : legalchar -> char
   val getchars : command -> legalchar vector
   val charcommand : legalchar -> command
+  (* All of the meanginful chars *)
+  val legalchars : legalchar vector
 
   val move : state * legalchar -> moveresult
 
@@ -96,6 +99,14 @@ sig
      (assuming it is the ONLY change to the state) and return whatever
      the continuation returned. *)
   val move_unwind : state * legalchar * (moveresult -> 'a) -> 'a
+
+  (* Apply many moves, updating the state, and then call the
+     continuation with a boolean, which is whether all moves succeeded
+     without GAMEOVER, ERROR, or locking. This is just a minimal
+     amount of feedback and we could do better by accumulating
+     move_results into one big one. *)
+  val move_unwind_many :
+      state * legalchar list * (bool -> 'a) -> 'a
 
   (* Also return a function that undoes the change to the state (assuming
      it is the ONLY change); this function should be called at most once. *)
