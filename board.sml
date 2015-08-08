@@ -555,7 +555,6 @@ struct
       StringUtil.delimit "\n" (List.tabulate (height, oneline))
     end
 
-
   val dw   : legalchar vector = Vector.fromList (explode "p'!.03")
   val de   : legalchar vector = Vector.fromList (explode "bcefy2")
   val dsw  : legalchar vector = Vector.fromList (explode "aghij4")
@@ -741,7 +740,15 @@ struct
              modified yet except for the stutter set. *)
           (* PERF! Avoid copying the board if for example we don't have
              any lines. The idea is that undo can just un-fill the cells
-             that are locked. *)
+             that are locked.
+
+             It's a little tricky because we'd like to avoid copying
+             the board at all unless we make a line, but we need to
+             modify the board to add frozen cells before looking
+             whether we created lines. (or, make the line code be
+             capable of reinserting a line; it's actually pretty easy
+             since we know what the contents of the line was (all
+             full). *)
           val old_board = clone_array board
           val old_rng = !rng
           val old_score = !score
@@ -810,15 +817,15 @@ struct
               (* XXX should we be updating the state here, if there
                  are accessors that people might call? cuz, we did
                  give them an undo function... *)
-              { result = M { lines = lines, scored = 0, locked = locked,
-                             status = NO_SPACE },
+              { result = M { lines = lines, scored = move_score,
+                             locked = locked, status = NO_SPACE },
                 undo = full_undo }
           | GPGameOver =>
               (* XXX should we be updating the state here, if there
                  are accessors that people might call? cuz, we did
                  give them an undo function... *)
-              { result = M { lines = lines, scored = 0, locked = locked,
-                             status = COMPLETE },
+              { result = M { lines = lines, scored = move_score,
+                             locked = locked, status = COMPLETE },
                 undo = full_undo }
         end
       else

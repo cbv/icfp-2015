@@ -16,6 +16,7 @@ struct
                          but it could have been the submission tagged 'david2'
                          instead -- not sure there's a way to tell via the
                          leaderboard.. *)
+  (* Maybe check the new problem, which drops letters.  -tom7 *)
   ]
 
   (* These are known to be incorrect -- phrases of weakness *)
