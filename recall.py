@@ -18,16 +18,42 @@ def fail(msg):
    sys.exit(1)
 
 parser = argparse.ArgumentParser(description='submitty.py')
-parser.add_argument('--prob', metavar='N', nargs=1, type=int, help='The number of the problem being solved')
-parser.add_argument('--seed', metavar='N', nargs=1, type=int, help='The seed for this problem')
+#parser.add_argument('--prob', metavar='N', nargs=1, type=int, help='The number of the problem being solved')
+#parser.add_argument('--seed', metavar='N', nargs=1, type=int, help='The seed for this problem')
 parser.add_argument('--tag', metavar='TAG', nargs=1, help='An optional tag')
 
 if __name__ == "__main__":
+   args = parser.parse_args(sys.argv[1:])
+   LIMIT = 80
+
+   if args.tag is not None:
+      request = {
+         'operation': 'query',
+         'TableName': 'submittydb',
+         'KeyConditionExpression': 'tag = :value',
+         'ExpressionAttributeValues': {':value': {'S': args.tag[0]}}
+      }
+      response = json.loads(requests.post(api, json.dumps(request)).text)
+      try:
+         problem = response['Items'][0]['problem']['N'] 
+         seed = response['Items'][0]['seed']['N'] 
+         solution = response['Items'][0]['solution']['S']
+         print "Tag:     "+args.tag[0]
+         print "Problem: "+problem
+         print "Seed:    "+seed
+         print "Solution\n"+'-'*LIMIT
+         print solution
+      except:
+         print "Something went wrong here's a dump of JSON"
+         print json.dumps(response)
+         sys.exit(1)
+      sys.exit(0)
+      #except:
+
    request = {
       'operation': 'list',
       'TableName': 'submittydb'
    }
-   LIMIT = 80
 
    response = json.loads(requests.post(api, json.dumps(request)).text)
    info = response['Items']
