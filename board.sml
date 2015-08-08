@@ -795,6 +795,25 @@ struct
       fun subtract_power r =
         List.app (fn word_idx =>
                   Array.update(r, word_idx, Array.sub(r, word_idx) - 1)) powerlist
+
+      (* Compute the power score for this char. Doesn't modify the
+         power counts yet. *)
+      val power_score = ref 0
+      val () =
+        (* All the power words (indices) we just made. *)
+        app (fn i =>
+             let
+               val revw = Vector.sub(power, i)
+               val power_base = 2 * size revw
+               (* Bonus only the first time *)
+               val power_bonus = if Array.sub(power_count, i) = 0
+                                 then 300
+                                 else 0
+             in
+               power_score := !power_score + power_base + power_bonus
+             end) powerlist
+      val power_score = !power_score
+
     in
       if check_and_add_repeat_at (nx, ny, na)
       then
@@ -864,6 +883,7 @@ struct
             then ((!last_lines - 1) * points) div 10
             else 0
           val move_score = points + line_bonus
+
           val locked = SOME (!x, !y, !a)
         in
           (* Now, try to place the next piece (if any) in the updated board. *)
@@ -888,7 +908,7 @@ struct
                                             (startx, starty, 0));
 
                 (* lines should affect score. *)
-                { result = M { lines = lines, scored = move_score,
+                { result = M { lines = lines, scored = move_score + power_score,
                                locked = locked, status = CONTINUE },
                   undo = full_undo }
               end
@@ -896,7 +916,7 @@ struct
               let in
                 (* Additionally mark invalid. *)
                 valid := false;
-                { result = M { lines = lines, scored = move_score,
+                { result = M { lines = lines, scored = move_score + power_score,
                                locked = locked, status = GAMEOVER why },
                   undo = full_undo }
               end
@@ -940,7 +960,7 @@ struct
           add_power power_count;
 
           (* PERF board hasn't changed -- don't need backup of it *)
-          { result = M { scored = 0, lines = 0, locked = NONE,
+          { result = M { scored = power_score, lines = 0, locked = NONE,
                          status = CONTINUE },
             undo = positional_undo }
         end
