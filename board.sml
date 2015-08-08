@@ -50,6 +50,7 @@ struct
            width : int,
            height : int,
            sourcelength : int,
+           (* power words; each word is REVERSED and LOWERCASE. *)
            power : string vector,
            seeds : Word32.word vector,
            (* aka units, an ml keyword *)
@@ -318,6 +319,9 @@ struct
         end
 
       val a = Array.array (width * height, false)
+
+      val power = Vector.map (StringUtil.reverse o
+                              StringUtil.lcase) power
     in
       app (fn (x, y) =>
            Array.update (a, y * width + x, true)) filled;
