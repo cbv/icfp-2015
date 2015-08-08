@@ -33,24 +33,49 @@ structure LockStep :> LOCK_STEP = struct
 
 
   (*
-     enumerate all lockstep sequences of depth n.
+     walk through all lockstep sequences of depth n.
      best: ((int, step list) option) ref
 
      heuristic: Board.state -> int
   *)
-  fun search (max_depth, best, (step as Step {px, py, a, state = SOME(state), ...}), prev_steps) =
-    let
-        val _ = possible_next_steps state
-    in
-        ()
-    end
-    | search (max_depth, best, (step as Step {px, py, a, state = NONE, ...}), prev_steps) = ()
+  fun search (max_depth, best, heuristic, heuristic_score, prev_steps) (step as Step {scored, state = state_opt, ...}) =
+    case (state_opt, max_depth <= 1 + (List.length prev_steps))
+     of (SOME(state), false) =>
+        let
+        in
+            search_steps (max_depth, best, heuristic, state, step::prev_steps)
+        end
+     | _ => (* don't go deeper *)
+       let
+           val best_score = case !best of
+                                SOME((score, _)) => score
+                              | NONE => ~1
+           val combined_score = 10000 * heuristic_score
+           val () = if combined_score > best_score
+                    then best := (SOME((combined_score, step::prev_steps)))
+                    else ()
+       in
+           ()
+       end
 
+  and search_steps (max_depth, best, heuristic, state, prev_steps) =
+      let
+          fun apper (step as Step {state, ...}) =
+            let
+                val hscore = case state of
+                                 NONE => 0
+                               | SOME(state) => heuristic state
+            in
+                (search (max_depth, best, heuristic, hscore, prev_steps) step)
+            end
+      in
+          List.app apper (possible_next_steps state)
+      end
 
   fun accumulate_best (state, heuristic, accumulator) =
     let
         val best = ref NONE
-(*        val () = search (3, best, [], best) *)
+        val () = search_steps (3, best, heuristic, state, [])
     in
         case !best of
             SOME((score, (step as Step { state = SOME(state), ...})::steps)) =>
