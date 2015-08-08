@@ -81,9 +81,12 @@ sig
   (* Just check that the char is legal, returning it.
      Otherwise, raise an exception. *)
   val legalize : char -> legalchar
+  (* Get the underlying char (always lowercase if a letter) *)
   val forgetlegal : legalchar -> char
   val getchars : command -> legalchar vector
   val charcommand : legalchar -> command
+  (* All of the meanginful chars *)
+  val legalchars : legalchar vector
 
   val move : state * legalchar -> moveresult
 

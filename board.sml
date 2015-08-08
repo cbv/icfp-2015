@@ -594,6 +594,7 @@ struct
   val dse  : legalchar vector = Vector.fromList (explode "lmno 5") (* ell *)
   val tcw  : legalchar vector = Vector.fromList (explode "dqrvz1") (* one *)
   val tccw : legalchar vector = Vector.fromList (explode "kstuwx")
+  val legalchars = Vector.concat [dw, de, dsw, dse, tcw, tccw]
   fun getchars (D W) = dw
     | getchars (D E) = de
     | getchars (D SW) = dsw
