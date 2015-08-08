@@ -360,10 +360,12 @@ struct
                piece = ref (!piece),
                rng = ref (!rng) }
 
-  fun isfull (S { board, problem = P{ width, height, ... }, ... },
+  fun isfull (S { board, problem = P{ width, height, ... },
+                  valid = ref true, ... },
               x, y) =
     x < 0 orelse y < 0 orelse x >= width orelse y >= height orelse
     Array.sub (board, y * width + x)
+    | isfull _ = raise Board "invalid board in isfull/isempty"
   fun isempty (state, x, y) = not (isfull (state, x, y))
 
   datatype getpieceresult =
@@ -466,7 +468,8 @@ struct
       resetwithseed (problem, seed)
     end
 
-  fun ispiece (S {x, y, piece = ref (Piece { rotations, ... }), a, ...},
+  fun ispiece (S {x, y, piece = ref (Piece { rotations, ... }), a,
+                  valid = ref true, ...},
                xx, yy) =
     let
       (* translate (xx, yy) to piece space, and look it up
@@ -480,9 +483,12 @@ struct
     in
       oriented_piece_has oriented_piece (px, py)
     end
+    | ispiece _ = raise Board "invalid board in ispiece"
 
-  fun ispivot (S {x, y, ...}, xx, yy) = xx = !x andalso yy = !y
-  fun pivot (S { x, y, ... }) = (!x, !y)
+  fun ispivot (S {x, y, valid = ref true, ...}, xx, yy) = xx = !x andalso yy = !y
+    | ispivot _ = raise Board "invalid board in ispivot"
+  fun pivot (S { x, y, valid = ref true, ... }) = (!x, !y)
+    | pivot _ = raise Board "invalid board in pivot"
 
   fun dirstring E = "E"
     | dirstring W = "W"
