@@ -11,7 +11,8 @@ fun main () =
     val problem = Board.fromjson
                       (StringUtil.readfile
                            ("qualifiers/problem_" ^ Int.toString problemId ^ ".json"))
-    val soln = Pathfind.find (Board.reset (problem, 0)) {px=7, py=13, a=1}
+    val soln = Pathfind.find (Board.reset (problem, 0))
+                             (Pathfind.Target {px=7, py=13, a=1})
   in
     case soln of NONE => print "None!\n"
                | SOME cmds =>

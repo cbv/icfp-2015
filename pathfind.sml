@@ -1,5 +1,7 @@
 structure Pathfind :> PATHFIND =
 struct
+  datatype target = Target of {px: int, py: int, a: int}
+
   fun cmds_to_string cmds = StringUtil.delimit "-" (List.map (Board.commandstring) cmds)
 
   datatype ptpos = PTP of {ux:int, uy:int, a:int}
@@ -135,11 +137,11 @@ struct
       find_first (move_helper commands) moves
     end
 
-  fun find state target =
+  fun find state (Target tgt) =
     let val setRef = ref (LocSet.singleton
                               (piece_location (state, Board.piece_symmetry state, [])));
     in
-      Option.map rev (helper (state, setRef, [], target))
+      Option.map rev (helper (state, setRef, [], tgt))
     end
 
 end
