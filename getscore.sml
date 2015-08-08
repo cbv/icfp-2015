@@ -3,7 +3,7 @@ structure GetScore =
 struct
 
   val scriptp = Params.param ""
-    (SOME("-script", "Script. Backtick inserts next character from script."))
+    (SOME("-script", "The command sequence (as characters) to run."))
     "script"
 
   val problemp = Params.param "11"
