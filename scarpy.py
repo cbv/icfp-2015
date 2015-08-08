@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import requests
+#import requests
 import json
 import urllib2
 import string
@@ -52,14 +52,14 @@ for i in range(0,numproblems):
                    }
                 scores.append(newhash)
 
-request = {
-   'time': data['time'],
-   'scores': scores
-}
-# print json.dumps(request)
-response = json.loads(requests.post(scarpy_writer, json.dumps(request)).text)
-if (not 'modified' in response):
-   print "Unexpected response!"
-   print json.dumps(response)
-if (response['modified'] != 0):
-   print 'Learned about '+str(response['modified'])+' new scores'
+#request = {
+#   'time': data['time'],
+#   'scores': scores
+#}
+## print json.dumps(request)
+#response = json.loads(requests.post(scarpy_writer, json.dumps(request)).text)
+#if (not 'modified' in response):
+#   print "Unexpected response!"
+#   print json.dumps(response)
+#if (response['modified'] != 0):
+#   print 'Learned about '+str(response['modified'])+' new scores'
