@@ -17,8 +17,10 @@ structure LockStep :> LOCK_STEP = struct
                      scored: int
                  }
 
-   fun stepstring (Step {px, py, a, ...}) =
-     "{ px = " ^ Int.toString px ^ ", py = " ^ Int.toString py ^ ", a = " ^ Int.toString a ^"}"
+   fun stepstring (Step {px, py, a, commands, scored, ...}) =
+     "{ px = " ^ Int.toString px ^ ", py = " ^ Int.toString py ^ ", a = " ^ Int.toString a ^
+        ", scored = " ^ Int.toString scored ^
+        ", commands= " ^  String.concat (List.map (fn c => (Board.commandstring c ^ ",")) commands)  ^ "}"
 
   fun possible_next_steps state =
     let
@@ -47,7 +49,7 @@ structure LockStep :> LOCK_STEP = struct
      of (SOME(state), false) =>
         let
         in
-            search_steps (max_depth, best, heuristic, state, step::prev_steps)
+            search_steps (max_depth, best, heuristic, Board.clone state, step::prev_steps)
         end
      | _ => (* don't go deeper *)
        let
@@ -56,7 +58,7 @@ structure LockStep :> LOCK_STEP = struct
            val best_score = case !best of
                                 SOME((score, _)) => score
                               | NONE => ~1
-           val combined_score = 10000 * heuristic_score + scored
+           val combined_score = 10000 * scored + heuristic_score
            val () = if combined_score > best_score
                     then best := (SOME((combined_score, steps)))
                     else ()
@@ -87,7 +89,7 @@ structure LockStep :> LOCK_STEP = struct
             SOME((score, all_steps as (step as Step { state = SOME(state), ...})::steps)) =>
             (print ("best score: " ^ Int.toString score ^ "\n");
              List.app (fn s => print (stepstring s ^ "\n")) all_steps;
-            accumulate_best (state, heuristic, step::accumulator))
+            accumulate_best (Board.clone state, heuristic, step::accumulator))
          |  SOME((score, (step as Step { state = NONE, ...})::steps)) => step::accumulator
          |  _ => raise LockStep "impossible"
     end
