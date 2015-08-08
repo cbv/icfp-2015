@@ -4,7 +4,7 @@ struct
 (* favor far-down squares *)
 fun heuristic (x, y) = y
 
-val problemId = 17;
+val problemId = 23;
 
 fun do_seed (problem, seed_idx, seed) =
   let

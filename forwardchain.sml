@@ -39,30 +39,30 @@ struct
                                  (T CW), (T CCW)]
 
   fun move_helper (state, visitedSetRef, commands) move =
-    let val {result = Board.M {scored, lines, locked, status}, undo} =
-          Board.move_undo (state, move)
+    let
         val sym = Board.piece_symmetry state
-        val () =
-        (case status of
-             Board.CONTINUE =>
-              let val new_commands = (Board.charcommand move)::commands
-                  val pl = piece_location(state, sym, locked, scored, new_commands)
-              in
-                  if LocSet.member (!visitedSetRef, pl)
-                  then () (* already visited *)
-                  else let
+        fun body (Board.M {scored, lines, locked, status}) =
+          (case status of
+               Board.CONTINUE =>
+               let val new_commands = (Board.charcommand move)::commands
+                   val pl = piece_location(state, sym, locked, scored, new_commands)
+               in
+                   if LocSet.member (!visitedSetRef, pl)
+                   then () (* already visited *)
+                   else
+                       let
                        in
                            visitedSetRef := (LocSet.add (!visitedSetRef, pl));
                            case locked of
                                NONE => helper (state, visitedSetRef, new_commands)
                             |  SOME _ =>  ()
                        end
-              end
-          | Board.COMPLETE => ()
-          | Board.NO_SPACE => ()
-          | Board.ERROR => ())
+               end
+             | Board.COMPLETE => ()
+             | Board.NO_SPACE => ()
+             | Board.ERROR => ())
     in
-        undo ()
+        Board.move_unwind (state, move, body)
     end
 
   and helper (state, visitedSetRef, commands) =

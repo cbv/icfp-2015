@@ -1,5 +1,6 @@
 signature FORWARD_CHAIN = sig
-  datatype PieceLocation = PL of {px: int, py: int, a: int, locked: bool, score: int,
+  datatype PieceLocation = PL of {px: int, py: int, a: int, locked: bool,
+                                  score: int,
                                   commands: Board.command list}
 
   val toascii : PieceLocation -> string
