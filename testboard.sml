@@ -5,6 +5,10 @@ struct
     (SOME("-script", "Script. Backtick inserts next character from script."))
     "script"
 
+  val problemp = Params.param "11"
+    (SOME("-problem", "Problem number to load."))
+    ("problem")
+
   val itos = Int.toString
 
   fun testrng (rng, 0) = ()
@@ -78,7 +82,7 @@ struct
   fun main args =
     let
       val problem = Board.fromjson
-        (StringUtil.readfile "qualifiers/problem_11.json")
+        (StringUtil.readfile ("qualifiers/problem_" ^ !problemp ^ ".json"))
 
       val state = Board.reset (problem, 0)
       (* val commands = ForwardChain.simple_heuristic_solver state *)
