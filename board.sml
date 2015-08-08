@@ -665,27 +665,9 @@ struct
                      x, y, a, board },
                  ch : legalchar) =
     let
-      (* PERF! Avoid copying the board; the idea here is that we
-         can just un-fill any cells that are locked, if that happens. *)
-      val old_state = clone state
-      fun undo () =
-        let
-          val S { rng = old_rng, score = old_score, x = old_x, y = old_y,
-                  a = old_a, board = old_board, piece = old_piece,
-                  last_lines = old_last_lines, stutters = old_stutters,
-                  next_sourceidx = old_next_sourceidx, ... } = old_state
-        in
-          rng := !old_rng;
-          score := !old_score;
-          x := !old_x;
-          y := !old_y;
-          a := !old_a;
-          stutters := !old_stutters;
-          piece := !old_piece;
-          last_lines := !old_last_lines;
-          next_sourceidx := !old_next_sourceidx;
-          Array.copy {di = 0, dst = board, src = old_board}
-        end
+      (* Don't modify anything until we know what branch we're in!
+         We want to create an undo function that does a minimal
+         amount of work. *)
 
       fun freeze () =
         let
@@ -740,14 +722,52 @@ struct
             end
         end
 
+      (* check_and_add_repeat_at may modify this, so save the old set *)
+      val old_stutters = !stutters
+
     in
       if check_and_add_repeat_at (nx, ny, na)
-      then { result = M { scored = 0, lines = 0, locked = NONE, status = ERROR },
-             undo = undo }
+      then
+        (* Here, we haven't even modified the stutter set, so
+           there is nothing to undo. *)
+        { result = M { scored = 0, lines = 0, locked = NONE, status = ERROR },
+          undo = fn () => () }
       else
       if is_locked_at (problem, board, !piece, nx, ny, na)
       then
         let
+          (* Slow path. Just copy everything. Nothing should have been
+             modified yet except for the stutter set. *)
+          (* PERF! Avoid copying the board if for example we don't have
+             any lines. The idea is that undo can just un-fill the cells
+             that are locked. *)
+          val old_board = clone_array board
+          val old_rng = !rng
+          val old_score = !score
+          val old_x = !x
+          val old_y = !y
+          val old_a = !a
+          (* old_stutters above *)
+          val old_piece = !piece
+          val old_last_lines = !last_lines
+          val old_next_sourceidx = !next_sourceidx
+
+          fun full_undo () =
+            let in
+              rng := old_rng;
+              score := old_score;
+              x := old_x;
+              y := old_y;
+              a := old_a;
+              stutters := old_stutters;
+              piece := old_piece;
+              last_lines := old_last_lines;
+              next_sourceidx := old_next_sourceidx;
+              Array.copy {di = 0, dst = board, src = old_board}
+            end
+
+          (* OK, now safe to modify anything we want... *)
+
           val () = freeze()
           val lines = check_lines problem board
 
@@ -783,7 +803,7 @@ struct
                 (* lines should affect score. *)
                 { result = M { lines = lines, scored = move_score,
                                locked = locked, status = CONTINUE },
-                  undo = undo }
+                  undo = full_undo }
               end
           | GPNoSpace =>
               (* XXX should we be updating the state here, if there
@@ -791,17 +811,41 @@ struct
                  give them an undo function... *)
               { result = M { lines = lines, scored = 0, locked = locked,
                              status = NO_SPACE },
-                undo = undo }
+                undo = full_undo }
           | GPGameOver =>
               (* XXX should we be updating the state here, if there
                  are accessors that people might call? cuz, we did
                  give them an undo function... *)
               { result = M { lines = lines, scored = 0, locked = locked,
                              status = COMPLETE },
-                undo = undo }
+                undo = full_undo }
         end
       else
-        let in
+        let
+          (* Here we are just moving. We don't need to copy the board
+             (it can't change), nor check for lines, etc. *)
+          val old_score = !score
+          val old_x = !x
+          val old_y = !y
+          val old_a = !a
+          val old_last_lines = !last_lines
+          (* old_stutters above *)
+
+          (* These can't change. *)
+          (* val old_piece = !piece
+             val old_next_sourceidx = !old_next_sourceidx
+             val old_rng = !rng *)
+
+          fun positional_undo () =
+            let in
+              score := old_score;
+              x := old_x;
+              y := old_y;
+              a := old_a;
+              stutters := old_stutters;
+              last_lines := old_last_lines
+            end
+        in
           (* No locking. Don't need to check lines, score, etc. *)
           x := nx;
           y := ny;
@@ -810,7 +854,7 @@ struct
           (* PERF board hasn't changed -- don't need backup of it *)
           { result = M { scored = 0, lines = 0, locked = NONE,
                          status = CONTINUE },
-            undo = undo }
+            undo = positional_undo }
         end
     end
 
