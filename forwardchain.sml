@@ -43,7 +43,7 @@ struct
                                  (D E),  (D W),
                                  (T CW), (T CCW)]
 
-  fun move_helper (state, visitedSetRef, commands) move =
+  fun move_helper (state, visitedSetRef, score, commands) move =
     let
         val sym = Board.piece_symmetry state
         fun body (Board.M {scored, lines, locked, status}) =
@@ -51,7 +51,8 @@ struct
               Board.ERROR => ()
             |  _ =>
                let val new_commands = (Board.charcommand move)::commands
-                   val pl = piece_location(state, sym, locked, scored, new_commands)
+                   val new_score = score + scored
+                   val pl = piece_location(state, sym, locked, new_score, new_commands)
                in
                    if LocSet.member (!visitedSetRef, pl)
                    then () (* already visited *)
@@ -60,7 +61,7 @@ struct
                        in
                            visitedSetRef := (LocSet.add (!visitedSetRef, pl));
                            case locked of
-                               NONE => helper (state, visitedSetRef, new_commands)
+                               NONE => helper (state, visitedSetRef, new_score, new_commands)
                             |  SOME _ =>  ()
                        end
                end
@@ -69,13 +70,13 @@ struct
         Board.move_unwind (state, move, body)
     end
 
-  and helper (state, visitedSetRef, commands) =
-    List.app (move_helper (state, visitedSetRef, commands)) moves
+  and helper (state, visitedSetRef, score, commands) =
+    List.app (move_helper (state, visitedSetRef, score, commands)) moves
 
   fun accessible_locations state =
     let val setRef = ref (LocSet.singleton (piece_location (state, Board.piece_symmetry state,
                                                             NONE, 0, []))); (* can't be locked on first turn *)
-        val () = helper (state, setRef, []);
+        val () = helper (state, setRef, 0, []);
     in
         LocSet.listItems (!setRef)
     end
