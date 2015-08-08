@@ -100,17 +100,17 @@ struct
         val locs = accessible_locations state
         val best_score = ref (~1)
         val best_loc = ref NONE
-        val () = List.app (fn (loc as PL {score, px, py, ...}) =>
-                              let
-                                  val combined_score = combine_score(score, heuristic (px, py))
-                              in
-                                  if combined_score > (!best_score)
-                                  then ((best_score := combined_score);
-                                        (best_loc := (SOME loc)))
-                                  else ()
-                              end
-                          )
-                          locs
+        fun do_loc (PL {locked = NONE, ...}) = ()
+          | do_loc (loc as PL {score, px, py, locked = _, ...}) =
+            let
+                val combined_score = combine_score(score, heuristic (px, py))
+            in
+                if combined_score > (!best_score)
+                then ((best_score := combined_score);
+                      (best_loc := (SOME loc)))
+                else ()
+            end
+        val () = List.app do_loc locs
     in
         case !best_loc of
             NONE => ([], false)
