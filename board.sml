@@ -220,7 +220,7 @@ struct
         end
     end
 
-  fun fromjson s =
+  fun fromjsonwithpower (s, power) =
     let
       datatype json = datatype JSONDatatypeCallbacks.json
 
@@ -339,6 +339,8 @@ struct
           (map makepiece
            (map ExpectPiece (List (j, "units")))) }
     end
+
+  fun fromjson s = fromjsonwithpower (s, Vector.fromList Phrases.power)
 
   fun clone_array a =
     (* PERF There must be a faster way to do this?? *)
