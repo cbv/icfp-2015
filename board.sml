@@ -101,10 +101,15 @@ struct
 
            rng: RNG.rng ref }
 
-  fun piece_position (S {x, y, ...}) = (!x, !y)
-  fun piece_angle (S {a, ...}) = !a
-  fun piece_symmetry (S {piece = ref (Piece { symmetry, ... }), ...}) =
+  fun piece_position (S {x, y, valid = ref true, ...}) = (!x, !y)
+    | piece_position _ = raise Board "invalid board in piece_position"
+  fun piece_angle (S {a, valid = ref true, ...}) = !a
+    | piece_angle _ = raise Board "invalid board in piece_angle"
+
+  fun piece_symmetry (S {piece = ref (Piece { symmetry, ... }),
+                         valid = ref true, ...}) =
     symmetry
+    | piece_symmetry _ = raise Board "invalid board in piece_symmetry"
 
   fun delta E = (1, 0)
     | delta W = (~1, 0)
@@ -339,6 +344,7 @@ struct
     (* PERF There must be a faster way to do this?? *)
     Array.tabulate (Array.length a, fn i => Array.sub(a, i))
 
+  (* OK to clone invalid boards, I guess. *)
   fun clone (S { board, next_sourceidx, last_lines, stutters,
                  valid, problem, score, rng, piece, a, x, y }) : state =
            S { board = clone_array board,
