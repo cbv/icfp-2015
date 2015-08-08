@@ -13,7 +13,7 @@ struct
                                              SOME (x,y,a) => ((x,y), a, true)
                                            | NONE => (Board.piece_position state, Board.piece_angle state, false)
     in
-        PL {px = px, py = py, a = angle mod sym, locked = is_locked, score = 0, commands = commands}
+        PL {px = px, py = py, a = angle mod sym, locked = is_locked, score = score, commands = commands}
     end
 
   fun compare (PL {px = px0, py = py0, a = a0, locked = locked0, ...},
