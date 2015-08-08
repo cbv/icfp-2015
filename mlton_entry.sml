@@ -1,1 +1,1 @@
-val _ = TestBoard.main (CommandLine.args())
+val _ = TestBoard.main (CommandLine.arguments())
