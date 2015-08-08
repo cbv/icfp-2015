@@ -15,19 +15,73 @@ struct
     "seed"
 
   fun main () =
-    let in
-      (* Total score *)
-      print "7\n";
-      (* Number of distinct words of power. *)
-      print "0\n"
+    let
+      val seed = Word32.fromInt (Params.asint 0 seedp)
+      val problem = Board.fromjson
+        (StringUtil.readfile ("qualifiers/problem_" ^ !problemp ^ ".json"))
+
+      val state = Board.resetwithseed (problem, seed)
+
+      val full_script = explode (!scriptp)
+      fun replay { score, lines, phrases, script : char list } =
+        case script of
+          nil => { score = score, lines = lines, phrases = phrases,
+                   leftover = 0,
+                   fate = "SCRIPT_EXHAUSTED" }
+        | c :: rest =>
+            let
+              val legalchar : Board.legalchar = Board.legalize c
+
+              val Board.M { scored, lines = newlines, locked = _, status } =
+                Board.move (state, legalchar)
+
+              val score = score + scored
+              val lines = lines + newlines
+              val phrases = phrases (* XXX *)
+              datatype status = datatype Board.status
+            in
+              case status of
+                CONTINUE => replay { score = score, lines = lines,
+                                     phrases = phrases, script = rest }
+              | COMPLETE => { score = score,
+                              lines = lines,
+                              phrases = phrases,
+                              leftover = length rest,
+                              fate = "COMPLETE" }
+              | NO_SPACE => { score = score,
+                              lines = lines,
+                              phrases = phrases,
+                              leftover = length rest,
+                              fate = "NO_SPACE" }
+              | ERROR => { score = 0,
+                           lines = lines,
+                           phrases = phrases,
+                           leftover = length rest,
+                           fate = "ERROR_STUTTER" }
+            end
+
+      val { score, lines, phrases, leftover, fate } =
+        replay { score = 0, lines = 0, phrases = 0, script = full_script }
+
+      fun jsonline (k, v) = "\"" ^ k ^ "\": " ^ v
+    in
+      print
+      ("{\n  " ^
+       StringUtil.delimit ",\n  "
+       (map jsonline
+        [("score", Int.toString score),
+         ("distinct_phrases", Int.toString phrases),
+         ("fate", "\"" ^ fate ^ "\""),
+         ("commands_left", Int.toString leftover)]) ^
+       "\n}\n")
     end
 
 end
 
 val () = Params.main0
-  ("This program takes no arguments (but uses -flags). It prints out two " ^
-   "lines. The first is the total score for the given script on the problem " ^
-   "with the given seed. The second is the total number of distinct phrases " ^
-   "of power used during the execution; this only includes the phrases that " ^
-   "the board implementation knows about.")
+  ("This program takes no arguments (but uses -flags). It prints out a simple " ^
+   "JSON object with statistics about the -script executed on the -problem " ^
+   "number with the given -seed value. Information about phrases of power, " ^
+   "including their impact on the score, is only relative to the phrases " ^
+   "known in phrases.sml.")
   GetScore.main
