@@ -15,7 +15,7 @@ fun main () =
   in
     case soln of NONE => print "None!\n"
                | SOME cmds =>
-                 print (implode (rev (List.map (Board.forgetlegal o Board.anychar) cmds)))
+                 print (implode (List.map (Board.forgetlegal o Board.anychar) cmds))
   end
   handle Board.Board s =>
          TextIO.output (TextIO.stdErr, "Uncaught Board: " ^ s ^ "\n")

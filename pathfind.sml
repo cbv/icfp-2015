@@ -139,7 +139,7 @@ struct
     let val setRef = ref (LocSet.singleton
                               (piece_location (state, Board.piece_symmetry state, [])));
     in
-      helper (state, setRef, [], target)
+      Option.map rev (helper (state, setRef, [], target))
     end
 
 end
