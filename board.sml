@@ -777,6 +777,9 @@ struct
       r
     end
 
+  fun piecesleft (S { problem = P { sourcelength, ... },
+                      next_sourceidx, ... }) =
+    sourcelength - !next_sourceidx
 
   fun size (P { width, height, ... }) = (width, height)
   fun width (P { width, ... }) = width

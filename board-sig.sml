@@ -98,6 +98,10 @@ sig
   val isfull : state * int * int -> bool
   val isempty : state * int * int -> bool
 
+  (* Give the number of pieces that are remaining to spawn after the
+     current one; assumes the state is still in a Continue state. *)
+  val piecesleft : state -> int
+
   (* Does this cell currently contain a member of the piece?
      This does not necessarily include the pivot. *)
   val ispiece : state * int * int -> bool

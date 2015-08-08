@@ -48,6 +48,7 @@ struct
       val () = print (Board.toascii state ^ "\n")
       val Board.M { scored, lines, locked, status } = commandloop()
     in
+      print ("Pieces left: " ^ itos (Board.piecesleft state) ^ "\n");
       print ("Scored " ^ itos scored ^ " in " ^ itos lines ^ " lines " ^
              " and locked: " ^ Bool.toString locked ^ "\n");
       (case status of
