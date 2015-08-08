@@ -11,39 +11,54 @@ struct
   fun ptadd (PTP p, PTP q) =
     PTP { ux = #ux p + #ux q,
           uy = #uy p + #uy q,
-          a = #a p + #a q }
+          a = (#a p + #a q) mod 6 }
 
   fun ptsub (PTP p, PTP q) =
     PTP { ux = #ux p - #ux q,
           uy = #uy p - #uy q,
-          a = #a p - #a q }
+          a = (#a p - #a q) mod 6 }
 
   fun ptsum pts = foldr ptadd ptz pts
 
   fun choice_order (PTP {ux,uy,a}) =
     let
-      val turns = if a < 3
-                  then [T CW, T CCW]
-                  else [T CCW, T CW]
-      val horiz = if ux > 0
-                  then [D E, D W]
-                  else [D W, D E]
-      val diag = if ux > 0
-                 then [D SE, D SW]
-                 else [D SW, D SE]
-      val moves = if uy > 0
-                  then diag @ horiz
-                  else horiz @ diag
+(*      val _ = print( (Int.toString ux) ^ " " ^ (Int.toString uy) ^ " " ^ (Int.toString a) ^ "\n") *)
+      val (best_turn, worst_turn) =
+          if a < 3
+          then (T CW, T CCW)
+          else (T CCW, T CW)
+      val east = 2 * ux + uy > 0
+      val horiz =
+          if east
+          then [D E, D W]
+          else [D W, D E]
+      val diag =
+          if east
+          then [D SE, D SW]
+          else [D SW, D SE]
+      val moves =
+          if uy > 0
+          then diag @ horiz
+          else horiz @ diag
     in
       if (a <> 0)
-      then turns @ moves
-      else moves @ turns
+      then [best_turn] @ moves @ [worst_turn]
+      else moves @ [best_turn, worst_turn]
     end
 
   fun choice_order_for state target =
-    [(D SE), (D SW),
-     (D E),  (D W),
-     (T CW), (T CCW)]
+    let
+      val unif = Board.uniformize_coord
+      val ((px, py), pa) = (Board.piece_position state, Board.piece_angle state)
+      val (px, py) = unif (px, py)
+      (* PERF: unnecessary recomputation of uniformization of target *)
+      val {px=tx,py=ty,a=ta} = target
+      val (tx, ty) = unif (tx, ty)
+      val answer = choice_order (ptsub (PTP {ux=tx,uy=ty,a=ta}, PTP {ux=px,uy=py,a=pa}))
+    in
+(*      print (">" ^ cmds_to_string answer ^ "\n"); *)
+      answer
+    end
 
   datatype PieceLocation = PL of {px: int, py: int, a: int,
                                   commands: Board.command list (* TODO(perf) track this somewhere else? *)}
@@ -73,8 +88,10 @@ struct
 
   fun find_first f [] = NONE
     | find_first f (x::tl) =
-      (case f x of NONE => find_first f tl
-                | y => y)
+      (
+        (*      print ("find_first " ^ Board.commandstring (Board.charcommand x) ^ "\n"); *)
+        (case f x of NONE => find_first f tl
+                   | y => y))
 
   fun helper (state, visitedSetRef, commands, target) =
     let
@@ -89,10 +106,10 @@ struct
                      val pl = piece_location(state, sym, new_commands)
                      val {px=tx,py=ty,a=ta} = target
                      val ((px, py), pa) = (Board.piece_position state, Board.piece_angle state)
-                 (*
+(*
                      val _ = print("piece at " ^ (Int.toString px) ^ " " ^ (Int.toString py) ^ "\n")
                      val _ = print("commands " ^ (cmds_to_string new_commands) ^ "\n")
-                 *)
+*)
                  in
                    if py > ty
                    then NONE

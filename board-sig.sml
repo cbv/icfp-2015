@@ -125,4 +125,6 @@ sig
   val thaw : fstate -> state
   *)
 
+  val uniformize_coord : (int * int) -> (int * int)
+  val deuniformize_coord : (int * int) -> (int * int)
 end
