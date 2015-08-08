@@ -3,6 +3,7 @@
 import requests
 import json
 import urllib2
+import string
     
 api = "https://cmage109g3.execute-api.us-west-2.amazonaws.com/what"
 scarpy_writer = api + "/scarpydb"
@@ -39,17 +40,23 @@ for i in range(0,numproblems):
              print "("+str(rankings[j]['power_score'])+" power word(s))"
              print "   Tags:    " + str(rankings[j]['tags'])
              print "   "
-             if (len(rankings[j]['tags']) == 1):
-                scores.append({
-                   'tag': rankings[j]['tags'][0],
+             if (len(rankings[j]['tags']) > 0):
+                tag = rankings[j]['tags']
+                tag.sort()
+                newhash = {
+                   'tag': string.join(tag, "_"),
                    'problem': j,
-                   'score': rankings[j]['score']
-                })
+                   'score': rankings[j]['score'],
+                   'power': rankings[j]['power_score'],
+                   'alltags': rankings[j]['tags']
+                   }
+                scores.append(newhash)
 
 request = {
    'time': data['time'],
    'scores': scores
 }
+print json.dumps(request)
 response = json.loads(requests.post(scarpy_writer, json.dumps(request)).text)
 if (not 'modified' in response):
    print "Unexpected response!"
