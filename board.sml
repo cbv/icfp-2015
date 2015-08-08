@@ -482,14 +482,13 @@ struct
     | commandorder (_, D _) = GREATER
     | commandorder (T t, T tt) = turnorder (t, tt)
 
-  fun statusstring _ = "sorry, unimplemented"
+  fun statusstring CONTINUE = "CONTINUE"
+    | statusstring COMPLETE = "COMPLETE"
+    | statusstring NO_SPACE = "NO_SPACE"
+    | statusstring ERROR = "ERROR"
 
-  (* XXX show everything *)
-  fun moveresultstring _ = "sorry, unimplemented..."
-(*
-  fun moveresultstring (Continue {scored, lines, locked}) = "Continue..."
-    | moveresultstring (Done {reason}) = "Done..."
-*)
+  fun moveresultstring (M {scored, lines, locked, status }) =
+    "{ scored: " ^ Int.toString scored ^ ", status: " ^ statusstring status ^" }"
 
   (* TODO: Use this beauty, but might need to use ansi backgrounds...
 
@@ -602,6 +601,8 @@ struct
       ignore (charcommand c);
       c
     end
+
+  fun forgetlegal c = c
 
   (* Imperatively update board to reflect deleted lines, and return
      the number of lines so deleted. *)

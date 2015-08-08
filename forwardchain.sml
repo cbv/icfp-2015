@@ -94,12 +94,20 @@ struct
 
   fun stepper (state, accumulator) =
     let
-        val (commands, continue) = simple_heuristic_step state
-        val acc' = commands::accumulator
+        val (rev_commands, continue) = simple_heuristic_step state
+        val () = List.app (fn c =>
+                              let
+                                 val result =  Board.move (state, Board.anychar c)
+                                 val () = print ((Board.moveresultstring result) ^ "\n")
+                              in
+                                  ()
+                              end)
+                          (List.rev rev_commands)
+        val acc' = rev_commands::accumulator
     in
         if continue
-        then stepper (state, acc')
-        else List.concat (List.map List.rev accumulator)
+        then (stepper (state, acc'))
+        else List.rev (List.concat accumulator)
     end
 
   fun simple_heuristic_solver state =

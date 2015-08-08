@@ -73,6 +73,7 @@ sig
   (* Just check that the char is legal, returning it.
      Otherwise, raise an exception. *)
   val legalize : char -> legalchar
+  val forgetlegal : legalchar -> char
   val getchars : command -> legalchar vector
   val charcommand : legalchar -> command
 
