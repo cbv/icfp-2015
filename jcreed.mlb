@@ -50,4 +50,9 @@ pathfind.sml
 powerize-sig.sml
 powerize.sml
 
+forwardchain-sig.sml
+forwardchain.sml
+lockstep-sig.sml
+lockstep.sml
+
 jcreed.sml
