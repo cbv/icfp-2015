@@ -1026,4 +1026,30 @@ struct
   fun pieces (P { pieces, ... }) = pieces
   fun seeds (P { seeds, ... }) = seeds
 
+
+  fun raggedness_heuristic (S { problem = P { width, height, ... },
+                               board, ... }) =
+    let
+      val count = ref 0
+    in
+      Util.for 0 (height - 1)
+      (fn y =>
+       let
+         val off = y * width
+         val parity =
+           ref (Array.sub (board, off + 0))
+       in
+         Util.for 1 (width - 1)
+         (fn x =>
+          let val value = Array.sub (board, off + x)
+          in
+            if value <> !parity
+            then (count := !count + 1;
+                  parity := value)
+            else ()
+          end)
+       end);
+      !count
+    end
+
 end
