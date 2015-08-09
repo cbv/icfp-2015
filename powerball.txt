@@ -1,5 +1,7 @@
 # You can't win -- if you don't play!
 
+hp lovecraft
+hplovecraft
 Lovecraft
 # Different spellings of cthulhu from wikipedia
 Tulu
@@ -555,3 +557,11 @@ as2h2
 vancouver
 icfp
 2015
+
+# douglas adams
+so long and thanks for all the fish
+42
+don't panic
+zaphod beeblebrox
+ford prefect
+arthur dent

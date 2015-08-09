@@ -63,50 +63,67 @@ struct
   end
 
 
-  fun make_experiment problem_idx seed guesses =
+  fun make_experiment problem_idx seed prefix guesses =
     let
       val problem = Vector.sub(problems, problem_idx)
       val state = Board.resetwithseed (problem, seed)
-
-      fun loop (sofar : string, phrases) =
-        (* try to insert a power phrase here. *)
-        let
-          (* Get a phrase that we can insert here, and the
-             remaining phrases (possibly reordered) *)
-          fun getphrase (_, nil) = NONE
-            | getphrase (acc, ph :: rest) =
-            if PU.can_execute state ph
-               (* Might accidentally make a power word by concatenation;
-                  this makes a bad experiment so don't do it *)
-               andalso (not (PU.contains_known (sofar ^ ph)))
-            then
-                SOME (ph, acc @ rest)
-
-            else getphrase (ph :: acc, rest)
-        in
-          case getphrase (nil, phrases) of
-            NONE => (* XXX Explore some... *) (sofar, phrases)
-          | SOME (ph, rest) =>
-              let in
-                PU.execute state ph;
-                loop (sofar ^ ph, rest)
-              end
-        end
     in
-      loop ("", guesses)
+      if PU.can_execute state prefix
+      then
+        let
+          fun loop (sofar : string, phrases) =
+            (* try to insert a power phrase here. *)
+            let
+              (* Get a phrase that we can insert here, and the
+                 remaining phrases (possibly reordered) *)
+              fun getphrase (_, nil) = NONE
+                | getphrase (acc, ph :: rest) =
+                if PU.can_execute state ph
+                   (* Might accidentally make a power word by concatenation;
+                      this makes a bad experiment so don't do it *)
+                   andalso (not (PU.contains_known (sofar ^ ph)))
+                then
+                  SOME (ph, acc @ rest)
+
+                else getphrase (ph :: acc, rest)
+            in
+              case getphrase (nil, phrases) of
+                NONE => (* XXX Explore some... *) (sofar, phrases)
+              | SOME (ph, rest) =>
+                  let in
+                    PU.execute state ph;
+                    loop (sofar ^ ph, rest)
+                  end
+            end
+        in
+          PU.execute state prefix;
+          loop ("", guesses)
+        end
+      else ("", guesses)
     end
 
-  fun make_experiments nil =
+  fun make_experiments (_, nil) =
     print "Got 'em all!\n"
-    | make_experiments guesses =
+    | make_experiments (prefix, guesses) =
     let
       (* XXX in all states.. *)
       val problem_idx = 24
       val seed : Word32.word = 0w18
     in
-      case make_experiment 24 0w18 guesses of
-        ("", _) => print ("Leftover guesses: " ^
-                          Int.toString (length guesses) ^ "\n")
+      case make_experiment 24 0w18 prefix guesses of
+        ("", _) =>
+          if size prefix > 10
+          then
+            print ("Stuck. Leftover guesses: " ^
+                   Int.toString (length guesses) ^ "\n")
+          else
+            let val prefix = prefix ^ "hog"
+            in
+              print ("New prefix: " ^ prefix ^ " [" ^ Int.toString (length guesses) ^
+                     "left]\n");
+              make_experiments (prefix, guesses)
+            end
+
       | (ph, guesses) =>
           let in
             TextIO.output
@@ -114,10 +131,10 @@ struct
              "./submitty.py --prob " ^ Int.toString problem_idx ^
              " --seed " ^ Int.toString (Word32.toInt seed) ^
              " --tag pb_" ^
-             " --sol '" ^ PU.escape ph ^ "'\n");
-            make_experiments guesses
+             " --sol '" ^ PU.escape (prefix ^ ph) ^ "'\n");
+            make_experiments (prefix, guesses)
           end
     end
 
-  val () = make_experiments guesses
+  val () = make_experiments ("", guesses)
 end
