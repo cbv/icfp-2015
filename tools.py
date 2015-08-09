@@ -97,7 +97,7 @@ def scarpyreport(timestamp, all_rankings):
    if backoff is 0: print "[scarpyreport] giving up :("
    elif total > 1: print "[scarpyreport] done. "+str(total)+" new scores"
    elif total is 1: print "[scarpyreport] done. 1 new score"
-   else: print "[scarpyreport] done."
+   else: print "[scarpyreport] done, none of those scores were new."
    
       
                
