@@ -106,6 +106,7 @@ if __name__ == "__main__":
             print "Problem "+str(prob)+" seed "+str(seed)+":"
             db[prob][seed].sort(key=scoreme)
             theset = set([])
+            dups = 0
             for i in range(0, len(db[prob][seed])):
                if db[prob][seed][i]['solution'] not in theset:
                   theset.add(db[prob][seed][i]['solution'])
@@ -116,4 +117,6 @@ if __name__ == "__main__":
                   text = text+score+" "*(maxscore_len + 1 - len(score))+solution
                   if len(text) > LIMIT: text = text[:(LIMIT-3)]+"..."
                   print text
-
+               else: dups += 1
+            if dups == 1: print "   (1 duplicate omitted)"
+            elif dups > 1: print "   ("+str(dups)+" duplicates omitted)" 
