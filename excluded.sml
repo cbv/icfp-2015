@@ -27,7 +27,14 @@ struct
      "xalafuxctholxexanothwhorfinwatsonlamportmormomotheryhagniyhoundehyidhrayigyomagn'thoparker",
      "watermelonvorvadossultharvoltiyigtulushugguathulhu regiothu thuthe worm that gnaws in the nightthe nameless mistthe hydrasthanee",
      "eighth dimensioneihortemdallgobogeggod of the red fluxgolothessistashaiodhouellebecqgtuhanaihoare",
-     (* pb_789 "charybdishaumeahoney beesjanai'ngok'nar'stk'tulukaajh'kaalbhkasparovliskovlloigorhnarqulovecraftlythaliaarwassam'nagalah", *)
+     "charybdishaumeahoney beesjanai'ngok'nar'stk'tulukaajh'kaalbhkasparovliskovlloigorhnarqulovecraftlythaliaarwassam'nagalah", (* pb_789 *)
+     "tharapithiaraphanasuanthanaroasmolenskhopcroftsoon!star motherrlim shaikorthzindarak", (* pb_5a0 *)
+     "ovytonvothuumorryxoornolkothogham waitenyogthanycteliosnycramanyaghogguamril thorionmother of pusmordiggianpluto", (* pb_d6b *)
+     "summanussmallberriesth'ryghthe green godyorithxislanyxxirdnethxa'lighavulthoomysbaddadenythogthavthyarilopsmnomquahz'toggua", (* pb_ea7 *)
+     "makemakemappo no ryujinarkhammichelmilnermlandothdarknessmynoghranugpharolothuyeg", (* pb_90d *)
+     "shlithnethshathakshaklatalsfatlicllpvarunaserioussedna", (* pb_753 *)
+     "xoxiigghuaxotliswarogsk'taishterotshavalyoth", (* pb_c5d *)
+     (* "nctolhunctosaphrases of powerragnallaprintposeidonplanetxplanet xpimoa cthulhusaa'itiirokonrivestscyllasathogguayaya", (* pb_2ff *) *)
      ""]
 
 end
