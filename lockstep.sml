@@ -1,5 +1,7 @@
 structure LockStep :> LOCK_STEP = struct
 
+  val HEURISTIC_FACTOR = 1000
+
   exception LockStep of string
 
    (* Lock the piece at position `(px, py)` and angle `a` *)
@@ -96,11 +98,7 @@ structure LockStep :> LOCK_STEP = struct
                                  NONE => 0
                                | SOME(state) => heuristic (HI {state = state, px = px, py = py, a = a })
                 val scored = List.foldr (fn (Step {scored,...}, s) => scored + s) 0 (step::prev_steps)
-                val still_alive_bonus = case step of
-                                            (Step {state = SOME(_), ...}) => 1000000
-                                          | _ => 0
-                val combined_score = 10000 * scored + hscore + still_alive_bonus
-
+                val combined_score = scored * HEURISTIC_FACTOR + hscore
             in
                 (combined_score, step)
             end
@@ -173,27 +171,27 @@ structure LockStep :> LOCK_STEP = struct
         play_n_steps (state, heuristic, time_limit, (Board.piecesleft state) + 1)
     end
 
-fun simple_heuristic problem (HI {state, ...})  =
-  let
-      val (width, height) = Board.size problem
-      val score = ref 0
-      val () = Util.for
-                   0 (width - 1)
-                   (fn ii => Util.for 0 (height - 1)
-                                      (fn jj =>
-                                          if Board.isempty (state, ii, jj)
-                                          then
-                                              let
-                                              in
-                                                  (* more points, proportional to distance from botton *)
-                                                  score := ((!score) + (height - jj) )
-                                              end
-                                          else ()
+  fun simple_heuristic problem (HI {state, py, ...})  =
+    let
+        val (width, height) = Board.size problem
+        val future_pieces = (Board.piecesleft state) * 50 (* over-estimate *)
+        val score = ref future_pieces
+        val () = Util.for
+                     0 (width - 1)
+                     (fn ii => Util.for 0 (height - 1)
+                                        (fn jj =>
+                                            if Board.isempty (state, ii, jj)
+                                            then
+                                                let
+                                                in
+                                                    (* more points, proportional to distance from botton *)
+                                                    score := ((!score) + (height - jj) )
+                                                end
+                                            else ()
                                       ))
-
-  in
-      !score
-  end
+    in
+        !score
+    end
 
 
 end
