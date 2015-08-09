@@ -52,6 +52,7 @@ if __name__ == "__main__":
    solutiondb = checkdatabase(tags)
    augmentscores(solutiondb)
    warnings = []
+   better = []
 
    for i in range(0,numproblems):
       rankings = data['data']['settings'][i]['rankings']
@@ -83,10 +84,21 @@ if __name__ == "__main__":
 
                if (score < history[i][0]['score']):
                   warnings.append((i, score, history[i][0]['score']))
+                  better = better + history[i][0]['tags']
+                  
+   scarpyreport(data['time'], data['data']['settings'])
+   print ""
 
    for i in range(0, len(warnings)):
       (problem, score, historical) = warnings[i]
-      print "WARNING: Not our best score for problem "+str(i)+",",
+      print "[ULTRASCARPY] Warning, not our best score for problem "+str(i)+",",
       print str(score)+" versus "+str(historical)
-
-   scarpyreport(data['time'], data['data']['settings'])
+   if len(better) > 0:
+      print ""
+      print "[ULTRASCARPY] Don't necessarily trust me, but I think the",
+      print "following tags, if"
+      print "submitted, would give us a better score:"
+      print "-"*80
+      for tag in better:
+         print tag,
+      print "\n"

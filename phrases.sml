@@ -16,7 +16,7 @@ struct
   val hypotheses = [
     (* Other Cthulhu mythos stuff?  Yog Suthuth, Shub Niggurath...? *)
     "icfp2015" (* dropped letters in problem 24.. /probably/ not?  fp is E W, and so is 20.. very hard not to stutter *)
-  ]
+                    ]
 
   (* These are known to be incorrect -- phrases of weakness *)
   val weakness = [

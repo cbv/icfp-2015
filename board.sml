@@ -664,6 +664,10 @@ struct
 
   fun forgetlegal c = c
 
+  fun islegal c =
+    (* PERF -- are exns fast? *)
+    (ignore (charcommand c); true) handle Board _ => false
+
   (* Imperatively update board to reflect deleted lines, and return
      the number of lines so deleted. *)
   fun check_lines (P { width, height, ... }) board =

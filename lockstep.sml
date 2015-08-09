@@ -38,18 +38,27 @@ structure LockStep :> LOCK_STEP = struct
     end
 
 
+  datatype searchcontext = SC of { max_depth: int,
+                                   best: ((int * step list) option) ref,
+                                   heuristic: Board.state -> int,
+                                   prev_steps: step list
+                                 }
+
   (*
      walk through all lockstep sequences of depth n.
      best: ((int, step list) option) ref
 
      heuristic: Board.state -> int
   *)
-  fun search (max_depth, best, heuristic, combined_score, prev_steps) (step as Step {state = state_opt, ...}) =
+  fun search (SC {max_depth, best, heuristic, prev_steps}, combined_score,
+              step as Step {state = state_opt, ...}) =
     case (state_opt, max_depth <= 1 + (List.length prev_steps))
      of (SOME(state), false) =>
         let
+            val new_context = SC {max_depth = max_depth, best = best, heuristic = heuristic,
+                              prev_steps = step::prev_steps}
         in
-            search_steps (max_depth, best, heuristic, state, step::prev_steps)
+            search_steps (new_context, state)
         end
      | _ => (* don't go deeper *)
        let
@@ -64,7 +73,7 @@ structure LockStep :> LOCK_STEP = struct
            ()
        end
 
-  and search_steps (max_depth, best, heuristic, state, prev_steps) =
+  and search_steps (context as SC {heuristic, prev_steps, ...}, state) =
       let
           fun mapper (step as Step {state, ...}) =
             let
@@ -98,7 +107,7 @@ structure LockStep :> LOCK_STEP = struct
           fun apper (combined_score, step) =
             let
             in
-                (search (max_depth, best, heuristic, combined_score, prev_steps) step)
+                search (context, combined_score, step)
             end
       in
           List.app apper pairs_to_search
@@ -108,7 +117,8 @@ structure LockStep :> LOCK_STEP = struct
     let
         val best = ref NONE
 (*        val () = print (Board.toascii state ^ "\n\n") *)
-        val () = search_steps (8, best, heuristic, state, [])
+        val context = SC {max_depth = 3, best = best, heuristic = heuristic, prev_steps = []}
+        val () = search_steps (context, state)
     in
         case !best of
             SOME((score, all_steps as (step as Step { state = SOME(state), ...})::steps)) =>
@@ -117,10 +127,18 @@ structure LockStep :> LOCK_STEP = struct
          |  _ => raise LockStep "impossible"
     end
 
-  fun play_to_end (state, heuristic) =
+  fun play_n_steps (state, heuristic, time_limit, n) =
     let
     in
         accumulate_best (state, heuristic, [])
     end
+
+  fun play_to_end (state, heuristic, time_limit) =
+    let
+    in
+        play_n_steps (state, heuristic, time_limit, (Board.piecesleft state) + 1)
+    end
+
+
 
 end

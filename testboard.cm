@@ -41,6 +41,7 @@ sml-lib/algo/heap-sig.sml
 sml-lib/algo/heap.sml
 
 json.sml
+json-util.sml
 
 ansi.sml
 
@@ -49,12 +50,10 @@ rng.sml
 
 phrases.sml
 
-json_utils.sml
-
 board-sig.sml
 board.sml
 
-tactic-sig.sml
+(* tactic-sig.sml *)
 (* astar.sml *)
 
 forwardchain-sig.sml

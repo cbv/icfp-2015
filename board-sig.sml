@@ -91,6 +91,7 @@ sig
   val charcommand : legalchar -> command
   (* All of the meanginful chars *)
   val legalchars : legalchar vector
+  val islegal : char -> bool
 
   val move : state * legalchar -> moveresult
 
