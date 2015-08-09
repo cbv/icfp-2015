@@ -7,8 +7,8 @@ val problemp = Params.param "15"
 
 fun main () =
   let
-    val power_phrases = Phrases.power
-    val power_phrases = ["john bigboote"]
+(*     val power_phrases = Phrases.power*)
+     val power_phrases = ["planet 10"]
     val problemId = Params.asint 1 problemp
     val problem = Board.fromjson
                       (StringUtil.readfile
@@ -91,8 +91,22 @@ fun main () =
            | SOME s => play_to_end (s, heur))
       end
 
-    val lchrs = play_to_end (state, heur)
+(*     val lchrs = play_to_end (state, heur) *)
+
+    val steps = rev (LockStep.play_to_end (state, LockStep.lockstep_heuristic problem,
+                                           Time.fromSeconds 10))
+(*     val _ = print ((Int.toString (length steps)) ^ "\n") *)
+    fun steps_to_lchrs state [] = (TextIO.output(TextIO.stdErr, "WAT2\n"); [Board.legalize #"p"])
+      | steps_to_lchrs state (LockStep.Step (step as {state=SOME state', ...})::tl) =
+        (TextIO.output(TextIO.stdErr, "STEP\n");
+         lchrs_for_step state step @ steps_to_lchrs state' tl)
+      | steps_to_lchrs state (LockStep.Step (step as {state=NONE, ...})::tl) =
+        (TextIO.output(TextIO.stdErr, "WAT\n");
+        lchrs_for_step state step)
+
+    val lchrs = steps_to_lchrs state steps
   in
+
     print (implode (map Board.forgetlegal lchrs))
   end
   handle Board.Board s =>

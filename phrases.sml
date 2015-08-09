@@ -11,6 +11,7 @@ struct
     , "Necronomicon" (* for summoning the Old Ones; experiment power27e *)
     , "Tsathoggua" (* Master of formless spawn, tag manual515 *)
     , "John Bigboote" (* confirmed tag banzai8be. *)
+    , "Planet 10"
     ]
 
   (* Ideas? *)

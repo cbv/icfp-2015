@@ -144,7 +144,7 @@ structure LockStep :> LOCK_STEP = struct
   fun accumulate_best (state, heuristic, accumulator, 0, deadline) = accumulator
     | accumulate_best (state, heuristic, accumulator, steps_remaining, deadline) =
     let
-        val () = TextIO.output(TextIO.stdErr, Board.toascii state ^ "\n\n\n");
+(*        val () = TextIO.output(TextIO.stdErr, Board.toascii state ^ "\n\n\n"); *)
         val step_deadline = Time.+(
                               Time.now(),
                               Time.fromReal(Time.toReal(Time.-(deadline, Time.now())) /
