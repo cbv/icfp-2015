@@ -46,6 +46,10 @@ struct
      "allons yatlach nachabad wolfbalrogbugg shashdoctor whogeronimoidh yaajohn backusmonkey boymoriamr fusionpandoricariver songq'yth azrobin minlerzoth ommog", (* pb_3ac *)
      "fly you foolsfly you fools!nautilustardisthe doctorzhar and lloigorzvilpogghuaunder the sea", (* pb_5a5 *)
      "no matter where you go there you areremember no matter where you go there you are", (* pb_c03 *)
+     "chaimchoose wiselyemetgolemwatermelons", (* pb_e67 *)
+     "'twas brillig and the slithy tovesall mimsy were the borogovesand the mome raths outgrabe42!don't panicnorthot", (* pb_13 *)
+     "abracadabraavada kedavracallooh!hocus pocusbadwolfvogon", (* pb_efb *)
+     "oh no! not again!oh no not againthe cloud thingpresto", (* pb_e13 *)
      ""]
 
 end

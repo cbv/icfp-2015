@@ -110,6 +110,7 @@ struct
       val problem_idx = 24
       val seed : Word32.word = 0w18
     in
+<<<<<<< HEAD
       case make_experiment 24 0w18 prefix guesses of
         ("", _) =>
           if size prefix > 10
@@ -124,6 +125,15 @@ struct
               make_experiments (prefix, guesses)
             end
 
+=======
+      case make_experiment 24 0w18 guesses of
+        ("", _) => print ("Leftover guesses: " ^
+                          Int.toString (length guesses) ^ "\n"
+                          (* print the list of guesses -- on a line by itself
+                             so it's easy to comment out if desired *)
+                          ^ String.concatWith "\n" guesses ^ "\n"
+                          )
+>>>>>>> a819311a69701899e4e684832ab8a1bd35f9c93d
       | (ph, guesses) =>
           let in
             TextIO.output
