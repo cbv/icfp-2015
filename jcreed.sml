@@ -17,7 +17,7 @@ val timelimitp = Params.param "10"
 fun main () =
   let
     val power_phrases = Phrases.power
-    (*      val power_phrases = ["planet 10"] *)
+    val power_phrases = ["the deep ones"]
 
     val Pathfind.PS {stream_state=init_stream_state, query} =
         Pathfind.PowerHeuristics.robin power_phrases

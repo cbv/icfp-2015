@@ -613,6 +613,18 @@ vancouver
 icfp
 2015
 
+# meta
+# this line is is 51 chars long
+# -------------------------------------------------
+international conference on functional programming
+international conference on functional programming!
+international conference on functional programming 2015
+ACM SIGPLAN
+icfp 2015
+galois connections
+evariste galois
+icfpcontest
+
 # charlie stross
 # http://thelaundryfiles.wikia.com/wiki/Category:Code_names
 CASE NIGHTMARE GREEN
@@ -658,3 +670,5 @@ RHESUS POSITIVE EPSILON
 SCORPION STARE
 TEAPOT
 TEAPOT BARON TYBURN
+
+the deep ones

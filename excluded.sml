@@ -54,7 +54,8 @@ struct
      "what do you get when you multiply six by ninevoilazaphod beeblebrox", (* pb_5d2 *)
      "hp lovecrafthplovecraftso long and thanks for all the fishzeus", (* pb_7d8 *)
      "hogzymal", (* pb_6d2 *)
-     (* "hoghoghogothkkartho", (* pb_82c *) *)
+     "hoghoghogothkkartho", (* pb_82c *)
+     (* "hoghogleslie lamport", (* XXX *) *)
      ""]
 
 end
