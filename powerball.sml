@@ -1,18 +1,56 @@
 
-structure DB =
+structure PB =
 struct
 
-  exception DB of string
+  exception PB of string
   structure PU = PowerUtil
-
-  val chars = Vector.map Board.forgetlegal Board.legalchars
-  val radix = Vector.length chars
-
-  val l = DeBruijnSequence.debruijn (3, radix)
-  val s : string = CharVector.fromList (map (fn idx => Vector.sub(chars, idx)) l)
 
   val problems = PowerUtil.problems ()
 
+  val guesses = Script.linesfromfile "powerball.txt"
+  val guesses = map (StringUtil.losespecsides StringUtil.whitespec) guesses
+  val guesses = List.filter
+    (fn "" => false
+  | s => not (StringUtil.matchhead "#" s)) guesses
+  val guesses = map StringUtil.lcase guesses
+
+  structure SS = SplaySetFn(type ord_key = string
+                            val compare = String.compare)
+  fun deduplicate sl =
+    let val s = foldr SS.add' SS.empty sl
+    in SS.foldr op:: nil s
+    end
+
+  val guesses = deduplicate guesses
+
+  fun filterout s =
+    if PU.is_known s
+    then
+      let in
+        print ("Already known: [" ^ s ^ "]\n");
+        NONE
+      end
+    else
+      if PU.is_excluded s
+      then
+        let in
+          print ("Already exlcuded: [" ^ s ^ "]\n");
+          NONE
+        end
+      else
+        if PU.is_invalid s
+        then
+          let in
+            print ("Contains invalid chars: [" ^ s ^ "]\n");
+            NONE
+          end
+        else SOME s
+
+  val guesses = List.mapPartial filterout guesses
+
+  val () = app (fn s => print (s ^ "\n")) guesses
+
+    (*
   val padding = "hog"
   fun longest_prefix_with_padding solution =
     let
@@ -84,4 +122,5 @@ struct
     end
   val () = ListUtil.appi onebig big
   val () = TextIO.closeOut f
+*)
 end

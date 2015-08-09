@@ -63,5 +63,26 @@ struct
       | SOME (n, idx, s) => (n, idx, s)
     end
 
+  structure SS = SplaySetFn(type ord_key = string
+                            val compare = String.compare)
+
+  val all_excluded = Excluded.excluded @ Phrases.weakness
+  val known_powerwords = foldr SS.add' SS.empty Phrases.power
+
+  fun is_excluded s =
+    let
+      fun try nil = false
+        | try (w :: rest) =
+        case StringUtil.find s w of
+          NONE => try rest
+        | SOME _ => true
+    in
+      try all_excluded
+    end
+
+  fun is_invalid s =
+    CharVector.exists (fn c => not (Board.islegal c)) s
+
+  fun is_known s = SS.member (known_powerwords, s)
 
 end
