@@ -1,4 +1,7 @@
-(* WARNING!! This code has noob bugs in it! Do not trust! -tom7 *)
+(* WARNING!! This code has noob bugs in it! Do not trust! -tom7
+
+   And it's soooooo slowwwww
+*)
 
 (*******************************************************************************
 *  Standard ML JSON parser

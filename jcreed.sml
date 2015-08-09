@@ -13,27 +13,14 @@ val timelimitp = Params.param "10"
                               (SOME("-timelimit", "Max number of seconds to spend."))
                               ("timelimit")
 
-structure StringSet = SplaySetFn(struct
-                                  type ord_key = string
-                                  val compare = String.compare
-                                  end)
-
 
 fun main () =
   let
-     val power_phrases = Phrases.power
-(*      val power_phrases = ["planet 10"] *)
+    val power_phrases = Phrases.power
+    (*      val power_phrases = ["planet 10"] *)
 
-    datatype sstate = SSA of StringSet.set
-                    | SSB
-    fun query (SSA s) = if StringSet.isEmpty s
-                        then query SSB
-                        else
-                          let val pick = hd (StringSet.listItems s)
-                          in (pick, SSA (StringSet.delete(s, pick)), SSA s)
-                          end
-      | query SSB = ("ia! ia!", SSB, SSB)
-    val init_stream_state = SSA (StringSet.addList(StringSet.empty, power_phrases))
+    val Pathfind.PS {stream_state=init_stream_state, query} =
+        Pathfind.PowerHeuristics.robin power_phrases
 
     fun lchrs_for_step state stream_state (LockStep.Step {px, py, a, commands, ...}) =
       let

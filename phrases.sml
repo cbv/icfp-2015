@@ -65,5 +65,6 @@ struct
   , "Nyarlathotep" (* refuted by tag nyarlathotep8d6 *)
   , "John" (* confirmed tag banzai43f *)
   , "deneb" (* refuted by AKIVA2d1 *)
+  , "lord john whorfin barbara liskov robin milner ron rivest ronald rivest sir tony hoare john conway john cocke" (* refuted by submittyfa9 *)
     ]
 end

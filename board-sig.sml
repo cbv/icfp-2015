@@ -149,4 +149,8 @@ sig
 
   val uniformize_coord : (int * int) -> (int * int)
   val deuniformize_coord : (int * int) -> (int * int)
+
+  (* Count of on-off transitions within each row;
+     higher values are worse. Assumes nonzero width. *)
+  val raggedness_heuristic : state -> int
 end
