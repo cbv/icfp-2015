@@ -1,9 +1,13 @@
 structure Excluded =
 struct
 
-  (* Does not contain any power words. These are subsequences of a de bruijn sequence
+  (* Does not contain any power words. Some are subsequences of a de bruijn sequence
      so they are encoded pretty efficiently (some have a prefix like "hog" in order to
-     put the piece in a place where it doesn't immediately crash). *)
+     put the piece in a place where it doesn't immediately crash).
+
+     Others are from powerball.txt, which is shotgun-style guesses (pastes from the
+     lovecraft wiki, etc.)
+     *)
   val excluded =
     ["hog1exkexsextexuexwexxfffyff2ffaffgffhffiffjff4fflffmffnffoff ff5ffdffqffrffvffzff1ffkffsfftffuffwffxfyyfy2fyafygfyhfyifyjfy4fylfymfynfyofy fy5fydfyqfyrfyvfyzfy1fykfysfytfyufywfyxf2yf22f2af2gf2hf2if2jf24f2lf2mf2nf2of2 f25f2df2qf2rf2vf2zf21f2kf2sf2tf2uf2wf2xfayfa2faafagfahfaifajfa4falfamfanfaofa fa5fadfaqfarfavfazfa1fakfasfatfaufawfaxfgyfg2fgafggfghfgifgjfg4fglfgmfgnfgofg fg5fgdfgqfgrfgvfgzfg1fgkfgsfgtfgufgwfgxfhyfh2fhafhgfhhfhifhjfh4fhlfhmfhnfhofh fh5fh",
      "4bblbbmbbnbbobb bb5bbdbbqbbrbbvbbzbb1bbkbbsbbtbbubbwbbxbccbcebcfbcybc2bcabcgbchbcibcjbc4bclbcmbcnbcobc bc5bcdbcqbcrbcvbczbc1bckbcsbctbcubcwbcxbecbeebefbeybe2beabegbehbeibejbe4belbembenbeobe be5bedbeqberbevbezbe1bekbesbetbeubewbexbfcbfebffbfybf2bfabfgbfhbfibfjbf4bflbfmbfnbfobf bf5bfdbfqbfrbfvbfzbf1bfkbfsbftbfubfwbfxbycbyebyfbyyby2byabygbyhbyibyjby4bylbymbynbyoby by5by",
@@ -15,7 +19,10 @@ struct
      "hog1bxkbxsbxtbxubxwbxxccceccfccycc2ccaccgcchcciccjcc4cclccmccnccocc cc5ccdccqccrccvcczcc1cckccscctccuccwccxceecefceyce2ceacegcehceicejce4celcemcenceoce ce5cedceqcercevcezce1cekcescetceucewcexcfecffcfycf2cfacfgcfhcficfjcf4cflcfmcfncfocf cf5cfdcfqcfrcfvcfzcf1cfkcfscftcfucfwcfxcyecyfcyycy2cyacygcyhcyicyjcy4cylcymcyncyocy cy5cydcyqcyrcyvcy",
      "hogzcy1cykcyscytcyucywcyxc2ec2fc2yc22c2ac2gc2hc2ic2jc24c2lc2mc2nc2oc2 c25c2dc2qc2rc2vc2zc21c2kc2sc2tc2uc2wc2xcaecafcayca2caacagcahcaicajca4calcamcancaoca ca5cadcaqcarcavcazca1cakcascatcaucawcaxcgecgfcgycg2cgacggcghcgicgjcg4cglcgmcgncgocg cg5cgdcgqcgrcgvcgzcg1cgkcgscgtcgucgwcgxchechfchych2chachgchhchichjch4chlc",
      "abholosabhothaiueb gnshalalalaalithlai tyyammutsebaapocolothothayi'igaylithbasatanbastbyatiscthaeghya",
-     "cthaatcoinchenncoatlicuecluluclooloocrom cruachclearedcighuluchaugnar faugncathuluazathothbigger scorescthugha'ymnarcthulhucthullucthulucthyllactogghacyaeghaeyroix"
+     "cthaatcoinchenncoatlicuecluluclooloocrom cruachclearedcighuluchaugnar faugncathuluazathothbigger scorescthugha'ymnarcthulhucthullucthulucthyllactogghacyaeghaeyroix",
+     "cxaxukluthcynothoglysei'lordzewadythalladygradveahtehserrordagondaolothderlethdhuminfinalsgaloisghadamonghatanothoahoneycombhoggghastalyksebekscathachkaalutkthanid",
+     "klosmiebhyxkathulukassogthakthulhukthulhutktulukulhukutulamkutunluulocksmh'ithrhakutuluph'nglui"
+     (* pb_fc4 "ovytonvothuyegothuumorryxoornoneolkothogham waitenyogthanycteliosnycramanyaghogguaoztalunnugnodensnctosanctolhumynoghramril thorionmother of pusmothermormomichelmappo no ryujinprintk'tulupimoa cthulhuphrases of powerlovecraftpharollythaliamlandothr'lyehsfatlicllpk'nar'stiod" *)
      ]
 
 end

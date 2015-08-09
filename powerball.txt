@@ -342,3 +342,24 @@ honeycomb
 
 # pdf
 Aleister
+
+# from tweets
+watermelon
+quantum computing
+d-wave
+kurzweil
+kasparov
+watson
+honey bees
+benthic
+pluto
+neptune
+planet x
+planetx
+charon
+eris
+makemake
+sedna
+quaoar
+varuna
+haumea
