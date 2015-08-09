@@ -38,7 +38,7 @@ sml-lib/misc/params-sig.sml
 sml-lib/misc/params.sml
 
 json.sml
-json_utils.sml
+json-util.sml
 
 ansi.sml
 
@@ -49,5 +49,8 @@ phrases.sml
 
 board-sig.sml
 board.sml
+
+power-util-sig.sml
+power-util.sml
 
 debruijn.sml

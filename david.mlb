@@ -32,6 +32,7 @@ sml-lib/misc/params-sig.sml
 sml-lib/misc/params.sml
 
 json.sml
+json-util.sml
 
 ansi.sml
 
@@ -39,8 +40,6 @@ rng-sig.sml
 rng.sml
 
 phrases.sml
-
-json_utils.sml
 
 board-sig.sml
 board.sml

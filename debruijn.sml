@@ -3,6 +3,7 @@ structure DB =
 struct
 
   exception DB of string
+  structure PU = PowerUtil
 
   val chars = Vector.map Board.forgetlegal Board.legalchars
   val radix = Vector.length chars
@@ -10,66 +11,13 @@ struct
   val l = DeBruijnSequence.debruijn (3, radix)
   val s : string = CharVector.fromList (map (fn idx => Vector.sub(chars, idx)) l)
 
-  fun loadproblem p = Board.fromjson
-    (StringUtil.readfile ("qualifiers/problem_" ^ Int.toString p ^ ".json"))
-
-  val () = print "loading problems...\n"
-  val problems = Vector.tabulate(25, loadproblem)
-  val () = print "ok.\n"
-
-  (* Return the longest prefix that does not result in ERROR; can be 0 *)
-  fun get_valid_prefix problem seed solution =
-    let
-      val state = Board.resetwithseed (problem, seed)
-      val solution_size = String.size solution
-      fun score_from i =
-        if i = solution_size
-        then i
-        else
-          let
-            val c = Board.legalize (String.sub (solution, i))
-            val Board.M { status, ... } = Board.move (state, c)
-          in
-            case status of
-              Board.CONTINUE => score_from (i + 1)
-            | Board.GAMEOVER _ => i
-            | Board.ERROR => i
-          end
-  in
-    score_from 0
-  end
-
-  fun longest_prefix solution =
-    let
-      val best = ref NONE
-      fun oneproblem (idx, p) =
-        let
-          val seeds = Board.seeds p
-          fun oneseed s =
-            let
-              val n = get_valid_prefix p s solution
-            in
-              if (case !best of
-                    NONE => true
-                  | SOME (x, _, _) => n > x)
-              then best := SOME (n, idx, s)
-              else ()
-            end
-        in
-          Vector.app oneseed seeds
-        end
-    in
-      Vector.appi oneproblem problems;
-      case !best of
-        NONE => raise DB "There is at least one problem, right?"
-      | SOME (n, idx, s) => (n, idx, s)
-    end
+  val problems = PowerUtil.problems ()
 
   val padding = "hog"
   fun longest_prefix_with_padding solution =
     let
-      val (n, i, s) = longest_prefix solution
-      val (nn, ii, ss) = longest_prefix (padding ^ solution)
+      val (n, i, s) = PU.longest_prefix problems solution
+      val (nn, ii, ss) = PU.longest_prefix problems (padding ^ solution)
     in
       if nn - size padding > n
       then (nn - size padding, ii, ss, true)
