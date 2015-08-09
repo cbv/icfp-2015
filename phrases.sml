@@ -10,9 +10,7 @@ struct
     , "Cthulhu fhtagn!" (* "Cthulhu waits"; experiment powerc6e *)
     , "Necronomicon" (* for summoning the Old Ones; experiment power27e *)
     , "Tsathoggua" (* Master of formless spawn, tag manual515 *)
-        (* , "John Bigboote" (* confirmed tag banzai8be. *)
-           could be a substring -- testing 'bigboote' in tom_f95 right now
-           *)
+    , "John Bigboote" (* confirmed tag banzai8be + what jason? *)
     , "yoyodyne" (* confirmed in yes_93b *)
     ]
 
