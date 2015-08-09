@@ -42,26 +42,6 @@ structure LockStep :> LOCK_STEP = struct
         List.mapPartial mapper accessible
     end
 
-
-  datatype searchcontext = SC of { max_depth: int,
-                                   heuristic: HeuristicInput -> int,
-                                   branch_factor: int,
-                                   best: ((int * step list) option) ref,
-                                   prev_steps: step list
-                                 }
-
-
-  fun compare_first_reverse ((s1, _), (s2, _)) =
-    case Int.compare (s1, s2) of
-        LESS => GREATER
-      | GREATER => LESS
-      | EQUAL => EQUAL
-  fun take n [] = []
-    | take 0 lst = []
-    | take n (x::xs) = x::(take (n - 1) xs)
-
-
-
   structure Heap = HeapFn(struct
                            type priority = int
                            val compare = Int.compare
@@ -90,31 +70,39 @@ structure LockStep :> LOCK_STEP = struct
     let
         val result_heap = Heap.empty ()
         val heap = ref (Heap.empty ())
+        val next_heap = ref (Heap.empty ())
         val _ = Heap.insert (!heap) 0 []
         val iter = ref 0
 
-        fun maybe_prune() =
-          if Heap.size (!heap) < 100000
-          then ()
-          else
-              let
-                  val old_heap = !heap
-                  val new_heap = Heap.empty()
-                  val () = Util.for 0 1000 (fn _ =>
-                                               case Heap.min old_heap
-                                                of SOME(p, v) => (Heap.insert new_heap p v;())
-                                                 | _ => ())
-              in
-                  heap := new_heap
-              end
-
         fun single_step () =
           case Heap.min (!heap) of
-              NONE => ()
+              NONE =>
+              if Heap.size (!next_heap) > 0
+              then
+                  let
+                      val () = heap := (!next_heap)
+                      val () = next_heap := (Heap.empty())
+                      val () =
+                          if Heap.size (!heap) > 100000
+                          then
+                              let
+                                  val old_heap = !heap
+                                  val new_heap = Heap.empty ()
+                                  val () = Util.for 0 100 (fn _ =>
+                                                             case Heap.min old_heap
+                                                              of SOME(p, v) => (Heap.insert new_heap p v;())
+                                                               | _ => ())
+                              in
+                                  heap := new_heap
+                              end
+                          else ()
+                  in
+                      single_step()
+                  end
+              else ()
             | SOME (neg_combined_score, ssteps) =>
               let
                   val () = iter := ((!iter) + 1)
-                  val () = maybe_prune()
 (*                  val () = print ("examining node with priority " ^ Int.toString neg_combined_score ^ "\n") *)
                   val (state, accum_score) =
                       case ssteps of
@@ -123,12 +111,8 @@ structure LockStep :> LOCK_STEP = struct
                           (state, accum_score)
                         | _ => raise LockStep "impossible"
                   val poss = (possible_next_steps state)
-                  val pairs = List.map (compute_combined_score heuristic accum_score) poss
-                  val sorted_pairs = ListUtil.sort compare_first_reverse pairs
+                  val pairs_to_search = List.map (compute_combined_score heuristic accum_score) poss
 
-                  (* Just look at the most promising *)
-                  val branch_factor = 10
-                  val pairs_to_search = take branch_factor sorted_pairs
                   fun apper (combined_score, step as Step {scored, state = state_opt, ...}) =
                     let
                         val new_accum_score = accum_score + scored
@@ -136,7 +120,7 @@ structure LockStep :> LOCK_STEP = struct
                         val _ =
                             case state_opt of
                                 SOME(new_state) =>
-                                Heap.insert (!heap) (~combined_score) new_sequence
+                                Heap.insert (!next_heap) (~combined_score) new_sequence
                               | NONE =>
                                 (* We've reached an end state. emit it. *)
                                 Heap.insert result_heap (~new_accum_score)
@@ -170,8 +154,6 @@ structure LockStep :> LOCK_STEP = struct
                            )
                         | _ => raise LockStep "impossible"
                   else ());
-
-
 
                   if (!iter) mod 1000 = 0 andalso Time.>(Time.now(), deadline)
                   then ()
