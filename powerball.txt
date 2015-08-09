@@ -624,3 +624,10 @@ icfp 2015
 galois connections
 evariste galois
 icfpcontest
+
+# charlie stross
+# http://thelaundryfiles.wikia.com/wiki/Category:Code_names
+CASE NIGHTMARE GREEN
+MAGINOT BLUE STARS
+the deep ones
+
