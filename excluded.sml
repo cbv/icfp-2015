@@ -41,6 +41,7 @@ struct
      "ptar axtlanreal soon!kaunuzothraandaii b'nkyog saphagzxtyos", (* pb_3a0 *)
      "juk shabblu kthungyr korathnssu ghahnbut'ulls hr'hervile octhuitloxopetlvolgna gathuitzilcapacyad thaddag", (* pb_f33 *)
      "lord john whorfin barbara liskov robin milner ron rivest ronald rivest sir tony hoare john conway john cocke", (* submittyfa9 *)
+     "etaoin shrdluflux capacitord wavegi hoveggigawattsgog hoorgol gorothasdfgreat scottyegg ha", (* pb_516 *)
      ""]
 
 end

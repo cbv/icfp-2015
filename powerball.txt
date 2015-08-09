@@ -64,9 +64,12 @@ Cyaegha
 Nyarlathotep
 Nyogtha
 Shub-Niggurath
+Shub Niggurath
 sathoggua
 Yog-Sothoth
+Yog Sothoth
 phoom-Zhah
+phoom Zhah
 Cthugha
 Cthulhu
 Dagon
@@ -472,6 +475,7 @@ gigawatts
 flux capacitor
 mr fusion
 great scott
+great scott!
 under the sea
 
 
