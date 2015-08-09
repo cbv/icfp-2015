@@ -240,25 +240,21 @@ $(document).on('keypress', function(e) {
 });
 
 $(document).on('keydown', function(e) {
-//  console.log(e.keyCode);
+  //  console.log(e.keyCode);
+  if (e.keyCode == 188) { // ","
+    problemNumber--;
+    load_problem(problemNumber);
+  }
+  if (e.keyCode == 190) { // "."
+    problemNumber++;
+    load_problem(problemNumber);
+  }
+
   if (mode == "joystick") {
     try_motion_command(e.keyCode);
     if (e.keyCode == 192) { // "`"
       mode = "literal";
       draw_board(g_board);
-    }
-    if (e.keyCode == 188) { // ","
-      problemNumber--;
-      load_problem(problemNumber);
-    }
-
-    if (e.keyCode == 188) { // ","
-      problemNumber--;
-      load_problem(problemNumber);
-    }
-    if (e.keyCode == 190) { // "."
-      problemNumber++;
-      load_problem(problemNumber);
     }
     if (e.keyCode == 85) { // "u"
       attempt_move(0,-1,0, "=");
