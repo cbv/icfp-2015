@@ -15,7 +15,7 @@ struct
     ("timelimit")
 
 (* favor far-down squares *)
-fun heuristic (x, y) = y
+(* fun heuristic (x, y) = y *)
 
 (*
 fun do_seed (problemId, problem, seed_idx, seed) =
