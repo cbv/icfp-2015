@@ -114,7 +114,7 @@ structure LockStep :> LOCK_STEP = struct
             | SOME (neg_combined_score, ssteps) =>
               let
                   val () = maybe_prune()
-                  val () = print ("examining node with priority " ^ Int.toString neg_combined_score ^ "\n")
+(*                  val () = print ("examining node with priority " ^ Int.toString neg_combined_score ^ "\n") *)
                   val (state, accum_score) =
                       case ssteps of
                           [] => (initial_state, 0)
@@ -131,7 +131,7 @@ structure LockStep :> LOCK_STEP = struct
                   fun apper (combined_score, step as Step {scored, state = state_opt, ...}) =
                     let
                         val new_accum_score = accum_score + scored
-                        val new_sequence = (SS {step = step, accum_score = accum_score})::ssteps
+                        val new_sequence = (SS {step = step, accum_score = new_accum_score})::ssteps
                         val _ =
                             case state_opt of
                                 SOME(new_state) =>
@@ -140,20 +140,13 @@ structure LockStep :> LOCK_STEP = struct
                                 (* We've reached an end state. emit it. *)
                                 Heap.insert result_heap (~new_accum_score)
                                             new_sequence
-
                     in
                         ()
                     end
               in
                   List.app apper pairs_to_search;
-                  print ("took a step. size = " ^ Int.toString (Heap.size (!heap)) ^ "\n");
-                  print ("result size = " ^ Int.toString (Heap.size result_heap) ^ "\n");
-                  (if (Heap.size result_heap) > 0
-                  then case Heap.min result_heap of
-                           SOME (_, (SS {accum_score, ...})::_) =>
-                           print ("found a result with score" ^ Int.toString accum_score ^ "\n")
-                        | _ => raise LockStep "impossible"
-                  else ());
+(*                  print ("took a step. size = " ^ Int.toString (Heap.size (!heap)) ^ "\n");
+                  print ("result size = " ^ Int.toString (Heap.size result_heap) ^ "\n"); *)
                   single_step()
               end
 
