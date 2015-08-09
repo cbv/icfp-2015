@@ -117,6 +117,8 @@ struct
                   Int.toString (!wasted) ^ ".\n" ^
                   "There are " ^ Int.toString (length (!big)) ^ " big strings.\n")
 
+  val big = ListUtil.sort (fn ((s, _, _, _), (ss, _, _, _)) => Int.compare (size ss, size s)) (!big)
+
   val f = TextIO.openOut "db3.txt"
   (* Ridiculous! Since we are targeting 'quoted' output, turn a single
      quote into ' (ending the quote) "'" (quoted quote) ' (restart quotes).
@@ -126,11 +128,11 @@ struct
     let val actual = if padded then padding ^ s
                      else s
     in
-      TextIO.output (f, "./submitty.py -prob " ^ Int.toString problem ^
-                     " -seed " ^ Int.toString (Word32.toInt seed) ^
-                     " -db3_" ^ Int.toString i ^
-                     " -sol '" ^ escape actual ^ "'\n")
+      TextIO.output (f, "./submitty.py --prob " ^ Int.toString problem ^
+                     " --seed " ^ Int.toString (Word32.toInt seed) ^
+                     " --tag db3_" ^ Int.toString i ^
+                     " --sol '" ^ escape actual ^ "'\n")
     end
-  val () = ListUtil.appi onebig (!big)
+  val () = ListUtil.appi onebig big
   val () = TextIO.closeOut f
 end
