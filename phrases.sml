@@ -13,6 +13,16 @@ struct
     , "John Bigboote" (* confirmed tag banzai8be. *)
     ]
 
+     (* pb_f38 "xalafuxctholxexanothwhorfinwatsonlamportmormomotheryhagniyhoundehyidhrayigyomagn'thoparkeryorithyoyodyneysbaddadenythogthaz'togguazathogy'golonac" has a power word!
+
+        pb_b0e "xalafuxctholxexanothwhorfinwatsonlamport" NO
+        pb_a33 "xalafuxctholxexanothwhorfinwatsonlamportmormomotheryhagniyhoundehyidhrayigyomagn'thoparker" NO
+               "xalafuxctholxexanothwhorfinwatsonlamportmormomotheryhagniyhoundehyidhrayigyomagn'thoparkeryorith" ?
+        pb_da8 "xalafuxctholxexanothwhorfinwatsonlamportmormomotheryhagniyhoundehyidhrayigyomagn'thoparkeryorithyoyodyneysbaddaden" YES
+
+        pb_799 "xalafuxctholxexanothwhorfinwatsonlamportmormomotheryhagniyhoundehyidhrayigyomagn'thoparkeryorithyoyodyneysbaddadenythogtha" YES
+        *)
+
   (* Ideas? *)
   val hypotheses = [
     (* Other Cthulhu mythos stuff?  Yog Suthuth, Shub Niggurath...? *)
