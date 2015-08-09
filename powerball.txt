@@ -673,9 +673,37 @@ TEAPOT
 TEAPOT BARON TYBURN
 # books from laundryfiles.wikia.com
 The Atrocity Archives
+The Concrete Jungle
 The Jennifer Morgue
-The Apocalypse Codex
+Pimpf
+Down on the Farm
+Equoid
 The Fuller Memorandum
+Overtime
+The Apocalypse Codex
 The Rhesus Chart
+The Annihilation Score
+# without articles
+Atrocity Archives
+Concrete Jungle
+Jennifer Morgue
+Fuller Memorandum
+Apocalypse Codex
+Rhesus Chart
+Annihilation Score
 
 the deep ones
+
+# power words and IF
+xyzzy
+plugh
+plover
+zork
+zorkmid
+# doom/id codes
+idkfa
+iddqd
+idspispopd
+idclip
+# konami code
+up up down down left right left right b a start

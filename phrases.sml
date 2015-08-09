@@ -16,6 +16,7 @@ struct
     , "yoyodyne" (* confirmed in yes_93b *)
     , "planet 10" (* confirmed in redacted7cf *)
     , "monkeyboy" (* confirmed in woo_e28 *)
+    , "blue hades" (* confirmed in pb_baa, and again in pb_cb *)
      ]
 
   (* Ideas? *)
