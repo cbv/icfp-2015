@@ -20,7 +20,7 @@ fun main () =
     (*      val power_phrases = ["planet 10"] *)
 
     val Pathfind.PS {stream_state=init_stream_state, query} =
-        Pathfind.PowerHeuristics.basic power_phrases
+        Pathfind.PowerHeuristics.robin power_phrases
 
     fun lchrs_for_step state stream_state (LockStep.Step {px, py, a, commands, ...}) =
       let

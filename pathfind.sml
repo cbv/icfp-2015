@@ -223,9 +223,9 @@ struct
                                       val compare = String.compare
                                       end)
 
+    (* Try really hard to get every power word once. Fails spectacularly on problem 1. *)
     datatype basic_state = SSA of StringSet.set
                          | SSB
-
     fun basic power_phrases =
       let
         fun query (SSA s) = if StringSet.isEmpty s
@@ -239,6 +239,29 @@ struct
       in
         PS {query=query, stream_state=stream_state}
       end
+
+    (* Try really hard to get every power word once, but be less stubborn about ordering *)
+    datatype robin_state = RSA of StringSet.set * int
+                         | RSB
+    fun robin power_phrases =
+      let
+        fun query (RSA (s, n)) =
+          if StringSet.isEmpty s
+          then query RSB
+          else
+            let
+              val words_left = StringSet.listItems s
+              val pick = List.nth (words_left, n)
+            in (pick,
+                RSA (StringSet.delete(s, pick), 0),
+                RSA (s, (n+1) mod (length words_left)))
+            end
+          | query RSB = ("ia! ia!", RSB, RSB)
+        val stream_state = RSA (StringSet.addList(StringSet.empty, power_phrases), 0)
+      in
+        PS {query=query, stream_state=stream_state}
+      end
+
   end
 
 end
