@@ -1,65 +1,39 @@
 structure Jcreed =
 struct
 
+val tagp = Params.param "better_default_tag"
+                        (SOME("-tag", "Value to put in the tag field."))
+                        "tag"
+
 val problemp = Params.param "15"
                             (SOME("-problem", "Problem number to load."))
                             ("problem")
+
+val timelimitp = Params.param "10"
+                              (SOME("-timelimit", "Max number of seconds to spend."))
+                              ("timelimit")
 
 structure StringSet = SplaySetFn(struct
                                   type ord_key = string
                                   val compare = String.compare
                                   end)
 
+
 fun main () =
   let
      val power_phrases = Phrases.power
 (*      val power_phrases = ["planet 10"] *)
-    val problemId = Params.asint 1 problemp
-    val problem = Board.fromjson
-                      (StringUtil.readfile
-                           ("qualifiers/problem_" ^ Int.toString problemId ^ ".json"))
-    val state = (Board.reset (problem, 0))
-    (* val _ = *)
-    (*     List.app *)
-    (*         (fn x => (Board.move (state, (Board.legalize x)); ())) *)
-    (*         (explode "ea!dea!pppppk") *)
-    (* val ((px, py), pa) = (Board.piece_position state, Board.piece_angle state) *)
-    (* val _ = print ("piece at " ^ (Int.toString px) ^ " " ^ (Int.toString py) ^ "\n") *)
 
-    (* fun body (Board.M {scored, lines, locked, new_phrases = _, status}) = *)
-    (*   let *)
-    (*     val ((px, py), pa) = (Board.piece_position state, Board.piece_angle state) *)
-    (*     val _ = print ("inner piece at " ^ (Int.toString px) ^ " " ^ (Int.toString py) ^ "\n") *)
-    (*   in *)
-    (*     () *)
-    (*   end *)
-    (* val _ = Board.move_unwind(state, Board.legalize #"b", body) *)
-
-    (* val _ = raise Match *)
-    (* val words = *)
-    (*     ["ghatanothoa", "hastur", "hypnos", "ithaqua", "nodens", "nyarlathotep"] *)
-    (* fun word_to_lock word = *)
-    (*   let *)
-    (*     val soln = Pathfind.find_with_power *)
-    (*                    state *)
-    (*                    (Pathfind.Target {px=8, py=18, a=0}) *)
-    (*                    (fn n => word) *)
-    (*   in *)
-    (*     case soln of NONE => "" *)
-    (*                | SOME lchrs => *)
-    (*                  (implode (List.map (Board.forgetlegal) lchrs)) ^ "a" *)
-    (*   end *)
-(*    val soln = Powerize.insert (Board.reset (problem, 0))
-                               (Pathfind.Target {px=7, py=13, a=5})
-                               "ea! ea! ea!" *)
-    fun @@ (EQUAL, o2) = o2
-      | @@ (o1, _) = o1
-    infixr 3 @@
-    val nn = ref 0
-    val not_seen = ref (StringSet.addList(StringSet.empty, power_phrases))
-
-    val init_stream_state = true
-    fun query s = (if s then "ea!" else "ia!", not s, s)
+    datatype sstate = SSA of StringSet.set
+                    | SSB
+    fun query (SSA s) = if StringSet.isEmpty s
+                        then query SSB
+                        else
+                          let val pick = hd (StringSet.listItems s)
+                          in (pick, SSA (StringSet.delete(s, pick)), SSA s)
+                          end
+      | query SSB = ("ia! ia!", SSB, SSB)
+    val init_stream_state = SSA (StringSet.addList(StringSet.empty, power_phrases))
 
     fun lchrs_for_step state stream_state (LockStep.Step {px, py, a, commands, ...}) =
       let
@@ -73,6 +47,68 @@ fun main () =
                    | NONE => (* shouldn't happen, but just in case... *)
                      (map Board.anychar (rev commands), stream_state)
       end
+
+
+
+
+    fun steps_to_lchrs state ss [] = raise Match
+      | steps_to_lchrs state ss ((step as LockStep.Step {state=next_state, ...})::tl) =
+        let
+          val (this, ss') = lchrs_for_step state ss step
+          val rest = (case next_state of
+                          SOME state' => steps_to_lchrs state' ss' tl
+                        | NONE => [])
+        in
+          this @ rest
+        end
+
+    fun do_seed (problemId, problem, seed_idx, seed) =
+      let
+        val state = Board.reset (problem, seed_idx)
+        val heuristic = LockStep.simple_heuristic problem
+        val seconds = Params.asint 3 timelimitp
+        val steps = rev (LockStep.play_to_end (state, heuristic, Time.fromSeconds (IntInf.fromInt seconds)))
+        val lchrs = steps_to_lchrs state init_stream_state steps
+      in
+        (if seed_idx > 0
+         then print ",\n"
+         else ());
+        print "{\n";
+        print ("\"problemId\": " ^ Int.toString problemId ^ ",\n");
+        print ("\"seed\": " ^ Int.toString (Word32.toInt seed) ^ ",\n");
+        print ("\"tag\": \"" ^ (!tagp) ^ "\",\n");
+        print ("\"solution\": \"");
+        print (implode (List.map (Board.forgetlegal) lchrs));
+        print "\"\n";
+        print "}\n"
+      end
+    val problemId = Params.asint 1 problemp
+    val problem = Board.fromjson
+                      (StringUtil.readfile
+                           ("qualifiers/problem_" ^ Int.toString problemId ^".json"))
+
+    val seeds = Board.seeds problem
+  in
+     print "[\n";
+     Vector.appi (fn  (idx, seed) => do_seed (problemId, problem, idx, seed)) seeds;
+     print "]\n"
+
+  end
+  handle Board.Board s =>
+         TextIO.output (TextIO.stdErr, "Uncaught Board: " ^ s ^ "\n")
+
+end
+
+val () = Params.main0 "No arguments." Jcreed.main
+
+
+                      (*
+(* relatively naive greedy search *)
+
+    fun @@ (EQUAL, o2) = o2
+      | @@ (o1, _) = o1
+    infixr 3 @@
+
 
     fun opt_compare (SOME _, SOME _) = EQUAL
       | opt_compare (SOME _, NONE) = GREATER
@@ -98,27 +134,4 @@ fun main () =
       end
 
 (*     val lchrs = play_to_end (state, heur) *)
-
-    val steps = rev (LockStep.play_to_end (state, LockStep.lockstep_heuristic problem,
-                                           Time.fromSeconds 3))
-
-    fun steps_to_lchrs state ss [] = raise Match
-      | steps_to_lchrs state ss ((step as LockStep.Step {state=next_state, ...})::tl) =
-        let
-          val (this, ss') = lchrs_for_step state ss step
-          val rest = (case next_state of
-                          SOME state' => steps_to_lchrs state' ss' tl
-                        | NONE => [])
-        in
-          this @ rest
-        end
-
-  in
-    print (implode (map Board.forgetlegal (steps_to_lchrs state init_stream_state steps)))
-  end
-  handle Board.Board s =>
-         TextIO.output (TextIO.stdErr, "Uncaught Board: " ^ s ^ "\n")
-
-end
-
- val () = Params.main0 "No arguments." Jcreed.main
+*)
