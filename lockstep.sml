@@ -170,6 +170,28 @@ structure LockStep :> LOCK_STEP = struct
         play_n_steps (state, heuristic, time_limit, (Board.piecesleft state) + 1)
     end
 
+(* opens for open cells with small y coordinate *)
+fun lockstep_heuristic problem state =
+  let
+      val (width, height) = Board.size problem
+      val score = ref 0
+      val () = Util.for
+                   0 (width - 1)
+                   (fn ii => Util.for 0 (height - 1)
+                                      (fn jj =>
+                                          if Board.isempty (state, ii, jj)
+                                          then
+                                              let
+                                              in
+                                                  (* more points, proportional to distance from botton *)
+                                                  score := ((!score) + (height - jj) )
+                                              end
+                                          else ()
+                                      ))
+
+  in
+      !score
+  end
 
 
 end

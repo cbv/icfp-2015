@@ -32,4 +32,5 @@ signature LOCK_STEP = sig
    (* Like play_to_end, but returns at most n steps. *)
    val play_n_steps : Board.state * (Board.state -> int) * Time.time * int -> step list
 
+   val lockstep_heuristic : Board.problem -> Board.state -> int
 end

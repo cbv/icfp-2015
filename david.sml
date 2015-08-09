@@ -39,33 +39,11 @@ fun do_seed (problemId, problem, seed_idx, seed) =
 
 
 
-(* opens for open cells with small y coordinate *)
-fun lockstep_heuristic problem state =
-  let
-      val (width, height) = Board.size problem
-      val score = ref 0
-      val () = Util.for
-                   0 (width - 1)
-                   (fn ii => Util.for 0 (height - 1)
-                                      (fn jj =>
-                                          if Board.isempty (state, ii, jj)
-                                          then
-                                              let
-                                              in
-                                                  (* more points, proportional to distance from botton *)
-                                                  score := ((!score) + (height - jj) )
-                                              end
-                                          else ()
-                                      ))
-
-  in
-      !score
-  end
 
 fun do_seed (problemId, problem, seed_idx, seed) =
   let
      val state = Board.reset (problem, seed_idx)
-     val heuristic = lockstep_heuristic problem
+     val heuristic = LockStep.lockstep_heuristic problem
      val seconds = Params.asint 10 timelimitp
      val steps = LockStep.play_to_end (state, heuristic, Time.fromSeconds (IntInf.fromInt seconds))
      val commands = List.rev (List.concat
