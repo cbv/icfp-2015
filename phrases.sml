@@ -43,5 +43,7 @@ struct
   (* more random cthulhu junk; experiment power777 *)
   , "Al Azif Madame Blavatsky Salem Kadath UAAAH 'Umr at Tawil At U'mr ....... Tawil At'Umr"
   , "Azathoth" (* refuted by tag azathoth33b *)
+  , "Ghatanothoa" (* refuted by tag two304 *)
+  , "Nodens" (* refuted by tag two304 *)
   ]
 end
