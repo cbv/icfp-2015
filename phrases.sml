@@ -12,6 +12,7 @@ struct
     , "Tsathoggua" (* Master of formless spawn, tag manual515 *)
     , "John Bigboote" (* confirmed tag banzai8be + what jason? *)
     , "yoyodyne" (* confirmed in yes_93b *)
+    , "planet 10" (* confirmed in redacted7cf *)
     ]
 
      (* pb_f38 "xalafuxctholxexanothwhorfinwatsonlamportmormomotheryhagniyhoundehyidhrayigyomagn'thoparkeryorithyoyodyneysbaddadenythogthaz'togguazathogy'golonac" has a power word!
