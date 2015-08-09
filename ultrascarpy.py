@@ -7,6 +7,7 @@ import requests
 import subprocess
 import sys
 from tools import checkdatabase
+from tools import scarpyreport
 from tools import augmentscores
 
 api = "https://cmage109g3.execute-api.us-west-2.amazonaws.com/what"
@@ -46,7 +47,6 @@ if __name__ == "__main__":
    # data['data']['settings'][n]['rankings'][m]['team']: string 
    
    numproblems = len(data['data']['settings'])
-   scores = []
 
    tags = []
    for i in range(0,numproblems):
@@ -74,7 +74,7 @@ if __name__ == "__main__":
                      print "      Tag: "+tag+" not in database"
                   elif 'score' not in solutiondb[tag]:
                      print "      Tag: "+tag+" had an error when analyzed",
-                     print "(script length ",
+                     print "(script length",
                      print str(len(solutiondb[tag]['solution']))+")"
                   else: 
                      analysis = solutiondb[tag]
@@ -83,26 +83,5 @@ if __name__ == "__main__":
                      print "      |    Fate:  "+analysis['fate']
                
                print "   "
-               if (len(rankings[j]['tags']) > 0):
-                  tag = rankings[j]['tags']
-                  tag.sort()
-                  newhash = {
-                     'tag': string.join(tag, "_"),
-                     'problem': i,
-                     'score': rankings[j]['score'],
-                     'power': rankings[j]['power_score'],
-                     'alltags': rankings[j]['tags']
-                  }
-                  scores.append(newhash)
-                  
-   request = {
-      'time': data['time'],
-      'scores': scores
-   }
-   # print json.dumps(request)
-   response = json.loads(requests.post(scarpy_writer, json.dumps(request)).text)
-   if (not 'modified' in response):
-      print "Unexpected response!"
-      print json.dumps(response)
-      if (response['modified'] != 0):
-         print 'Learned about '+str(response['modified'])+' new scores'
+
+   scarpyreport(data['time'], data['data']['settings'])

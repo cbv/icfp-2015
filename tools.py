@@ -58,6 +58,50 @@ def raw_submitter(problemId, seed, unique_tag, solution):
                             headers=heads)
    print response
 
+def scarpyreport(timestamp, all_rankings):
+   scores = []
+   for i in range(0, len(all_rankings)):
+      rankings = all_rankings[i]['rankings']
+      for j in range(0, len(rankings)):
+         if rankings[j]['teamId'] is 31:
+            stats = rankings[j]
+            if (len(rankings[j]['tags']) > 0):
+               tag = rankings[j]['tags']
+               tag.sort()
+               newhash = {
+                  'tag': string.join(tag, "_"),
+                  'problem': i,
+                  'score': rankings[j]['score'],
+                  'power': rankings[j]['power_score'],
+                  'alltags': rankings[j]['tags']
+               }
+               scores.append(newhash)
+   backoff = len(scores)
+   total = 0
+   while backoff > 0 and len(scores) > 0:
+      request = {
+         'time': timestamp,
+         'scores': scores[:backoff]
+      }
+      print "[scarpyreport] attempting to submit "+str(len(scores[:backoff])),
+      print "score(s)"
+
+      response = json.loads(requests.post(scarpy_writer, 
+                                          json.dumps(request)).text)
+      if (not 'modified' in response):
+         print "[scarpyreport] failed: backing off"
+         backoff = backoff/2
+      else:
+         total += response['modified']
+         scores = scores[backoff:]
+   if backoff is 0: print "[scarpyreport] giving up :("
+   elif total > 1: print "[scarpyreport] done. "+str(total)+" new scores"
+   elif total is 1: print "[scarpyreport] done. 1 new score"
+   else: print "[scarpyreport] done, none of those scores were new."
+   
+      
+               
+                
 def checkscore(problem, seed, solution):
    call = "./getscore.exe -problem "+str(problem)+\
           " -seed "+str(seed)+" -script '"+solution+"'"
@@ -66,6 +110,40 @@ def checkscore(problem, seed, solution):
       return json.loads(res)
    except:
       return None
+
+# Recall all the scoreboard info we know about
+def scarpyrecall():
+   done = False
+   info = []
+   request = {
+      'operation': 'list',
+      'TableName': 'scarpydb',
+      'IndexName': 'problem-score-index'
+   }
+
+   while (not done):
+      response = json.loads(requests.post(api, json.dumps(request)).text)
+      info = info + response['Items']
+      if ('LastEvaluatedKey' in response):
+         print "[scarpyrecall] loaded "+str(len(info))+" total, there are more!"
+         request['ExclusiveStartKey'] = response['LastEvaluatedKey']
+      else: 
+         print "[scarpyrecall] loaded "+str(len(info))+", done"
+         done = True
+
+   print 'Problem | Score   | Power   | Tag(s)'
+   for i in range(0, len(info)):
+      problem = info[i]['problem']['N']
+      score = info[i]['score']['N']
+      power = info[i]['power']['N']
+      tags = " "
+      for j in range(0, len(info[i]['alltags']['SS'])):
+         tags += " "+info[i]['alltags']['SS'][j]
+      print problem+" "*(8-len(problem))+"|",
+      print score+" "*(8-len(score))+"|",
+      print power+" "*(8-len(power))+"|"+tags
+         
+   
 
 # From a list of tags, generate a tag -> infomap (problem, seed, solution)
 def checkdatabase(tags):

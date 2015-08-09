@@ -44,23 +44,21 @@ structure LockStep :> LOCK_STEP = struct
 
      heuristic: Board.state -> int
   *)
-  fun search (max_depth, best, heuristic, heuristic_score, prev_steps) (step as Step {state = state_opt, ...}) =
+  fun search (max_depth, best, heuristic, combined_score, prev_steps) (step as Step {state = state_opt, ...}) =
     case (state_opt, max_depth <= 1 + (List.length prev_steps))
      of (SOME(state), false) =>
         let
         in
-            search_steps (max_depth, best, heuristic, Board.clone state, step::prev_steps)
+            search_steps (max_depth, best, heuristic, state, step::prev_steps)
         end
      | _ => (* don't go deeper *)
        let
            val steps = step::prev_steps
-           val scored = List.foldr (fn (Step {scored,...}, s) => scored + s) 0 steps
            val best_score = case !best of
                                 SOME((score, _)) => score
                               | NONE => ~1
-           val combined_score = 10000 * scored + heuristic_score
            val () = if combined_score > best_score
-                    then best := (SOME((combined_score, steps)))
+                    then best := (SOME((combined_score, List.rev steps)))
                     else ()
        in
            ()
@@ -68,28 +66,49 @@ structure LockStep :> LOCK_STEP = struct
 
   and search_steps (max_depth, best, heuristic, state, prev_steps) =
       let
-          fun apper (step as Step {state, ...}) =
+          fun mapper (step as Step {state, ...}) =
             let
                 val hscore = case state of
                                  NONE => 0
                                | SOME(state) => heuristic state
+                val scored = List.foldr (fn (Step {scored,...}, s) => scored + s) 0 (step::prev_steps)
+                val combined_score = 10000 * scored + hscore
+
             in
-                (search (max_depth, best, heuristic, hscore, prev_steps) step)
+                (combined_score, step)
+            end
+
+                (* reverse order *)
+          fun compare ((s1, _), (s2, _)) =
+            case Int.compare (s1, s2) of
+                LESS => GREATER
+              | GREATER => LESS
+              | EQUAL => EQUAL
+          fun take n [] = []
+            | take 0 lst = []
+            | take n (x::xs) = x::(take (n - 1) xs)
+          val poss = (possible_next_steps state)
+          val pairs = List.map mapper poss
+          val sorted_pairs = ListUtil.sort compare pairs
+          (* Just look at the most promising *)
+          val pairs_to_search = take 8 sorted_pairs
+          fun apper (combined_score, step) =
+            let
+            in
+                (search (max_depth, best, heuristic, combined_score, prev_steps) step)
             end
       in
-          List.app apper (possible_next_steps state)
+          List.app apper pairs_to_search
       end
 
   fun accumulate_best (state, heuristic, accumulator) =
     let
         val best = ref NONE
-        val () = search_steps (3, best, heuristic, state, [])
+        val () = search_steps (6, best, heuristic, state, [])
     in
         case !best of
             SOME((score, all_steps as (step as Step { state = SOME(state), ...})::steps)) =>
-            (print ("best score: " ^ Int.toString score ^ "\n");
-             List.app (fn s => print (stepstring s ^ "\n")) all_steps;
-            accumulate_best (Board.clone state, heuristic, step::accumulator))
+            accumulate_best (state, heuristic, step::accumulator)
          |  SOME((score, (step as Step { state = NONE, ...})::steps)) => step::accumulator
          |  _ => raise LockStep "impossible"
     end

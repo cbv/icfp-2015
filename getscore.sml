@@ -120,8 +120,8 @@ struct
                       (fn (p, sc, sd) => print_score (get_score p sc sd))
                       (fromjson (StringUtil.readfile (!file)))));
              print "]\n")
-        );
-        print "]"
+        ) (*; (* This next line can't be right. -rjs *)
+        print "]" *)
     end
 end
 

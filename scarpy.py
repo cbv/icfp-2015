@@ -30,7 +30,6 @@ except ValueError as e:
 # data['data']['settings'][n]['rankings'][m]['team']: string 
 
 numproblems = len(data['data']['settings'])
-scores = []
 
 for i in range(0,numproblems):
    rankings = data['data']['settings'][i]['rankings']
@@ -45,27 +44,6 @@ for i in range(0,numproblems):
              print "("+str(rankings[j]['power_score'])+" power word(s))"
              print "   Tags:    " + str(rankings[j]['tags'])
              print "   "
-             if (len(rankings[j]['tags']) > 0):
-                tag = rankings[j]['tags']
-                tag.sort()
-                newhash = {
-                   'tag': string.join(tag, "_"),
-                   'problem': i,
-                   'score': rankings[j]['score'],
-                   'power': rankings[j]['power_score'],
-                   'alltags': rankings[j]['tags']
-                   }
-                scores.append(newhash)
 
-import requests
-request = {
-   'time': data['time'],
-   'scores': scores
-}
-# print json.dumps(request)
-response = json.loads(requests.post(scarpy_writer, json.dumps(request)).text)
-if (not 'modified' in response):
-   print "Unexpected response!"
-   print json.dumps(response)
-if (response['modified'] != 0):
-   print 'Learned about '+str(response['modified'])+' new scores'
+from tools import scarpyreport
+scarpyreport(data['time'], data['data']['settings'])

@@ -22,7 +22,8 @@ signature LOCK_STEP = sig
 
    val possible_next_steps: Board.state -> step list
 
-   (* Takes an initial state and an heuristic. Returns the 'best' sequence of steps to take. *)
+   (* Takes an initial state and an heuristic.
+      Returns the 'best' sequence of steps to take, in reverse order. *)
    val play_to_end : Board.state * (Board.state -> int) -> step list
 
 end
