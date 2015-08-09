@@ -92,7 +92,7 @@ struct
   val filep = Params.param "" (SOME ("-file", "A file containing a JSON solution")) "file"
 
   fun main args =
-    let val problem = Board.fromjson (StringUtil.readfile ("qualifiers/problem_" ^ !problemp ^ ".json"))
+    let val problem = Board.fromjson ("qualifiers/problem_" ^ !problemp ^ ".json")
         val seed = Word32.fromInt (Params.asint 0 seedp)
         val solution = !scriptp
         val score = Params.asint 0 scorep

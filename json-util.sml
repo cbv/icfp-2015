@@ -1,19 +1,19 @@
 structure JSONUtils =
 struct
-datatype json = datatype JSONDatatypeCallbacks.json
+datatype json = datatype JSON.value
 
 exception JSONUtils of string
 
-fun UnInt (JInt i) = i
+fun UnInt (INT i) = IntInf.toInt i
   | UnInt _ = raise JSONUtils "Not an int"
 
-fun UnString (JStr s) = s
+fun UnString (STRING s) = s
   | UnString _ = raise JSONUtils "Not a string"
 
-fun UnList (JArray a) = a
+fun UnList (ARRAY a) = a
   | UnList _ = raise JSONUtils "Not a list/array"
 
-fun Key (JMap m, k) =
+fun Key (OBJECT m, k) =
     (case ListUtil.Alist.find op= m k of
          SOME (obj) => obj
        | NONE => raise JSONUtils ("Didn't find " ^ k))
