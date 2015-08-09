@@ -704,6 +704,8 @@ Rhesus Chart
 Annihilation Score
 
 the deep ones
+humans
+benthic treaty
 
 # power words and IF
 xyzzy
@@ -718,3 +720,6 @@ idspispopd
 idclip
 # konami code
 up up down down left right left right b a start
+uuddlrlrba
+hello aviator
+get lamp

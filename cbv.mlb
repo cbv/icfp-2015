@@ -69,3 +69,6 @@ forwardchain.sml
 
 lockstep-sig.sml
 lockstep.sml
+
+(* XXX sig *)
+powerthirst.sml
