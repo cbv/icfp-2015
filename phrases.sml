@@ -3,6 +3,7 @@ struct
 
   (* These are known to be correct *)
   val power =
+    (* cthulhu mythos *)
     [ "Ei!" (* Example in contest doc. *)
     , "Ia! Ia!" (* Filled cells in problem 3. Confirmed in experiment. *)
     , "R'lyeh" (* filled cells in problem 5. Confirmed in experiment. *)
@@ -10,6 +11,7 @@ struct
     , "Cthulhu fhtagn!" (* "Cthulhu waits"; experiment powerc6e *)
     , "Necronomicon" (* for summoning the Old Ones; experiment power27e *)
     , "Tsathoggua" (* Master of formless spawn, tag manual515 *)
+    (* buckaroo banzai across the 8th dimension *)
     , "John Bigboote" (* confirmed tag banzai8be + what jason? *)
     , "yoyodyne" (* confirmed in yes_93b *)
     , "planet 10" (* confirmed in redacted7cf *)

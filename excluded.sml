@@ -42,6 +42,10 @@ struct
      "juk shabblu kthungyr korathnssu ghahnbut'ulls hr'hervile octhuitloxopetlvolgna gathuitzilcapacyad thaddag", (* pb_f33 *)
      "lord john whorfin barbara liskov robin milner ron rivest ronald rivest sir tony hoare john conway john cocke", (* submittyfa9 *)
      "etaoin shrdluflux capacitord wavegi hoveggigawattsgog hoorgol gorothasdfgreat scottyegg ha", (* pb_516 *)
+     "great scott!groth golkagorthaiogh yaic'thluhypnos", (* pb_8a9 *)
+     "allons yatlach nachabad wolfbalrogbugg shashdoctor whogeronimoidh yaajohn backusmonkey boymoriamr fusionpandoricariver songq'yth azrobin minlerzoth ommog", (* pb_3ac *)
+     "fly you foolsfly you fools!nautilustardisthe doctorzhar and lloigorzvilpogghuaunder the sea", (* pb_5a5 *)
+     "no matter where you go there you areremember no matter where you go there you are", (* pb_c03 *)
      ""]
 
 end
