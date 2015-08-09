@@ -126,7 +126,7 @@ struct
             let val prefix = prefix ^ "hog"
             in
               print ("New prefix: " ^ prefix ^ " [" ^ Int.toString (length guesses) ^
-                     "left]\n");
+                     " left]\n");
               make_experiments (prefix, guesses)
             end
       | (ph, guesses) =>
