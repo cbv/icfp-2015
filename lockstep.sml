@@ -149,6 +149,7 @@ structure LockStep :> LOCK_STEP = struct
                            (
                              Heap.insert (!heap) p v;
                              print ("working on something with score " ^ Int.toString accum_score ^ "\n");
+                             print ("and priority " ^ Int.toString p ^ "\n");
                              print ("length = " ^ Int.toString (List.length v) ^ "\n");
                              print (Board.toascii state ^ "\n\n\n")
                            )
