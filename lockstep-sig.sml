@@ -12,16 +12,18 @@ signature LOCK_STEP = sig
                        NONE if this step results in gameover. You can assume that this state
                        is not aliased. *)
                      state: Board.state option,
-                     (* An example list of commands that could make up this step. *)
+                     (* An example list of commands that could make up this step, in reverse order. *)
                      commands: Board.command list,
                      (* An example number of points scored for making this step. *)
                      scored: int
                  }
 
+   val stepstring: step -> string
 
    val possible_next_steps: Board.state -> step list
 
-   (* Takes an initial state and an heuristic. Returns the 'best' sequence of steps to take. *)
+   (* Takes an initial state and an heuristic.
+      Returns the 'best' sequence of steps to take, in reverse order. *)
    val play_to_end : Board.state * (Board.state -> int) -> step list
 
 end

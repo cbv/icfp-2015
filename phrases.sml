@@ -7,7 +7,6 @@ struct
     , "Ia! Ia!" (* Filled cells in problem 3. Confirmed in experiment. *)
     , "R'lyeh" (* filled cells in problem 5. Confirmed in experiment. *)
     , "Yuggoth" (* filled cells in problem 7.  Confirmed in experiment powere92. *)
-    , "bapl"
     ]
 
   (* Ideas? *)
@@ -25,5 +24,6 @@ struct
     "Cthulhu Cthulhu Cthulhu" (* from contest clarification -- refuted by experiment powerd1f *)
   , "Yog Sothoth!" (* cthulhu mythos -- refuted by experiment power652 *)
   , "Shub" (* shub alone is not enough -- refuted by experiment powerca8 *)
+  , "bap" (* discovered via problem 1 score, but refuted by experiment power638. *)
   ]
 end

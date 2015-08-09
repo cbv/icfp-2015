@@ -11,11 +11,16 @@ structure LockStep :> LOCK_STEP = struct
                      (* An example state that could result from taking this step.
                        NONE if this step results in gameover. *)
                      state: Board.state option,
-                     (* An example list of commands that could make up this step. *)
+                     (* An example list of commands that could make up this step, in reverse order *)
                      commands: Board.command list,
                      (* An example number of points scored for making this step. *)
                      scored: int
                  }
+
+   fun stepstring (Step {px, py, a, commands, scored, ...}) =
+     "{ px = " ^ Int.toString px ^ ", py = " ^ Int.toString py ^ ", a = " ^ Int.toString a ^
+        ", scored = " ^ Int.toString scored ^
+        ", commands= " ^  String.concat (List.map (fn c => (Board.commandstring c ^ ",")) commands)  ^ "}"
 
   fun possible_next_steps state =
     let
@@ -23,7 +28,8 @@ structure LockStep :> LOCK_STEP = struct
         fun mapper (ForwardChain.PL {locked = NONE, ... }) = NONE
           | mapper (ForwardChain.PL {locked = (SOME (ForwardChain.NEW_PIECE state)),
                                      px, py, a, commands, score, ... }) =
-            SOME (Step {px = px, py = py, a = a, commands = commands, state = SOME(state), scored = score})
+            SOME (Step {px = px, py = py, a = a, commands = commands,
+                        state = SOME(Board.clone state), scored = score})
           | mapper (ForwardChain.PL {locked = (SOME ForwardChain.ALL_DONE),
                                      px, py, a, commands, score, ... }) =
             SOME (Step {px = px, py = py, a = a, commands = commands, state = NONE, scored = score })
@@ -38,7 +44,7 @@ structure LockStep :> LOCK_STEP = struct
 
      heuristic: Board.state -> int
   *)
-  fun search (max_depth, best, heuristic, heuristic_score, prev_steps) (step as Step {scored, state = state_opt, ...}) =
+  fun search (max_depth, best, heuristic, heuristic_score, prev_steps) (step as Step {state = state_opt, ...}) =
     case (state_opt, max_depth <= 1 + (List.length prev_steps))
      of (SOME(state), false) =>
         let
@@ -47,12 +53,14 @@ structure LockStep :> LOCK_STEP = struct
         end
      | _ => (* don't go deeper *)
        let
+           val steps = step::prev_steps
+           val scored = List.foldr (fn (Step {scored,...}, s) => scored + s) 0 steps
            val best_score = case !best of
                                 SOME((score, _)) => score
                               | NONE => ~1
-           val combined_score = 10000 * heuristic_score
+           val combined_score = 10000 * scored + heuristic_score
            val () = if combined_score > best_score
-                    then best := (SOME((combined_score, step::prev_steps)))
+                    then best := (SOME((combined_score, List.rev steps)))
                     else ()
        in
            ()
@@ -78,7 +86,7 @@ structure LockStep :> LOCK_STEP = struct
         val () = search_steps (3, best, heuristic, state, [])
     in
         case !best of
-            SOME((score, (step as Step { state = SOME(state), ...})::steps)) =>
+            SOME((score, all_steps as (step as Step { state = SOME(state), ...})::steps)) =>
             accumulate_best (state, heuristic, step::accumulator)
          |  SOME((score, (step as Step { state = NONE, ...})::steps)) => step::accumulator
          |  _ => raise LockStep "impossible"

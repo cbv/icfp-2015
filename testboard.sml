@@ -76,6 +76,8 @@ struct
       val problem = Board.fromjson
         (StringUtil.readfile ("qualifiers/problem_" ^ !problemp ^ ".json"))
 
+      (* XXX add a command line parameter for the seed?  how does that work..
+         if it's optional.. *)
       val state = Board.reset (problem, 0)
     in
       print "There is nothing, only Zuulthuhu.\n";

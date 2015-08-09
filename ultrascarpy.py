@@ -78,7 +78,7 @@ if __name__ == "__main__":
                      print str(len(solutiondb[tag]['solution']))+")"
                   else: 
                      analysis = solutiondb[tag]
-                     print "      Tag: "+tag+" known! Analysis follows:"
+                     print "      Tag: "+tag
                      print "      |    Score: "+str(analysis['score'])
                      print "      |    Fate:  "+analysis['fate']
                
