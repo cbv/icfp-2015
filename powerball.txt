@@ -620,6 +620,9 @@ icfp
 international conference on functional programming
 international conference on functional programming!
 international conference on functional programming 2015
+ifcp programming contest
+ifcp programming contest 2015
+cult of the bound variable
 ACM SIGPLAN
 icfp 2015
 galois connections

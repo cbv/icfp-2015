@@ -102,7 +102,27 @@ struct
     exec 0
   end
 
-
+  fun get_score problem seed solution =
+    let
+      val state = Board.resetwithseed (problem, seed)
+      val solution_size = String.size solution
+      fun scoreFrom i score_so_far =
+        if i >= solution_size
+        then score_so_far
+        else
+          let
+            val c = Board.legalize (String.sub (solution, i))
+            val Board.M { scored, status, ... } = Board.move (state, c)
+            val score = score_so_far + scored
+          in
+            case status of
+              Board.CONTINUE => scoreFrom (i + 1) score
+            | Board.GAMEOVER why => score
+            | Board.ERROR => 0
+          end
+    in
+      scoreFrom 0 0
+    end
 
   structure SS = SplaySetFn(type ord_key = string
                             val compare = String.compare)

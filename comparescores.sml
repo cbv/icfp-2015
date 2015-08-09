@@ -1,11 +1,13 @@
 structure CompareScores =
 struct
 
+  structure PU = PowerUtil
+
   fun david (problem, seed_idx) =
     let
       val state = Board.reset (problem, seed_idx)
       val heuristic = LockStep.simple_heuristic problem
-      val seconds = Params.asint 10 timelimitp
+      val seconds = 10 (* Params.asint 10 timelimitp *)
       val steps = LockStep.play_to_end (state, heuristic,
                                         Time.fromSeconds (IntInf.fromInt seconds))
       val commands = List.rev (List.concat
@@ -18,33 +20,35 @@ struct
 
 
   fun main () =
-    (* just run first seed on each problem for now? *)
     let
-      val problems = Vector.tabulate (24, fn i =>
-                                     Board.fromjson
-                                     ("qualifiers/problem_" ^ Int.toString problemId ^".json"))
+      (* just run first seed on each problem for now? *)
+      val seed_idx = 0
+      val problems = Vector.tabulate (24, PU.loadproblem)
 
-      fun maketable driver =
+      type result = { sol: string, score: int }
+      fun maketable driver : result vector =
         let
           fun oneidx i =
             let
               val problem = Vector.sub (problems, i)
-              val sol = driver (problem, 0)
-              val score = PU.score problem sol
+              val sol = driver (problem, seed_idx)
+              val seed_value = Vector.sub (Board.seeds problem, seed_idx)
+              val score = PU.get_score problem seed_value sol
             in
               print ".";
               { sol = sol, score = score }
             end
         in
-          Vector.tabulate (Vector.size problems, oneidx)
+          Vector.tabulate (Vector.length problems, oneidx)
         end
 
       val results_david = maketable david
 
-      val table = [" ", "david"] ::
-        List.tabulate (fn pidx =>
+      val table = ["problem", "david"] ::
+        List.tabulate (Vector.length problems,
+                       fn pidx =>
                        Int.toString pidx ::
-                       map (fn res =>
+                       map (fn res : result vector =>
                             let val { score, ... } = Vector.sub (res, pidx)
                             in Int.toString score
                             end) [results_david])
