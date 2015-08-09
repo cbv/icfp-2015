@@ -344,6 +344,8 @@ Zushakon
 Z'toggua
 Zvilpogghua
 
+innsmouth
+
 # elder gods
 Adaedu
 Alithlai Tyy
@@ -580,3 +582,29 @@ voila
 R1 O0 P1 Q1 P1 O0 N0 N0 P1 R1 Q1 P1 O0 P1 Q1 R1 P1 N0 N0 Q1 S1 N1 T1 S1 R1 P1 R1 Q1 P1 O0 O0 P1 Q1 R1 P1 N0 N0
 R1O0P1Q1P1O0N0N0P1R1Q1P1O0P1Q1R1P1N0N0Q1S1N1T1S1R1P1R1Q1P1O0O0P1Q1R1P1N0N0
 
+# early 20th century names for pluto
+# and charactes / places in that story
+Venetia Burney
+Venetia
+Burney
+lowell observatory
+atlast
+zymal
+zeus
+percival
+constance
+falconer madan
+percival lowell
+
+# from tweets
+new horizon
+laugha
+laugh a
+big booty
+bigboo tay
+davar
+formless spawn
+as2h2
+vancouver
+icfp
+2015
