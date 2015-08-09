@@ -36,6 +36,7 @@ struct
      "xoxiigghuaxotliswarogsk'taishterotshavalyoth", (* pb_c5d *)
      "nctolhunctosaphrases of powerragnallaprintposeidonplanetxplanet xpimoa cthulhusaa'itiirokonrivestscyllasathogguayaya", (* pb_2ff *)
      "yaggdytharhogogrh'thullareal soonzathogh'chtelegothinpescazehiretezhar", (* pb_c0d *)
+     "lord john whorfin barbara liskov robin milner ron rivest ronald rivest sir tony hoare john conway john cocke", (* submittyfa9 *)
      ""]
 
 end
