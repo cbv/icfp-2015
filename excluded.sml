@@ -26,7 +26,8 @@ struct
      (* during search for power word in powerball phrase *)
      "xalafuxctholxexanothwhorfinwatsonlamportmormomotheryhagniyhoundehyidhrayigyomagn'thoparker",
      "watermelonvorvadossultharvoltiyigtulushugguathulhu regiothu thuthe worm that gnaws in the nightthe nameless mistthe hydrasthanee",
-     (* pb_307 "eighth dimensioneihortemdallgobogeggod of the red fluxgolothessistashaiodhouellebecqgtuhanaihoare" *)
+     "eighth dimensioneihortemdallgobogeggod of the red fluxgolothessistashaiodhouellebecqgtuhanaihoare",
+     (* pb_789 "charybdishaumeahoney beesjanai'ngok'nar'stk'tulukaajh'kaalbhkasparovliskovlloigorhnarqulovecraftlythaliaarwassam'nagalah", *)
      ""]
 
 end

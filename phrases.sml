@@ -59,5 +59,6 @@ struct
   , "Nodens" (* refuted by tag two304 *)
   , "Nyarlathotep" (* refuted by tag nyarlathotep8d6 *)
   , "John" (* confirmed tag banzai43f *)
-  ]
+  , "deneb" (* refuted by AKIVA2d1 *)
+    ]
 end

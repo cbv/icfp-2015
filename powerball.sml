@@ -34,7 +34,7 @@ struct
       if PU.is_excluded s
       then
         let in
-          print ("Already exlcuded: [" ^ s ^ "]\n");
+          print ("Already excluded: [" ^ s ^ "]\n");
           NONE
         end
       else
