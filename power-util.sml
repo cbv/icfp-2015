@@ -4,7 +4,7 @@ struct
   exception PowerUtil of string
 
   fun loadproblem p = Board.fromjson
-    (StringUtil.readfile ("qualifiers/problem_" ^ Int.toString p ^ ".json"))
+                          ("qualifiers/problem_" ^ Int.toString p ^ ".json")
 
   fun problems () =
     let

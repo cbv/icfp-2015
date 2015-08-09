@@ -71,8 +71,7 @@ fun main () =
       end
     val problemId = Params.asint 1 problemp
     val problem = Board.fromjson
-                      (StringUtil.readfile
-                           ("qualifiers/problem_" ^ Int.toString problemId ^".json"))
+                      ("qualifiers/problem_" ^ Int.toString problemId ^".json")
 
     val seeds = Board.seeds problem
   in

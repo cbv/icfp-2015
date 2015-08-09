@@ -42,7 +42,7 @@ sml-lib/algo/de-bruijn-sequence.sml
 sml-lib/misc/params-sig.sml
 sml-lib/misc/params.sml
 
-json.sml
+sml-lib/njlib/JSON/json-lib.mlb
 json-util.sml
 
 ansi.sml

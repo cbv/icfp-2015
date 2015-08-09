@@ -442,11 +442,28 @@ parker
 emdall
 john
 eighth dimension
+8th dimension
 oscillation overthruster
 monkeyboy
 monkey boy
 lectroids
+red lectroids
+red lectroids from the 8th dimension
+red lectroids from the eighth dimension
 
+# buckaroo banzai quotes
+no matter where you go, there you are
+no matter where you go, there you are!
+no matter where you go... there you are!
+remember, no matter where you go, there you are
+remember, no matter where you go, there you are!
+remember, no matter where you go... there you are!
+no matter where you go there you are
+no matter where you go there you are!
+no matter where you go... there you are!
+remember no matter where you go there you are
+remember no matter where you go there you are!
+remember no matter where you go... there you are!
 
 # characters from backstory
 lamport
@@ -480,6 +497,30 @@ great scott
 great scott!
 under the sea
 
+
+# doctor who stuff
+doctor who
+tardis
+river song
+the doctor
+geronimo
+allons-y
+allons y
+bad wolf
+badwolf
+pandorica
+
+# the dwarves delved too deep
+moria
+durin's bane
+balrog
+fly you fools
+fly, you fools
+fly you fools!
+fly, you fools!
+
+# 20,000 leagues?
+nautilus
 
 # from contest logo, via akiva
 deneb
