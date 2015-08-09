@@ -612,3 +612,15 @@ as2h2
 vancouver
 icfp
 2015
+
+# meta
+# this line is is 51 chars long
+# -------------------------------------------------
+international conference on functional programming
+international conference on functional programming!
+international conference on functional programming 2015
+ACM SIGPLAN
+icfp 2015
+galois connections
+evariste galois
+icfpcontest
