@@ -55,6 +55,7 @@ struct
      "hp lovecrafthplovecraftso long and thanks for all the fishzeus", (* pb_7d8 *)
      "hogzymal", (* pb_6d2 *)
      "hoghoghogothkkartho", (* pb_82c *)
+     "galois connectionsinternational conference on functional programminginternational conference on functional programming 2015international conference on functional programming!zymal", (* pb_d9d *)
      (* "hoghogleslie lamport", (* XXX *) *)
      ""]
 

@@ -16,6 +16,10 @@ sig
   val longest_prefix : Board.problem vector -> string ->
     int * int * Word32.word
 
+  (* get_score problem seed_value soln
+     Get the total number of points. Any error results in 0. *)
+  val get_score : Board.problem -> Word32.word -> string -> int
+
   (* Can we legally execute the string at this point?
      Undoes any modifications to state. *)
   val can_execute : Board.state -> string -> bool
