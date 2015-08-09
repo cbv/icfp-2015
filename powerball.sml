@@ -119,7 +119,7 @@ struct
                      Int.toString (length guesses) ^ "):\n");
               (* print the list of guesses -- on a line by itself
                  so it's easy to comment out if desired *)
-              print (String.concatWith "\n" guesses ^ "\n");
+              (* print (String.concatWith "\n" guesses ^ "\n"); *)
               ()
             end
           else
