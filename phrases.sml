@@ -7,7 +7,8 @@ struct
     , "Ia! Ia!" (* Filled cells in problem 3. Confirmed in experiment. *)
     , "R'lyeh" (* filled cells in problem 5. Confirmed in experiment. *)
     , "Yuggoth" (* filled cells in problem 7.  Confirmed in experiment powere92. *)
-    , "Cthulhu fhtagn!" (* "Cthulhu waits", experiment powerc6e *)
+    , "Cthulhu fhtagn!" (* "Cthulhu waits"; experiment powerc6e *)
+    , "Necronomicon" (* for summoning the Old Ones; experiment power27e *)
     ]
 
   (* Ideas? *)
@@ -35,5 +36,7 @@ struct
   , "Innsmouth" (* Lovecraftian port town; refuted by experiment power3a4 *)
   , "Miskatonic" (* Lovecraftian university; refuted by experiment power8e5 *)
     (* NB: Miskatonic University is hard to make work -- "rs" is a CW/CCW *)
+  (* bunch of junk that contains no power phrases; experiment power588/power27e *)
+  , "aleister crowley alhazred enochian Corpus Hermeticum Azathoth Aiwaz nathan of gaza Klippoth"
   ]
 end
