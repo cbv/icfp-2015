@@ -94,9 +94,11 @@ if __name__ == "__main__":
       print str(score)+" versus "+str(historical)
    if len(better) > 0:
       print ""
-      print "[ULTRASCARPY] Don't necessarily trust me, but I think the",
-      print "following tags, if"
-      print "submitted, would give us a better score:"
+      print "[ULTRASCARPY] Don't necessarily trust me, but based only on",
+      print "previously observed"
+      print "scoreboard states, if the following tags",
+      print "were submitted, we would give us a"
+      print "better score:"
       print "-"*80
       for tag in better:
          print tag,

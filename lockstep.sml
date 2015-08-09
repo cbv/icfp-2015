@@ -170,7 +170,6 @@ structure LockStep :> LOCK_STEP = struct
         play_n_steps (state, heuristic, time_limit, (Board.piecesleft state) + 1)
     end
 
-(* opens for open cells with small y coordinate *)
 fun lockstep_heuristic problem state =
   let
       val (width, height) = Board.size problem
