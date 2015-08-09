@@ -1,7 +1,7 @@
 structure David =
 struct
 
-  val tagp = Params.param "[ERROR NO TAG FOUND]"
+  val tagp = Params.param "better_default_tag"
     (SOME("-tag", "Value to put in the tag field."))
     "tag"
 

@@ -104,7 +104,7 @@ structure LockStep :> LOCK_STEP = struct
   fun accumulate_best (state, heuristic, accumulator) =
     let
         val best = ref NONE
-        val () = search_steps (6, best, heuristic, state, [])
+        val () = search_steps (5, best, heuristic, state, [])
     in
         case !best of
             SOME((score, all_steps as (step as Step { state = SOME(state), ...})::steps)) =>
