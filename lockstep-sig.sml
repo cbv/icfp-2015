@@ -22,8 +22,11 @@ signature LOCK_STEP = sig
 
    val possible_next_steps: Board.state -> step list
 
-   (* Takes an initial state and an heuristic.
+   (* Takes an initial state, an heuristic, and a time limit.
+      The heuristic is used in evaluation of leaf nodes and in
+      prioritizing which branches to explore. In the full evaluation function,
+      real actual points are worth 10000 times as much as heuristic points.
       Returns the 'best' sequence of steps to take, in reverse order. *)
-   val play_to_end : Board.state * (Board.state -> int) -> step list
+   val play_to_end : Board.state * (Board.state -> int) * Time.time -> step list
 
 end
