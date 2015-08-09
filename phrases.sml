@@ -10,6 +10,7 @@ struct
     , "Cthulhu fhtagn!" (* "Cthulhu waits"; experiment powerc6e *)
     , "Necronomicon" (* for summoning the Old Ones; experiment power27e *)
     , "Tsathoggua" (* Master of formless spawn, tag manual515 *)
+    , "John Bigboote" (* confirmed tag banzai8be. Maybe a substring of it is also power, but don't know *)
     ]
 
   (* Ideas? *)

@@ -7,6 +7,8 @@ val problemp = Params.param "15"
 
 fun main () =
   let
+    val power_phrases = Phrases.power
+    val power_phrases = ["john bigboote"]
     val problemId = Params.asint 1 problemp
     val problem = Board.fromjson
                       (StringUtil.readfile
@@ -50,8 +52,8 @@ fun main () =
     infixr 3 @@
     val nn = ref 0
     val stream = (fn n =>
-                     let val w = List.nth(Phrases.power, !nn)
-                         val _ = nn := (!nn + 1) mod (length Phrases.power)
+                     let val w = List.nth(power_phrases, !nn)
+                         val _ = nn := (!nn + 1) mod (length power_phrases)
                      in
                        w
                      end)
