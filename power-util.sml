@@ -63,6 +63,47 @@ struct
       | SOME (n, idx, s) => (n, idx, s)
     end
 
+  fun can_execute state str =
+    let
+      fun exec i =
+        if i = size str
+        then true
+        else
+          let
+            val c = Board.legalize (String.sub (str, i))
+          in
+            Board.move_unwind (state, c,
+            (fn Board.M { status, ... } =>
+             case status of
+               Board.CONTINUE => exec (i + 1)
+             | Board.GAMEOVER _ => false
+             | Board.ERROR => false))
+          end
+  in
+    exec 0
+  end
+
+  fun execute state str =
+    let
+      fun exec i =
+        if i = size str
+        then ()
+        else
+          let
+            val c = Board.legalize (String.sub (str, i))
+            val Board.M { status, ... } = Board.move (state, c)
+          in
+            case status of
+              Board.CONTINUE => exec (i + 1)
+            | Board.GAMEOVER _ => raise PowerUtil "It was too long"
+            | Board.ERROR => raise PowerUtil "It was ERROR"
+          end
+  in
+    exec 0
+  end
+
+
+
   structure SS = SplaySetFn(type ord_key = string
                             val compare = String.compare)
 
@@ -84,5 +125,10 @@ struct
     CharVector.exists (fn c => not (Board.islegal c)) s
 
   fun is_known s = SS.member (known_powerwords, s)
+
+  (* Ridiculous! Since we are targeting 'quoted' output, turn a single
+     quote into ' (ending the quote) "'" (quoted quote) ' (restart quotes).
+     Of course, quote all that for SML string literals. *)
+  fun escape s = StringUtil.replace "'" "'\"'\"'" s
 
 end

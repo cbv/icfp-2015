@@ -69,10 +69,6 @@ struct
                            Int.compare (size ss, size s)) (!big)
 
   val f = TextIO.openOut "db3.txt"
-  (* Ridiculous! Since we are targeting 'quoted' output, turn a single
-     quote into ' (ending the quote) "'" (quoted quote) ' (restart quotes).
-     Of course, quote all that for SML string literals. *)
-  fun escape s = StringUtil.replace "'" "'\"'\"'" s
   fun onebig ((s, problem, seed, padded), i) =
     let val actual = if padded then padding ^ s
                      else s
@@ -80,7 +76,7 @@ struct
       TextIO.output (f, "./submitty.py --prob " ^ Int.toString problem ^
                      " --seed " ^ Int.toString (Word32.toInt seed) ^
                      " --tag db3_" ^ Int.toString i ^
-                     " --sol '" ^ escape actual ^ "'\n")
+                     " --sol '" ^ PU.escape actual ^ "'\n")
     end
   val () = ListUtil.appi onebig big
   val () = TextIO.closeOut f

@@ -50,77 +50,72 @@ struct
 
   val () = app (fn s => print (s ^ "\n")) guesses
 
-    (*
-  val padding = "hog"
-  fun longest_prefix_with_padding solution =
+  (* "shotgun" approach just tries to jam a lot of words into
+     experiments. *)
+  local
+    datatype command = datatype Board.command
+    datatype dir = datatype Board.dir
+                   datatype turn = datatype Board.turn
+  in
+    val moves = map Board.anychar [(D SE), (D SW),
+                                   (D E),  (D W),
+                                   (T CW), (T CCW)]
+  end
+
+  fun make_experiment problem_idx seed guesses =
     let
-      val (n, i, s) = PU.longest_prefix problems solution
-      val (nn, ii, ss) = PU.longest_prefix problems (padding ^ solution)
+      val problem = Vector.sub(problems, problem_idx)
+      val state = Board.resetwithseed (problem, seed)
+
+      fun loop phrases =
+        (* try to insert a power phrase here. *)
+        let
+          (* Get a phrase that we can insert here, and the
+             remaining phrases (possibly reordered) *)
+          fun getphrase (_, nil) = NONE
+            | getphrase (acc, ph :: rest) =
+            if PU.can_execute state ph
+            then SOME (ph, acc @ rest)
+            else NONE
+        in
+          case getphrase (nil, phrases) of
+            NONE => (* XXX Explore some... *) ("", phrases)
+          | SOME (ph, rest) =>
+              let
+                val () = PU.execute state ph
+                val (string, unused) = loop rest
+              in
+                (ph ^ string, unused)
+              end
+        end
+
+      val expt = loop guesses
     in
-      if nn - size padding > n
-      then (nn - size padding, ii, ss, true)
-      else (n, i, s, false)
+      loop guesses
     end
 
-
-  val big = ref nil
-  val covered = ref 0
-  val wasted = ref 0
-  fun consume "" = print "Done.\n"
-    | consume (s : string) =
+  fun make_experiments nil =
+    print "Got 'em all!\n"
+    | make_experiments guesses =
     let
-      val (n, idx, seed, padded) = longest_prefix_with_padding s
+      (* XXX in all states.. *)
+      val problem_idx = 24
+      val seed : Word32.word = 0w18
     in
-      if n > 0
-      then
-        let in
-          print ("[" ^ Int.toString (String.size s) ^ " left] " ^
-                 "first " ^ Int.toString n ^ " chars on " ^
-                 "problem " ^ Int.toString idx ^ " seed " ^
-                 Int.toString (Word32.toInt seed) ^
-                 (if padded then " (padded)" else "") ^
-                     "\n");
-          (if (n > 100)
-           then
-             let in
-               big := (String.substring (s, 0, n), idx, seed, padded) :: !big;
-               covered := !covered + n
-             end
-           else wasted := !wasted + n);
-          consume (String.substring (s, n, String.size s - n))
-        end
-      else
-        let in
-          print ("Had to skip one char [" ^ String.substring(s, 0, 1) ^
-                 "] :(\n");
-          wasted := !wasted + 1;
-          consume (String.substring (s, 1, String.size s - 1))
-        end
+      case make_experiment 24 0w18 guesses of
+        ("", _) => print ("Leftover guesses: " ^
+                          Int.toString (length guesses) ^ "\n")
+      | (ph, guesses) =>
+          let in
+            TextIO.output
+            (TextIO.stdOut,
+             "./submitty.py --prob " ^ Int.toString problem_idx ^
+             " --seed " ^ Int.toString (Word32.toInt seed) ^
+             " --tag pb_" ^
+             " --sol '" ^ PU.escape ph ^ "'\n");
+            make_experiments guesses
+          end
     end
 
-  val () = consume s
-  val () = print ("Covered " ^ Int.toString (!covered) ^ " chars and wasted " ^
-                  Int.toString (!wasted) ^ ".\n" ^
-                  "There are " ^ Int.toString (length (!big)) ^ " big strings.\n")
-
-  val big = ListUtil.sort (fn ((s, _, _, _), (ss, _, _, _)) =>
-                           Int.compare (size ss, size s)) (!big)
-
-  val f = TextIO.openOut "db3.txt"
-  (* Ridiculous! Since we are targeting 'quoted' output, turn a single
-     quote into ' (ending the quote) "'" (quoted quote) ' (restart quotes).
-     Of course, quote all that for SML string literals. *)
-  fun escape s = StringUtil.replace "'" "'\"'\"'" s
-  fun onebig ((s, problem, seed, padded), i) =
-    let val actual = if padded then padding ^ s
-                     else s
-    in
-      TextIO.output (f, "./submitty.py --prob " ^ Int.toString problem ^
-                     " --seed " ^ Int.toString (Word32.toInt seed) ^
-                     " --tag db3_" ^ Int.toString i ^
-                     " --sol '" ^ escape actual ^ "'\n")
-    end
-  val () = ListUtil.appi onebig big
-  val () = TextIO.closeOut f
-*)
+  val () = make_experiments guesses
 end

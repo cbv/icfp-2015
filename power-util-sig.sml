@@ -16,9 +16,18 @@ sig
   val longest_prefix : Board.problem vector -> string ->
     int * int * Word32.word
 
+  (* Can we legally execute the string at this point?
+     Undoes any modifications to state. *)
+  val can_execute : Board.state -> string -> bool
+  val execute : Board.state -> string -> unit
 
   val is_excluded : string -> bool
   val is_known : string -> bool
   val is_invalid : string -> bool
+
+  (* Escape a solution string so that it can be placed in single-quotes
+     on a bash command-line. (It actually breaks out of those quotes
+     to emit single quote characters.) *)
+  val escape : string -> string
 
 end
