@@ -111,6 +111,40 @@ def checkscore(problem, seed, solution):
    except:
       return None
 
+# Recall all the scoreboard info we know about
+def scarpyrecall():
+   done = False
+   info = []
+   request = {
+      'operation': 'list',
+      'TableName': 'scarpydb',
+      'IndexName': 'problem-score-index'
+   }
+
+   while (not done):
+      response = json.loads(requests.post(api, json.dumps(request)).text)
+      info = info + response['Items']
+      if ('LastEvaluatedKey' in response):
+         print "[scarpyrecall] loaded "+str(len(info))+" total, there are more!"
+         request['ExclusiveStartKey'] = response['LastEvaluatedKey']
+      else: 
+         print "[scarpyrecall] loaded "+str(len(info))+", done"
+         done = True
+
+   print 'Problem | Score   | Power   | Tag(s)'
+   for i in range(0, len(info)):
+      problem = info[i]['problem']['N']
+      score = info[i]['score']['N']
+      power = info[i]['power']['N']
+      tags = " "
+      for j in range(0, len(info[i]['alltags']['SS'])):
+         tags += " "+info[i]['alltags']['SS'][j]
+      print problem+" "*(8-len(problem))+"|",
+      print score+" "*(8-len(score))+"|",
+      print power+" "*(8-len(power))+"|"+tags
+         
+   
+
 # From a list of tags, generate a tag -> infomap (problem, seed, solution)
 def checkdatabase(tags):
    tags = list(set(tags))
