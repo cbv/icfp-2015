@@ -10,6 +10,10 @@ struct
     (SOME("-script", "The command sequence (as characters) to run."))
     "script"
 
+  val scriptfilep = Params.param ""
+    (SOME("-scriptfile", "A file containing (only) the command sequence to run."))
+    "scriptfile"
+
   val problemp = Params.param "11"
     (SOME("-problem", "Problem number to load."))
     "problem"
@@ -110,8 +114,15 @@ struct
          "\n}\n")
     in
         (if !file = "" then
-             print (print_score (get_score (!problemp) (!scriptp)
-                                           (Params.asint 0 seedp)))
+             (if !scriptfilep = "" then
+                  print (print_score (get_score (!problemp) (!scriptp)
+                                                (Params.asint 0 seedp)))
+              else
+                  print (print_score (get_score
+                                          (!problemp)
+                                          (StringUtil.readfile (!scriptfilep))
+                                          (Params.asint 0 seedp)))
+             )
          else
              (print "[";
               print
