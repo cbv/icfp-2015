@@ -414,6 +414,7 @@ sedna
 quaoar
 varuna
 haumea
+
 # buckaroo banzai
 buckaroo banzai
 yoyodyne
@@ -436,13 +437,43 @@ parker
 emdall
 john
 eighth dimension
+oscillation overthruster
+monkeyboy
+monkey boy
+lectroids
+
 
 # characters from backstory
 lamport
+leslie lamport
 rivest
+ron rivest
 milner
+robin minler
 hoare
+tony hoare
+sir tony hoare
 liskov
+barbara liskov
+backus
+john backus
+
+# nerd classics
+gort
+Klaatu barada nikto
+klaatu
+barada
+nikto
+etaoin shrdlu
+qwerty
+qwertyuiop
+asdf
+gigawatts
+flux capacitor
+mr fusion
+great scott
+under the sea
+
 
 # from contest logo, via akiva
 deneb
@@ -450,3 +481,4 @@ deneb
 # puzzle tweet
 R1 O0 P1 Q1 P1 O0 N0 N0 P1 R1 Q1 P1 O0 P1 Q1 R1 P1 N0 N0 Q1 S1 N1 T1 S1 R1 P1 R1 Q1 P1 O0 O0 P1 Q1 R1 P1 N0 N0
 R1O0P1Q1P1O0N0N0P1R1Q1P1O0P1Q1R1P1N0N0Q1S1N1T1S1R1P1R1Q1P1O0O0P1Q1R1P1N0N0
+

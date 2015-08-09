@@ -15,6 +15,10 @@ struct
     , "planet 10" (* confirmed in redacted7cf *)
     ]
 
+(*
+     (* "under the searobin minlermr fusionmonkeyboyy'llamonkey boyjohn backusidh yaaithaquahaiogh yaikranggroth golkazoth ommog", (* pb_bf4 *) *)
+*)
+
   (*
 
     pb_6bf "planetxplanet xplanet 10pimoa cthulhuphrases of powernctosanctolhuposeidonprintsaa'itiirokonscylla"  YES *)
