@@ -60,109 +60,104 @@ structure LockStep :> LOCK_STEP = struct
     | take 0 lst = []
     | take n (x::xs) = x::(take (n - 1) xs)
 
-  (*
-     walk through all lockstep sequences of depth n.
-     best: ((int, step list) option) ref
 
-     heuristic: Board.state -> int
-  *)
-  fun search (SC {max_depth, best, branch_factor, heuristic, prev_steps}, combined_score,
-              step as Step {state = state_opt, ...}) =
-    case (state_opt, max_depth <= 1 + (List.length prev_steps))
-     of (SOME(state), false) =>
-        let
-            val new_context = SC {max_depth = max_depth, branch_factor = branch_factor,
-                                  best = best, heuristic = heuristic,
-                                  prev_steps = step::prev_steps}
-        in
-            search_steps (new_context, state)
-        end
-     | _ => (* don't go deeper *)
-       let
-           val steps = step::prev_steps
-           val best_score = case !best of
-                                SOME((score, _)) => score
-                              | NONE => ~1
-           val () = if combined_score > best_score
-                    then best := (SOME((combined_score, List.rev steps)))
-                    else ()
-       in
-           ()
-       end
 
-  and search_steps (context as SC {heuristic, prev_steps, branch_factor, ...}, state) =
-      let
-          fun mapper (step as Step {state = state_opt, px, py, a, ...}) =
-            let
-                val hscore = case state_opt of
-                                 NONE => 0
-                               | SOME(state) => heuristic (HI {state = state, px = px, py = py, a = a })
-                val scored = List.foldr (fn (Step {scored,...}, s) => scored + s) 0 (step::prev_steps)
-                val combined_score = scored * HEURISTIC_FACTOR + hscore
-            in
-                (combined_score, step)
-            end
+  structure Heap = HeapFn(struct
+                           type priority = int
+                           val compare = Int.compare
+                           end)
 
-          val poss = (possible_next_steps state)
-          val pairs = List.map mapper poss
-          val sorted_pairs = ListUtil.sort compare_first_reverse pairs
+  datatype ScoredStep = SS of {
+         step: step,
 
-          (* Just look at the most promising *)
-          val pairs_to_search = take branch_factor sorted_pairs
-          fun apper (combined_score, step) =
-            let
-            in
-                search (context, combined_score, step)
-            end
-      in
-          List.app apper pairs_to_search
-      end
+         (* Total points achieved up in all of history up to here.
+            This does not include an *)
+         accum_score: int
+  }
 
-  fun get_best_step (state, depth, heuristic, step_deadline) =
+
+  fun compute_combined_score heuristic accum_score
+                             (step as Step {state = state_opt, px, py, a, scored, ...}) =
     let
-        val start_time = Time.now()
-        val branch_factor = 8;
-        val best = ref NONE
-        val context = SC {max_depth = depth, heuristic = heuristic, branch_factor = branch_factor,
-                          best = best, prev_steps = []}
-        val () = search_steps (context, state)
-        val end_time = Time.now()
-        val time_remaining = Time.-(step_deadline, end_time)
-        val elapsed = Time.-(end_time, start_time)
-
-        val enough_time =
-            Time.>(time_remaining, Time.fromReal((Time.toReal elapsed) * (Real.fromInt branch_factor)))
+        val hscore = case state_opt of
+                         NONE => 0
+                       | SOME(state) => heuristic (HI {state = state, px = px, py = py, a = a })
+        val combined_score = (accum_score + scored) * HEURISTIC_FACTOR + hscore
     in
-        (* we'll deepen if we have enough time and if the best step isn't an end state *)
-
-        case (enough_time, !best) of
-            (true, SOME((score, (Step { state = SOME(new_state), ...})::steps)))
-             => get_best_step(state, depth + 1, heuristic, step_deadline)
-         |  (_, SOME((_, step::steps))) => step
-         |  _ => raise LockStep "impossible"
+        (combined_score, step)
     end
 
-  fun accumulate_best (state, heuristic, accumulator, 0, deadline) = accumulator
-    | accumulate_best (state, heuristic, accumulator, steps_remaining, deadline) =
+
+  fun accumulate_best (initial_state, heuristic, deadline) =
     let
-(*        val () = TextIO.output(TextIO.stdErr, Board.toascii state ^ "\n\n\n"); *)
-        val step_deadline = Time.+(
-                              Time.now(),
-                              Time.fromReal(Time.toReal(Time.-(deadline, Time.now())) /
-                                            (Real.fromInt steps_remaining)))
-        val best_step = get_best_step (state, 1, heuristic, step_deadline)
+        val result_heap = Heap.empty ()
+        val heap = Heap.empty ()
+        val _ = Heap.insert heap 0 []
+        val iter = ref 0
+
+        fun single_step () =
+          case Heap.min heap of
+              NONE => ()
+            | SOME (neg_combined_score, ssteps) =>
+              let
+                  val (state, accum_score) =
+                      case ssteps of
+                          [] => (initial_state, 0)
+                        | (SS { step = Step {state = SOME(state), ...}, accum_score })::_ =>
+                          (state, accum_score)
+                        | _ => raise LockStep "impossible"
+                  val poss = (possible_next_steps state)
+                  val pairs = List.map (compute_combined_score heuristic accum_score) poss
+                  val sorted_pairs = ListUtil.sort compare_first_reverse pairs
+
+                  (* Just look at the most promising *)
+                  val branch_factor = 8
+                  val pairs_to_search = take branch_factor sorted_pairs
+                  fun apper (combined_score, step as Step {scored, state = state_opt, ...}) =
+                    let
+                        val new_accum_score = accum_score + scored
+                        val new_sequence = (SS {step = step, accum_score = accum_score})::ssteps
+                        val _ =
+                            case state_opt of
+                                SOME(new_state) =>
+                                Heap.insert heap (~combined_score) new_sequence
+                              | NONE =>
+                                (* We've reached an end state. emit it. *)
+                                Heap.insert result_heap (~new_accum_score)
+                                            new_sequence
+
+                    in
+                        ()
+                    end
+              in
+                  List.app apper pairs_to_search;
+                  print ("took a step. size = " ^ Int.toString (Heap.size heap) ^ "\n");
+                  print ("result size = " ^ Int.toString (Heap.size result_heap) ^ "\n");
+                  (if (Heap.size result_heap) > 0
+                  then case Heap.min result_heap of
+                           SOME (_, (SS {accum_score, ...})::_) =>
+                           print ("found a result with score" ^ Int.toString accum_score ^ "\n")
+                        | _ => raise LockStep "impossible"
+                  else ());
+                  single_step()
+              end
+
+        val () = single_step ()
     in
-        case best_step of
-            (step as Step {state = SOME(new_state), ...}) =>
-            accumulate_best (new_state, heuristic, step::accumulator, steps_remaining - 1, deadline)
-         | (step as Step {state = NONE, ...}) => step::accumulator
+        result_heap
     end
 
   fun play_n_steps (state, heuristic, time_limit, max_steps) =
     let
         val deadline = Time.+(time_limit, Time.now())
+        val result_heap = accumulate_best (state, heuristic, deadline)
+        val scored_steps =
+            case Heap.min result_heap of
+                SOME(_, ssteps) => ssteps
+              | NONE => raise LockStep "impossible?"
+        val steps = List.map (fn SS {step, ...} => step) scored_steps
     in
-        accumulate_best (state, heuristic, [], max_steps, deadline)
+        steps
     end
 
   fun play_to_end (state, heuristic, time_limit) =
