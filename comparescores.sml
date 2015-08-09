@@ -18,6 +18,22 @@ struct
       implode (List.map (Board.forgetlegal o Board.anychar) commands)
     end
 
+  fun ragged (problem, seed_idx) =
+    let
+      val state = Board.reset (problem, seed_idx)
+      fun heuristic (LockStep.HI { state, ... }) =
+        1000 - Board.raggedness_heuristic state
+      val seconds = 10 (* Params.asint 10 timelimitp *)
+      val steps = LockStep.play_to_end (state, heuristic,
+                                        Time.fromSeconds (IntInf.fromInt seconds))
+      val commands = List.rev (List.concat
+                               (List.map
+                                (fn (LockStep.Step {commands, ...}) => commands)
+                                steps))
+    in
+      implode (List.map (Board.forgetlegal o Board.anychar) commands)
+    end
+
 
   fun main () =
     let
@@ -38,20 +54,24 @@ struct
               print ".";
               { sol = sol, score = score }
             end
+
+          val r = Vector.tabulate (Vector.length problems, oneidx)
         in
-          Vector.tabulate (Vector.length problems, oneidx)
+          print "\n";
+          r
         end
 
       val results_david = maketable david
+      val results_ragged = maketable ragged
 
-      val table = ["problem", "david"] ::
+      val table = ["problem", "david", "ragged"] ::
         List.tabulate (Vector.length problems,
                        fn pidx =>
                        Int.toString pidx ::
                        map (fn res : result vector =>
                             let val { score, ... } = Vector.sub (res, pidx)
                             in Int.toString score
-                            end) [results_david])
+                            end) [results_david, results_ragged])
 
     in
       print (StringUtil.table 80 table ^ "\n")
