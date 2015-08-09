@@ -216,4 +216,29 @@ struct
     end
 
 
+  structure PowerHeuristics = struct
+
+    structure StringSet = SplaySetFn(struct
+                                      type ord_key = string
+                                      val compare = String.compare
+                                      end)
+
+    datatype basic_state = SSA of StringSet.set
+                         | SSB
+
+    fun basic power_phrases =
+      let
+        fun query (SSA s) = if StringSet.isEmpty s
+                            then query SSB
+                            else
+                              let val pick = hd (StringSet.listItems s)
+                              in (pick, SSA (StringSet.delete(s, pick)), SSA s)
+                              end
+          | query SSB = ("ia! ia!", SSB, SSB)
+        val stream_state = SSA (StringSet.addList(StringSet.empty, power_phrases))
+      in
+        PS {query=query, stream_state=stream_state}
+      end
+  end
+
 end
