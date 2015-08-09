@@ -68,6 +68,7 @@ if __name__ == "__main__":
          print "[recall] loaded "+str(len(info))+", done"
          done = True
 
+   print "[recall] usuing getscore.exe to get expected scores, may take awhile"
    db = {}
    maxtag_len = 0
    maxscore_len = 0 
@@ -80,7 +81,7 @@ if __name__ == "__main__":
       if problem not in db.keys(): db[problem] = {}
       if seed not in db[problem].keys(): db[problem][seed] = []
 
-      analysis = checkscore(problem, seed, solution)
+      analysis = checkscore(problem, seed, solution, tag)
       score = '???' if analysis is None else str(analysis['score'])
 
       maxtag_len = max(maxtag_len, len(tag))
@@ -93,21 +94,26 @@ if __name__ == "__main__":
 
    sorted(db, key = db.get)
 
+   def scoreme(x):
+      try:
+         return -int(x['score'])
+      except ValueError:
+         return 1
+   
    for prob in db.keys():
       if db[prob] is not None:
          for seed in db[prob].keys():
             print "Problem "+str(prob)+" seed "+str(seed)+":"
+            db[prob][seed].sort(key=scoreme)
+            theset = set([])
             for i in range(0, len(db[prob][seed])):
-               tag = db[prob][seed][i]['tag']
-               solution = db[prob][seed][i]['solution']
-               score = db[prob][seed][i]['score']
-               text = "   "+tag+" "*(maxtag_len + 1 - len(tag))
-               text = text+score+" "*(maxscore_len + 1 - len(score))+solution
-               if len(text) > LIMIT: text = text[:(LIMIT-3)]+"..."
-               print text
+               if db[prob][seed][i]['solution'] not in theset:
+                  theset.add(db[prob][seed][i]['solution'])
+                  tag = db[prob][seed][i]['tag']
+                  solution = db[prob][seed][i]['solution']
+                  score = db[prob][seed][i]['score']
+                  text = "   "+tag+" "*(maxtag_len + 1 - len(tag))
+                  text = text+score+" "*(maxscore_len + 1 - len(score))+solution
+                  if len(text) > LIMIT: text = text[:(LIMIT-3)]+"..."
+                  print text
 
-   if 'LastEvaluatedKey' in response:
-      print "WARNING: does not contain all results!"
-      print "This is because of database limits, get Rob to fix it"
-
-# json = json.dumps({'problemId': 0, 'seed': 0, 'tag', 'submitty', 'solution': 'Ei!'})
