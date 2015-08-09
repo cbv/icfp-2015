@@ -39,10 +39,6 @@ signature LOCK_STEP = sig
       Returns the 'best' sequence of steps to take, in reverse order. *)
    val play_to_end : Board.state * (HeuristicInput -> int) * Time.time -> step list
 
-   (* Like play_to_end, but returns at most n steps. *)
-   val play_n_steps : Board.state * (HeuristicInput -> int) * Time.time * int -> step list
-
-
-  (* points for open cells with small y coordinate *)
+  (* likes it when the previous lock had a large y coordinate *)
    val simple_heuristic : Board.problem -> HeuristicInput -> int
 end

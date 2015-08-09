@@ -113,6 +113,7 @@ structure LockStep :> LOCK_STEP = struct
               NONE => ()
             | SOME (neg_combined_score, ssteps) =>
               let
+                  val () = iter := ((!iter) + 1)
                   val () = maybe_prune()
 (*                  val () = print ("examining node with priority " ^ Int.toString neg_combined_score ^ "\n") *)
                   val (state, accum_score) =
@@ -126,7 +127,7 @@ structure LockStep :> LOCK_STEP = struct
                   val sorted_pairs = ListUtil.sort compare_first_reverse pairs
 
                   (* Just look at the most promising *)
-                  val branch_factor = 8
+                  val branch_factor = 10
                   val pairs_to_search = take branch_factor sorted_pairs
                   fun apper (combined_score, step as Step {scored, state = state_opt, ...}) =
                     let
@@ -147,7 +148,34 @@ structure LockStep :> LOCK_STEP = struct
                   List.app apper pairs_to_search;
 (*                  print ("took a step. size = " ^ Int.toString (Heap.size (!heap)) ^ "\n");
                   print ("result size = " ^ Int.toString (Heap.size result_heap) ^ "\n"); *)
-                  single_step()
+                  (if (!iter) mod 1000 = 0 andalso (Heap.size result_heap) > 0
+                  then case Heap.min result_heap of
+                           SOME (p, v as (SS {accum_score, ...})::_) =>
+                           (
+                             Heap.insert result_heap p v;
+                             print ("found a result with score " ^ Int.toString accum_score ^ "\n");
+                             print ("length = " ^ Int.toString (List.length v) ^ "\n")
+                           )
+                        | _ => raise LockStep "impossible"
+                  else ());
+
+                  (if (!iter) mod 1000 = 0
+                  then case Heap.min (!heap) of
+                           SOME (p, v as (SS {accum_score, step = Step {state= SOME(state), ...}})::_) =>
+                           (
+                             Heap.insert (!heap) p v;
+                             print ("working on something with score " ^ Int.toString accum_score ^ "\n");
+                             print ("length = " ^ Int.toString (List.length v) ^ "\n");
+                             print (Board.toascii state ^ "\n\n\n")
+                           )
+                        | _ => raise LockStep "impossible"
+                  else ());
+
+
+
+                  if (!iter) mod 1000 = 0 andalso Time.>(Time.now(), deadline)
+                  then ()
+                  else single_step()
               end
 
         val () = single_step ()
@@ -155,7 +183,8 @@ structure LockStep :> LOCK_STEP = struct
         result_heap
     end
 
-  fun play_n_steps (state, heuristic, time_limit, max_steps) =
+
+  fun play_to_end (state, heuristic, time_limit) =
     let
         val deadline = Time.+(time_limit, Time.now())
         val result_heap = accumulate_best (state, heuristic, deadline)
@@ -168,32 +197,13 @@ structure LockStep :> LOCK_STEP = struct
         steps
     end
 
-  fun play_to_end (state, heuristic, time_limit) =
-    let
-    in
-        play_n_steps (state, heuristic, time_limit, (Board.piecesleft state) + 1)
-    end
-
   fun simple_heuristic problem (HI {state, py, ...})  =
     let
         val (width, height) = Board.size problem
-        val future_pieces = (Board.piecesleft state) * 50 (* over-estimate *)
-        val score = ref future_pieces
-        val () = Util.for
-                     0 (width - 1)
-                     (fn ii => Util.for 0 (height - 1)
-                                        (fn jj =>
-                                            if Board.isempty (state, ii, jj)
-                                            then
-                                                let
-                                                in
-                                                    (* more points, proportional to distance from botton *)
-                                                    score := ((!score) + (height - jj) )
-                                                end
-                                            else ()
-                                      ))
+        val alive_bonus = 100000
+        val future_pieces = (Board.piecesleft state) * HEURISTIC_FACTOR div 100
     in
-        !score
+        (py * 500) + future_pieces + alive_bonus
     end
 
 
