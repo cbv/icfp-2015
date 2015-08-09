@@ -72,7 +72,10 @@ structure LockStep :> LOCK_STEP = struct
                                  NONE => 0
                                | SOME(state) => heuristic state
                 val scored = List.foldr (fn (Step {scored,...}, s) => scored + s) 0 (step::prev_steps)
-                val combined_score = 10000 * scored + hscore
+                val still_alive_bonus = case step of
+                                            (Step {state = SOME(_), ...}) => 1000000
+                                          | _ => 0
+                val combined_score = 10000 * scored + hscore + still_alive_bonus
 
             in
                 (combined_score, step)
@@ -104,7 +107,8 @@ structure LockStep :> LOCK_STEP = struct
   fun accumulate_best (state, heuristic, accumulator) =
     let
         val best = ref NONE
-        val () = search_steps (6, best, heuristic, state, [])
+(*        val () = print (Board.toascii state ^ "\n\n") *)
+        val () = search_steps (8, best, heuristic, state, [])
     in
         case !best of
             SOME((score, all_steps as (step as Step { state = SOME(state), ...})::steps)) =>
