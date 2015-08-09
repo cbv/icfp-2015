@@ -9,6 +9,7 @@ struct
     , "Yuggoth" (* filled cells in problem 7.  Confirmed in experiment powere92. *)
     , "Cthulhu fhtagn!" (* "Cthulhu waits"; experiment powerc6e *)
     , "Necronomicon" (* for summoning the Old Ones; experiment power27e *)
+    , "Tsathoggua" (* Master of formless spawn, tag manual515 *)
     ]
 
   (* Ideas? *)
