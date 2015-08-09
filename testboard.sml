@@ -74,7 +74,7 @@ struct
   fun main args =
     let
       val problem = Board.fromjson
-                        ("qualifiers/problem_" ^ !problemp ^ ".json")
+        (StringUtil.readfile ("qualifiers/problem_" ^ !problemp ^ ".json"))
 
       (* XXX add a command line parameter for the seed?  how does that work..
          if it's optional.. *)

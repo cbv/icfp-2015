@@ -26,7 +26,7 @@ struct
     let
       val seed = Word32.fromInt seeda
       val problem = Board.fromjson
-                        ("qualifiers/problem_" ^ problema ^ ".json")
+        (StringUtil.readfile ("qualifiers/problem_" ^ problema ^ ".json"))
 
       val state = Board.resetwithseed (problem, seed)
 
@@ -86,12 +86,16 @@ struct
 
   fun fromjson s =
     let
-      datatype json = datatype JSON.value
+      datatype json = datatype JSONDatatypeCallbacks.json
 
       fun error_handle (msg,pos,data) =
           raise Fail ("Error: " ^ msg ^ " near " ^ Int.toString pos)
 
-      val j = JSONParser.parseFile s
+      val j =
+          (JSON.inputData := s ;
+           JSON.inputPosition := 0 ;
+           JSON.parseArray ()) handle JSON.JSONParseError (m,p) =>
+                                      error_handle (m,p,!JSON.inputData)
 
       fun entry e =
           (Int.toString (JSONUtils.Int (e, "problemId")),
@@ -134,7 +138,7 @@ struct
                   (String.concatWith ",\n"
                   (List.map
                       (fn (p, sc, sd) => print_score (get_score p sc sd))
-                      (fromjson (!file))));
+                      (fromjson (StringUtil.readfile (!file)))));
              print "]\n")
         ) (*; (* This next line can't be right. -rjs *)
         print "]" *)

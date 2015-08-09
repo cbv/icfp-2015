@@ -42,15 +42,7 @@ sml-lib/algo/de-bruijn-sequence.sml
 sml-lib/misc/params-sig.sml
 sml-lib/misc/params.sml
 
-JSON-SML/json-tokens.sml
-JSON-SML/json.lex.sml
-JSON-SML/json.sml
-JSON-SML/json-stream-parser.sml
-JSON-SML/json-parser.sml
-JSON-SML/json-stream-printer.sml
-JSON-SML/json-printer.sml
-
-
+json.sml
 json-util.sml
 
 ansi.sml
