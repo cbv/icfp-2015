@@ -29,4 +29,7 @@ signature LOCK_STEP = sig
       Returns the 'best' sequence of steps to take, in reverse order. *)
    val play_to_end : Board.state * (Board.state -> int) * Time.time -> step list
 
+   (* Like play_to_end, but returns at most n steps. *)
+   val play_n_steps : Board.state * (Board.state -> int) * Time.time * int -> step list
+
 end
