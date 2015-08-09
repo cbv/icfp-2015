@@ -41,6 +41,7 @@ pimoa cthulhu
 thulhu regio
 dagon
 Yog-Sothoth
+Yog Sothoth
 Azathoth
 arkham
 gilman house
@@ -73,14 +74,17 @@ Ghatanothoa
 Mother
 Hydra
 Zoth-Ommog
+Zoth Ommog
 
 # outer gods
 Abhoth
 Aiueb Gnshal
 Azathoth
 Azhorra-Tha
+Azhorra Tha
 The Blackness from the Stars
 The Cloud-Thing
+The Cloud Thing
 C'thalpa
 Cxaxukluth
 Daoloth
@@ -88,34 +92,43 @@ Darkness
 D'endrrah
 Ghroth
 Gi-Hoveg
+Gi Hoveg
 Haiogh-Yai
+Haiogh Yai
 Huitloxopetl
 The Hydra
 Ialdagorth
 Kaajh'Kaalbh
 Lu-Kthu
+Lu Kthu
 Mh'ithrha
 Mlandoth
 Mril Thorion
 Mother of Pus
 The Nameless Mist
 Ngyr-Korath
+Ngyr Korath
 Noth-yidik
+Noth yidik
 Nyarlathotep
 Nyctelios
 Olkoth
 Shabbith-Ka
+Shabbith Ka
 Shub-Niggurath
+Shub Niggurath
 Star Mother
 Tru'nembra
 Tulzscha
 Ubbo-Sathla
+Ubbo Sathla
 Uvhash
 Xa'ligha
 Xexanoth
 Ycnagnnisssz
 Yhoundeh
 Yibb-Tstll
+Yibb Tstll
 Yidhra
 Yomagn'tho
 
@@ -124,17 +137,23 @@ Abholos
 Alala
 Ammutseba
 Amon-Gorloth
+Amon Gorloth
 Aphoom-Zhah
+Aphoom Zhah
 Apocolothoth
 Arwassa
 Atlach-Nacha
+Atlach Nacha
 Ayi'ig
 Aylith
 Baoht Z'uqqa-mogg
+Baoht Z'uqqa mogg
 Basatan
 B'gnu-Thun
+B'gnu Thun
 Bokrug
 Bugg-Shash
+Bugg Shash
 Byatis
 Chaugnar Faugn
 Coatlicue
@@ -166,13 +185,17 @@ Gloon
 Gobogeg
 God of the Red Flux
 Gog-Hoor
+Gog Hoor
 Gol-Goroth
+Gol Goroth
 Golothess
 the Green God
 Groth-Golka
+Groth Golka
 Gtuhanai
 Gurathnaka
 Gur'la-ya
+Gur'la ya
 Gzxtyos
 Han
 Hastalyk
@@ -182,12 +205,14 @@ Hnarqu
 Hydra
 Hziulquoigmnzhah
 Idh-yaa
+Idh yaa
 Inpesca
 Iod
 Istasha
 Ithaqua
 Janai'ngo
 Juk-Shabb
+Juk Shabb
 Kaalut
 Kag'Naru
 Kassogtha
@@ -212,6 +237,7 @@ Nctolhu
 Ngirrth'lu
 Northot
 Nssu-Ghahnb
+Nssu Ghahnb
 Nug
 Nyaghoggua
 Nycrama
@@ -224,13 +250,17 @@ Pharol
 Poseidon
 Psuchawrl
 Ptar-Axtlan
+Ptar Axtlan
 Quachil Uttaus
 Quyagen
 Q'yth-az
+Q'yth az
 Raandaii-B'nk
+Raandaii B'nk
 Ragnalla
 Raphanasuan
 Rhan-Tegoth
+Rhan Tegoth
 Rhogog
 Rh'Thulla
 Rlim Shaikorth
@@ -244,14 +274,19 @@ Sfatlicllp
 Shaklatal
 Shathak
 Shaurash-Ho
+Shaurash Ho
 Sheb-Teth
+Sheb Teth
 Shlithneth
 Sho-Gath
+Sho Gath
 Shterot
 Shudde M'ell
 Shuy-Nihl
+Shuy Nihl
 Sthanee
 S'tya-Yg'Nalle
+S'tya Yg'Nalle
 Summanus
 Swarog
 Thanaroa
@@ -263,10 +298,13 @@ Tulushuggua
 Turua
 Uitzilcapac
 Ut'Ulls-Hr'Her
+Ut'Ulls Hr'Her
 Vhuzompha
 Vibur
 Vile-Oct
+Vile Oct
 Volgna-Gath
+Volgna Gath
 Voltiyig
 Vthyarilops
 Vulthoom
@@ -279,6 +317,7 @@ Xotli
 Xoxiigghua
 Yeb
 Yegg-Ha
+Yegg Ha
 Y'Golonac
 Yhagni
 Yhashtur
@@ -286,14 +325,17 @@ Yig
 Y'lla
 'Ymnar
 Yog-Sapha
+Yog Sapha
 Yorith
 Ysbaddaden
 Ythogtha
 Yug-Siturath
+Yug Siturath
 Zathog
 Zhar and Lloigor
 Zindarak
 Zoth-Ommog
+Zoth Ommog
 Zstylzhemghi
 Zushakon
 Z'toggua
@@ -320,7 +362,9 @@ Urthuvn
 Vorvadoss
 Xislanyx
 Xuthyos-Sihb'Bz
+Xuthyos Sihb'Bz
 Yad-Thaddag
+Yad Thaddag
 Yaggdytha
 Zehirete
 # jk
@@ -351,6 +395,7 @@ Aleister
 watermelon
 quantum computing
 d-wave
+d wave
 kurzweil
 kasparov
 watson
@@ -381,6 +426,7 @@ yaya
 smallberries
 lectroids
 real soon
+real soon!
 soon!
 buckaroo
 banzai

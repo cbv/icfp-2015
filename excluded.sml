@@ -36,6 +36,10 @@ struct
      "xoxiigghuaxotliswarogsk'taishterotshavalyoth", (* pb_c5d *)
      "nctolhunctosaphrases of powerragnallaprintposeidonplanetxplanet xpimoa cthulhusaa'itiirokonrivestscyllasathogguayaya", (* pb_2ff *)
      "yaggdytharhogogrh'thullareal soonzathogh'chtelegothinpescazehiretezhar", (* pb_c0d *)
+     "amon gorlothaphoom zhahazhorra thaadaeduubbo sathla", (* pb_9a5 *)
+     "shuy nihlsho gathsheb tethshabbith kasedmelluqrhan tegoths'tya yg'nallenoth yidikyibb tstll", (* pb_dac *)
+     "ptar axtlanreal soon!kaunuzothraandaii b'nkyog saphagzxtyos", (* pb_3a0 *)
+     "juk shabblu kthungyr korathnssu ghahnbut'ulls hr'hervile octhuitloxopetlvolgna gathuitzilcapacyad thaddag", (* pb_f33 *)
      ""]
 
 end
