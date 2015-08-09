@@ -357,6 +357,7 @@ pluto
 neptune
 planet x
 planetx
+planet 10
 charon
 eris
 makemake
