@@ -90,7 +90,7 @@ if __name__ == "__main__":
 
    for i in range(0, len(warnings)):
       (problem, score, historical) = warnings[i]
-      print "[ULTRASCARPY] Warning, not our best score for problem "+str(i)+",",
+      print "[ULTRASCARPY] Not our best score for problem "+str(problem)+":",
       print str(score)+" versus "+str(historical)
    if len(better) > 0:
       print ""

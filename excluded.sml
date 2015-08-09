@@ -34,7 +34,7 @@ struct
      "makemakemappo no ryujinarkhammichelmilnermlandothdarknessmynoghranugpharolothuyeg", (* pb_90d *)
      "shlithnethshathakshaklatalsfatlicllpvarunaserioussedna", (* pb_753 *)
      "xoxiigghuaxotliswarogsk'taishterotshavalyoth", (* pb_c5d *)
-     (* "nctolhunctosaphrases of powerragnallaprintposeidonplanetxplanet xpimoa cthulhusaa'itiirokonrivestscyllasathogguayaya", (* pb_2ff *) *)
+     "nctolhunctosaphrases of powerragnallaprintposeidonplanetxplanet xpimoa cthulhusaa'itiirokonrivestscyllasathogguayaya", (* pb_2ff *)
      ""]
 
 end

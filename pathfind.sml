@@ -1,5 +1,8 @@
 structure Pathfind :> PATHFIND =
 struct
+  datatype 'a power_stream = PS of {stream_state: 'a,
+                                    query: 'a -> string * 'a * 'a}
+
   datatype target = Target of {px: int, py: int, a: int}
 
   fun cmds_to_string cmds = StringUtil.delimit "-" (List.map (Board.commandstring) cmds)
@@ -147,10 +150,10 @@ struct
 
   fun string_to_legalchars s = map Board.legalize (explode s)
 
-  fun power_helper (state, visitedSetRef, lchrs, target, power, n) =
+  fun power_helper (state, visitedSetRef, lchrs, target, power) =
     let
       val moves = map Board.anychar (choice_order_for state target)
-      fun move_helper lchrs (move : Board.legalchar) =
+      fun move_helper lchrs power (move : Board.legalchar) =
         let
           val sym = Board.piece_symmetry state
           fun body (Board.M {scored, lines, locked, new_phrases = _, status}) =
@@ -160,6 +163,8 @@ struct
                      val pl = piece_location(state, sym, map Board.charcommand new_lchrs)
                      val {px=tx,py=ty,a=ta} = target
                      val ((px, py), pa) = (Board.piece_position state, Board.piece_angle state)
+                     val PS {stream_state, ...} = power
+
 (*
                      val _ = print("successfulish move!\n" ^
                                    " piece at " ^ (Int.toString px) ^ " " ^ (Int.toString py) ^ "\n")
@@ -169,14 +174,14 @@ struct
                    if py > ty
                    then ((* print "But rejecting because too low\n";*) NONE)
                    else if (pa, px, py) = (ta, tx, ty)
-                   then SOME new_lchrs
+                   then SOME (new_lchrs, stream_state)
                    else if LocSet.member (!visitedSetRef, pl)
                    then ((*print "But rejecting because already seen\n";*) NONE) (* already visited *)
                    else
                      let
                      in
                        visitedSetRef := (LocSet.add (!visitedSetRef, pl));
-                       power_helper (state, visitedSetRef, new_lchrs, target, power, n)
+                       power_helper (state, visitedSetRef, new_lchrs, target, power)
                      end
                  end
                | _ => NONE
@@ -184,18 +189,19 @@ struct
         in
           Board.move_unwind (state, move, body)
         end
-      val power_word_lchrs = string_to_legalchars (power n)
+      val PS {stream_state, query} = power
+      val (phrase, succ, fail) = query stream_state
+      val power_word_lchrs = string_to_legalchars phrase
       fun attempt_k true = (* succeeded at saying power word! *)
         ((*print "attempt_k true\n";*)
         power_helper(state,
                      visitedSetRef,
                      (rev power_word_lchrs) @ lchrs,
-                     target, power,
-                     n+1))
+                     target, PS {stream_state=succ,query=query}))
         | attempt_k false = NONE (* failed at saying power word :( *)
     in
       case Board.move_unwind_many (state, power_word_lchrs, attempt_k) of
-          NONE => find_first (move_helper lchrs) moves
+          NONE => find_first (move_helper lchrs (PS {stream_state=fail,query=query})) moves
         | x => x
     end
 
@@ -204,8 +210,9 @@ struct
                               (piece_location (state, Board.piece_symmetry state, [])));
     in
       Option.map
-          rev
-          (power_helper (state, setRef, [], tgt, power, 0))
+          (fn (rev_lchrs, stream_state) => (rev rev_lchrs, stream_state))
+          (power_helper (state, setRef, [], tgt, power))
+
     end
 
 
