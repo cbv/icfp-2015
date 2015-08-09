@@ -12,11 +12,11 @@ local
     end
   basis l65 =
     bas
-      (* $/smlnj-lib.cm ====> *) $(SML_LIB)/smlnj-lib/Util/smlnj-lib.mlb
+      (* $/smlnj-lib.cm ====> *) ../Util/smlnj-lib.mlb
     end
   basis l8 =
     bas
-      (* $/ml-lpt-lib.cm ====> *) $(SML_LIB)/mllpt-lib/mllpt-lib.mlb
+      (* $/ml-lpt-lib.cm ====> *) ../../mllpt-lib/mllpt-lib.mlb
     end
 in
 local
