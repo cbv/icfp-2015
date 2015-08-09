@@ -75,7 +75,6 @@ structure LockStep :> LOCK_STEP = struct
          accum_score: int
   }
 
-
   fun compute_combined_score heuristic accum_score
                              (step as Step {state = state_opt, px, py, a, scored, ...}) =
     let
@@ -87,19 +86,35 @@ structure LockStep :> LOCK_STEP = struct
         (combined_score, step)
     end
 
-
   fun accumulate_best (initial_state, heuristic, deadline) =
     let
         val result_heap = Heap.empty ()
-        val heap = Heap.empty ()
-        val _ = Heap.insert heap 0 []
+        val heap = ref (Heap.empty ())
+        val _ = Heap.insert (!heap) 0 []
         val iter = ref 0
 
+        fun maybe_prune() =
+          if Heap.size (!heap) < 100000
+          then ()
+          else
+              let
+                  val old_heap = !heap
+                  val new_heap = Heap.empty()
+                  val () = Util.for 0 1000 (fn _ =>
+                                               case Heap.min old_heap
+                                                of SOME(p, v) => (Heap.insert new_heap p v;())
+                                                 | _ => ())
+              in
+                  heap := new_heap
+              end
+
         fun single_step () =
-          case Heap.min heap of
+          case Heap.min (!heap) of
               NONE => ()
             | SOME (neg_combined_score, ssteps) =>
               let
+                  val () = maybe_prune()
+                  val () = print ("examining node with priority " ^ Int.toString neg_combined_score ^ "\n")
                   val (state, accum_score) =
                       case ssteps of
                           [] => (initial_state, 0)
@@ -120,7 +135,7 @@ structure LockStep :> LOCK_STEP = struct
                         val _ =
                             case state_opt of
                                 SOME(new_state) =>
-                                Heap.insert heap (~combined_score) new_sequence
+                                Heap.insert (!heap) (~combined_score) new_sequence
                               | NONE =>
                                 (* We've reached an end state. emit it. *)
                                 Heap.insert result_heap (~new_accum_score)
@@ -131,7 +146,7 @@ structure LockStep :> LOCK_STEP = struct
                     end
               in
                   List.app apper pairs_to_search;
-                  print ("took a step. size = " ^ Int.toString (Heap.size heap) ^ "\n");
+                  print ("took a step. size = " ^ Int.toString (Heap.size (!heap)) ^ "\n");
                   print ("result size = " ^ Int.toString (Heap.size result_heap) ^ "\n");
                   (if (Heap.size result_heap) > 0
                   then case Heap.min result_heap of
