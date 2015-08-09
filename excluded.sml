@@ -24,7 +24,7 @@ struct
      "klosmiebhyxkathulukassogthakthulhukthulhutktulukulhukutulamkutunluulocksmh'ithrhakutuluph'nglui",
      "backusbanzaibenthicbigbootebuckaroobuckaroo banzaicharonc'thulhucockeconwayerisghisguthghrothgilman houseglaakigleethgloon",
      (* during search for power word in powerball phrase *)
-     "xalafuxctholxexanothwhorfinwatsonlamportmormomotheryhagniyhoundehyidhrayigyomagn'thoparker"
+     "xalafuxctholxexanothwhorfinwatsonlamportmormomotheryhagniyhoundehyidhrayigyomagn'thoparker",
      ""]
 
 end
