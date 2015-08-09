@@ -396,6 +396,7 @@ Aleister
 
 # from tweets
 watermelon
+watermelons
 quantum computing
 d-wave
 d wave
@@ -468,6 +469,7 @@ lamport
 leslie lamport
 rivest
 ron rivest
+ronald rivest
 milner
 robin minler
 hoare
@@ -520,8 +522,59 @@ fly, you fools!
 # 20,000 leagues?
 nautilus
 
+# ??? quotes
+the fate of the world is in your hands
+the fate of the world is in your hands!
+the fate of your planet rests in your hands
+the fate of your planet rests in your hands!
+choose wisely
+
+# hebrew words
+chaim
+l'chaim
+emet
+golem
+
 # from contest logo, via akiva
 deneb
+
+### other world-ending fates from the contest logo?
+# douglas adams
+vogon
+fortytwo
+42!
+oh no not again
+oh no! not again!
+don't panic
+don't panic!
+arthur
+arthur dent
+dent arthur dent
+zaphod beeblebrox
+slartibartfast
+what do you get when you multiply six by nine
+# superman?
+
+# lewis carroll
+jabberwocky
+jabberwock
+beware the jabberwock my son!
+'twas brillig and the slithy toves
+did gyre and gimble in the wabe
+all mimsy were the borogoves
+and the mome raths outgrabe
+o frabjous day!
+callooh!
+callay!
+
+# brazil?
+
+# random magic words
+abracadabra
+avada kedavra
+hocus pocus
+presto
+voila
 
 # puzzle tweet
 R1 O0 P1 Q1 P1 O0 N0 N0 P1 R1 Q1 P1 O0 P1 Q1 R1 P1 N0 N0 Q1 S1 N1 T1 S1 R1 P1 R1 Q1 P1 O0 O0 P1 Q1 R1 P1 N0 N0

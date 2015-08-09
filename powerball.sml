@@ -106,7 +106,11 @@ struct
     in
       case make_experiment 24 0w18 guesses of
         ("", _) => print ("Leftover guesses: " ^
-                          Int.toString (length guesses) ^ "\n")
+                          Int.toString (length guesses) ^ "\n"
+                          (* print the list of guesses -- on a line by itself
+                             so it's easy to comment out if desired *)
+                          ^ String.concatWith "\n" guesses ^ "\n"
+                          )
       | (ph, guesses) =>
           let in
             TextIO.output
