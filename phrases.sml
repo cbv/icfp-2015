@@ -17,8 +17,6 @@ struct
                          but it could have been the submission tagged 'david2'
                          instead -- not sure there's a way to tell via the
                          leaderboard.. *)
-  (* Maybe check the new problem, which drops letters.  -tom7 *)
-  , "fnord"
   ]
 
   (* These are known to be incorrect -- phrases of weakness *)
@@ -28,7 +26,8 @@ struct
   , "Shub" (* shub alone is not enough -- refuted by experiment powerca8 *)
   , "bap" (* discovered via problem 1 score, but refuted by experiment power638 (leaderboard "isomorphic phrasing" bug). *)
   , "davar" (* refuted by experiment power4df *)
-  , "icfp2015" (* /probably/ not?  fp is E W, and so is 20.. very hard not to stutter *)
+  , "icfp2015" (* dropped letters in problem 24.. /probably/ not?  fp is E W, and so is 20.. very hard not to stutter *)
   , "Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn!" (* experiment power17c *)
+  , "fnord" (* experiment power26f *)
   ]
 end
