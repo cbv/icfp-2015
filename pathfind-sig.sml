@@ -13,4 +13,9 @@ signature PATHFIND = sig
   val find_with_power : Board.state -> target -> 'a power_stream ->
                         (Board.legalchar list * 'a) option
 
+  structure PowerHeuristics :
+            sig
+              type basic_state
+              val basic : string list -> basic_state power_stream
+            end
 end
