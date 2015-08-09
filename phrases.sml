@@ -7,6 +7,7 @@ struct
     , "Ia! Ia!" (* Filled cells in problem 3. Confirmed in experiment. *)
     , "R'lyeh" (* filled cells in problem 5. Confirmed in experiment. *)
     , "Yuggoth" (* filled cells in problem 7.  Confirmed in experiment powere92. *)
+    , "Cthulhu fhtagn!" (* experiment powerc6e *)
     ]
 
   (* Ideas? *)
@@ -17,6 +18,7 @@ struct
                          instead -- not sure there's a way to tell via the
                          leaderboard.. *)
   (* Maybe check the new problem, which drops letters.  -tom7 *)
+  , "fnord"
   ]
 
   (* These are known to be incorrect -- phrases of weakness *)
@@ -24,6 +26,9 @@ struct
     "Cthulhu Cthulhu Cthulhu" (* from contest clarification -- refuted by experiment powerd1f *)
   , "Yog Sothoth!" (* cthulhu mythos -- refuted by experiment power652 *)
   , "Shub" (* shub alone is not enough -- refuted by experiment powerca8 *)
-  , "bap" (* discovered via problem 1 score, but refuted by experiment power638. *)
+  , "bap" (* discovered via problem 1 score, but refuted by experiment power638 (leaderboard "isomorphic phrasing" bug). *)
+  , "davar" (* refuted by experiment power4df *)
+  , "icfp2015" (* /probably/ not?  fp is E W, and so is 20.. very hard not to stutter *)
+  , "Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn!" (* experiment power17c *)
   ]
 end
