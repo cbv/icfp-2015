@@ -83,7 +83,7 @@ def scarpyreport(timestamp, all_rankings):
          'time': timestamp,
          'scores': scores[:backoff]
       }
-      print "[scarpyreport] attempting to submit "+str(len(scores[:backoff])),
+      print "[scarpyreport] remembering "+str(len(scores[:backoff])),
       print "score(s)"
 
       response = json.loads(requests.post(scarpy_writer, 
