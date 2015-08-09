@@ -195,63 +195,110 @@ function draw_board(board) {
     }
   }
 
-
+//  console.log(">" + mode);
   d.fillStyle = "rgba(0,0,100,0.2)";
   d.font = "50px sans-serif";
   d.fillText("Problem: " + problemNumber + " Unit: " + (board.cur_piece.unit_id + 1) + "/" +
-             board.units.length, 10, h - 10);
+             board.units.length + " Mode: " + mode, 10, h - 10) ;
   d.restore();
-
 
 }
 
+var table = [
+  [["p", "'", "!", ".", "0", "3"], 72],
+  [["b", "c", "e", "f", "y", "2"], 75],
+  [["a", "g", "h", "i", "j", "4"], 78],
+  [["l", "m", "n", "o", " ", "5"], 77],
+  [["d", "q", "r", "v", "z", "1"], 191],
+  [["k", "s", "t", "u", "w", "x"], 220]
+];
+
+letter_map = {};
+table.forEach(function(pair) {
+  var letters = pair[0];
+  var keycode = pair[1];
+  letters.forEach(function(x) {
+    letter_map[x] = keycode;
+  });
+});
+
 load_problem(0);
 console.log("Keybindings:\n ','/'.' prev/next problem\n '/','\\' rotate piece cw,ccw \n 'uihknm' move piece \n '['/']' prev/next unit");
-$(document).on('keydown', function(e) {
-  //   console.log(e.keyCode);
-  if (e.keyCode == 188) { // ","
-    problemNumber--;
-    load_problem(problemNumber);
-  }
-  if (e.keyCode == 190) { // "."
-    problemNumber++;
-    load_problem(problemNumber);
-  }
-  if (e.keyCode == 191) { // "/"
-    attempt_move(0, 0, 1, "d");
-  }
-  if (e.keyCode == 220) { // "\\"
-    attempt_move(0,0,-1, "k");
-  }
-  if (e.keyCode == 85) { // "u"
-    attempt_move(0,-1,0, "=");
-  }
-  if (e.keyCode == 73) { // "i"
-    attempt_move(1,-1,0, "=");
-  }
-  if (e.keyCode == 72) { // "h"
-    attempt_move(-1,0,0,"p");
-  }
-  if (e.keyCode == 75) { // "k"
-    attempt_move(1,0,0,"b");
-  }
-  if (e.keyCode == 78) { // "n"
-    attempt_move(-1,1,0,"a");
-  }
-  if (e.keyCode == 77) { // "m"
-    attempt_move(0,1,0,"l");
-  }
-  if (e.keyCode == 219) { // "["
-    g_board.cur_piece.unit_id = (g_board.cur_piece.unit_id + g_board.units.length - 1) % g_board.units.length;
-    draw_board(g_board);
-  }
-  if (e.keyCode == 221) { // "]"
-    g_board.cur_piece.unit_id = (g_board.cur_piece.unit_id + 1) % g_board.units.length;
-    draw_board(g_board);
-  }
 
+mode = "joystick";
+
+$(document).on('keypress', function(e) {
+  var chr = String.fromCharCode(e.charCode);
+  if (mode == "literal") {
+    if (chr == "~") {
+      mode = "joystick";
+      draw_board(g_board);
+    }
+    else
+      try_motion_command(letter_map[chr]);
+  }
+});
+
+$(document).on('keydown', function(e) {
+//  console.log(e.keyCode);
+  if (mode == "joystick") {
+    try_motion_command(e.keyCode);
+    if (e.keyCode == 192) { // "`"
+      mode = "literal";
+      draw_board(g_board);
+    }
+    if (e.keyCode == 188) { // ","
+      problemNumber--;
+      load_problem(problemNumber);
+    }
+
+    if (e.keyCode == 188) { // ","
+      problemNumber--;
+      load_problem(problemNumber);
+    }
+    if (e.keyCode == 190) { // "."
+      problemNumber++;
+      load_problem(problemNumber);
+    }
+    if (e.keyCode == 85) { // "u"
+      attempt_move(0,-1,0, "=");
+    }
+    if (e.keyCode == 73) { // "i"
+      attempt_move(1,-1,0, "=");
+    }
+
+    if (e.keyCode == 219) { // "["
+      g_board.cur_piece.unit_id = (g_board.cur_piece.unit_id + g_board.units.length - 1) % g_board.units.length;
+      draw_board(g_board);
+    }
+    if (e.keyCode == 221) { // "]"
+      g_board.cur_piece.unit_id = (g_board.cur_piece.unit_id + 1) % g_board.units.length;
+      draw_board(g_board);
+    }
+  }
 
 });
+
+function try_motion_command(keycode) {
+  if (keycode == 191) { // "/"
+    attempt_move(0, 0, 1, "d");
+  }
+  if (keycode == 220) { // "\\"
+    attempt_move(0,0,-1, "k");
+  }
+  if (keycode == 72) { // "h"
+    attempt_move(-1,0,0,"p");
+  }
+  if (keycode == 75) { // "k"
+    attempt_move(1,0,0,"b");
+  }
+  if (keycode == 78) { // "n"
+    attempt_move(-1,1,0,"a");
+  }
+  if (keycode == 77) { // "m"
+    attempt_move(0,1,0,"l");
+  }
+}
 
 function attempt_move(dx, dy, drot, chr) {
   g_moves += chr;

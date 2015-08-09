@@ -9,6 +9,7 @@ struct
     , "Yuggoth" (* filled cells in problem 7.  Confirmed in experiment powere92. *)
     , "Cthulhu fhtagn!" (* "Cthulhu waits"; experiment powerc6e *)
     , "Necronomicon" (* for summoning the Old Ones; experiment power27e *)
+    , "Tsathoggua" (* Master of formless spawn, tag manual515 *)
     ]
 
   (* Ideas? *)
@@ -41,5 +42,8 @@ struct
   , "klaatu barada nikto" (* worth a shot; experiment power811 *)
   (* more random cthulhu junk; experiment power777 *)
   , "Al Azif Madame Blavatsky Salem Kadath UAAAH 'Umr at Tawil At U'mr ....... Tawil At'Umr"
+  , "Azathoth" (* refuted by tag azathoth33b *)
+  , "Ghatanothoa" (* refuted by tag two304 *)
+  , "Nodens" (* refuted by tag two304 *)
   ]
 end

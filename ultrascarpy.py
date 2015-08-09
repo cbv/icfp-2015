@@ -9,22 +9,16 @@ import sys
 from tools import checkdatabase
 from tools import scarpyreport
 from tools import augmentscores
+from tools import scarpyrecall
+from tools import checkscore
 
 api = "https://cmage109g3.execute-api.us-west-2.amazonaws.com/what"
 scarpy_writer = api + "/scarpydb"
-
-def checkscore(problem, seed, solution):
-   call = "./getscore.exe -problem "+str(problem)+\
-          " -seed "+str(seed)+" -script '"+solution+"'"
-   res = subprocess.check_output(call,shell=True)
-   try:
-      return json.loads(res)
-   except:
-      return None
-
       
 
 if __name__ == "__main__":
+   history = scarpyrecall()
+
    try:
       data = urllib2.urlopen('https://davar.icfpcontest.org/rankings.js')
       data = data.read()
@@ -57,7 +51,8 @@ if __name__ == "__main__":
 
    solutiondb = checkdatabase(tags)
    augmentscores(solutiondb)
-   
+   warnings = []
+
    for i in range(0,numproblems):
       rankings = data['data']['settings'][i]['rankings']
       numteams = len(rankings)
@@ -65,6 +60,8 @@ if __name__ == "__main__":
          if rankings[j]['teamId'] is 31:
             stats = rankings[j]
             if (stats['score'] != 0 or len(stats['tags']) != 0):
+               score = rankings[j]['score']
+               power = rankings[j]['power_score']
                print rankings[j]['team'] + ", problem #" + str(i)
                print "   Ranking: " + str(rankings[j]['rank'])
                print "   Official score: " + str(rankings[j]['score']),
@@ -83,5 +80,13 @@ if __name__ == "__main__":
                      print "      |    Fate:  "+analysis['fate']
                
                print "   "
+
+               if (score < history[i][0]['score']):
+                  warnings.append((i, score, history[i][0]['score']))
+
+   for i in range(0, len(warnings)):
+      (problem, score, historical) = warnings[i]
+      print "WARNING: Not our best score for problem "+str(i)+",",
+      print str(score)+" versus "+str(historical)
 
    scarpyreport(data['time'], data['data']['settings'])

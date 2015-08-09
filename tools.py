@@ -89,7 +89,7 @@ def scarpyreport(timestamp, all_rankings):
       response = json.loads(requests.post(scarpy_writer, 
                                           json.dumps(request)).text)
       if (not 'modified' in response):
-         print "[scarpyreport] failed: backing off"
+         print "[scarpyreport] failed: backing off "+json.dumps(response)
          backoff = backoff/2
       else:
          total += response['modified']
@@ -131,25 +131,20 @@ def scarpyrecall():
          print "[scarpyrecall] loaded "+str(len(info))+", done"
          done = True
 
-   print 'Problem | Score   | Power   | Tag(s)'
+   db = {}
    for i in range(0, len(info)):
-      problem = info[i]['problem']['N']
-      score = info[i]['score']['N']
-      power = info[i]['power']['N']
-      tags = ""
-      print problem+" "*(8-len(problem))+"|",
-      print score+" "*(8-len(score))+"|",
-      print power+" "*(8-len(power))+"|",
-      budget = 49
-      for j in range(0, len(info[i]['alltags']['SS'])):
-         new = info[i]['alltags']['SS'][j]
-         if (len(new) > budget):
-            print "\n        |         |         |",
-            budget = 49
-         print new,
-         budget = budget - len(new) - 1
-      print ""
-         
+      problem = int(info[i]['problem']['N'])
+      if problem not in db: db[problem] = []
+      db[problem].append({
+         'score': int(info[i]['score']['N']),
+         'power': int(info[i]['power']['N']),
+         'tags': info[i]['alltags']['SS']
+      })
+
+   for problem in db.keys():
+      db[problem].sort(key=lambda x: -x['score'])
+
+   return db
    
 
 # From a list of tags, generate a tag -> infomap (problem, seed, solution)
