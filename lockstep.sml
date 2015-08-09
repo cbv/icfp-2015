@@ -39,10 +39,21 @@ structure LockStep :> LOCK_STEP = struct
 
 
   datatype searchcontext = SC of { max_depth: int,
-                                   best: ((int * step list) option) ref,
                                    heuristic: Board.state -> int,
+                                   branch_factor: int,
+                                   best: ((int * step list) option) ref,
                                    prev_steps: step list
                                  }
+
+
+  fun compare_first_reverse ((s1, _), (s2, _)) =
+    case Int.compare (s1, s2) of
+        LESS => GREATER
+      | GREATER => LESS
+      | EQUAL => EQUAL
+  fun take n [] = []
+    | take 0 lst = []
+    | take n (x::xs) = x::(take (n - 1) xs)
 
   (*
      walk through all lockstep sequences of depth n.
@@ -50,13 +61,14 @@ structure LockStep :> LOCK_STEP = struct
 
      heuristic: Board.state -> int
   *)
-  fun search (SC {max_depth, best, heuristic, prev_steps}, combined_score,
+  fun search (SC {max_depth, best, branch_factor, heuristic, prev_steps}, combined_score,
               step as Step {state = state_opt, ...}) =
     case (state_opt, max_depth <= 1 + (List.length prev_steps))
      of (SOME(state), false) =>
         let
-            val new_context = SC {max_depth = max_depth, best = best, heuristic = heuristic,
-                              prev_steps = step::prev_steps}
+            val new_context = SC {max_depth = max_depth, branch_factor = branch_factor,
+                                  best = best, heuristic = heuristic,
+                                  prev_steps = step::prev_steps}
         in
             search_steps (new_context, state)
         end
@@ -73,7 +85,7 @@ structure LockStep :> LOCK_STEP = struct
            ()
        end
 
-  and search_steps (context as SC {heuristic, prev_steps, ...}, state) =
+  and search_steps (context as SC {heuristic, prev_steps, branch_factor, ...}, state) =
       let
           fun mapper (step as Step {state, ...}) =
             let
@@ -90,20 +102,12 @@ structure LockStep :> LOCK_STEP = struct
                 (combined_score, step)
             end
 
-                (* reverse order *)
-          fun compare ((s1, _), (s2, _)) =
-            case Int.compare (s1, s2) of
-                LESS => GREATER
-              | GREATER => LESS
-              | EQUAL => EQUAL
-          fun take n [] = []
-            | take 0 lst = []
-            | take n (x::xs) = x::(take (n - 1) xs)
           val poss = (possible_next_steps state)
           val pairs = List.map mapper poss
-          val sorted_pairs = ListUtil.sort compare pairs
+          val sorted_pairs = ListUtil.sort compare_first_reverse pairs
+
           (* Just look at the most promising *)
-          val pairs_to_search = take 8 sorted_pairs
+          val pairs_to_search = take branch_factor sorted_pairs
           fun apper (combined_score, step) =
             let
             in
@@ -113,24 +117,51 @@ structure LockStep :> LOCK_STEP = struct
           List.app apper pairs_to_search
       end
 
-  fun accumulate_best (state, heuristic, accumulator) =
+  fun get_best_step (state, depth, heuristic, step_deadline) =
     let
+        val start_time = Time.now()
+        val branch_factor = 8;
         val best = ref NONE
-(*        val () = print (Board.toascii state ^ "\n\n") *)
-        val context = SC {max_depth = 3, best = best, heuristic = heuristic, prev_steps = []}
+        val context = SC {max_depth = depth, heuristic = heuristic, branch_factor = branch_factor,
+                          best = best, prev_steps = []}
         val () = search_steps (context, state)
+        val end_time = Time.now()
+        val time_remaining = Time.-(step_deadline, end_time)
+        val elapsed = Time.-(end_time, start_time)
+
+        val enough_time =
+            Time.>(time_remaining, Time.fromReal((Time.toReal elapsed) * (Real.fromInt branch_factor)))
     in
-        case !best of
-            SOME((score, all_steps as (step as Step { state = SOME(state), ...})::steps)) =>
-            accumulate_best (state, heuristic, step::accumulator)
-         |  SOME((score, (step as Step { state = NONE, ...})::steps)) => step::accumulator
+        (* we'll deepen if we have enough time and if the best step isn't an end state *)
+
+        case (enough_time, !best) of
+            (true, SOME((score, (Step { state = SOME(new_state), ...})::steps)))
+             => get_best_step(state, depth + 1, heuristic, step_deadline)
+         |  (_, SOME((_, step::steps))) => step
          |  _ => raise LockStep "impossible"
     end
 
-  fun play_n_steps (state, heuristic, time_limit, n) =
+  fun accumulate_best (state, heuristic, accumulator, 0, deadline) = accumulator
+    | accumulate_best (state, heuristic, accumulator, steps_remaining, deadline) =
     let
+        val () = TextIO.output(TextIO.stdErr, Board.toascii state ^ "\n\n\n");
+        val step_deadline = Time.+(
+                              Time.now(),
+                              Time.fromReal(Time.toReal(Time.-(deadline, Time.now())) /
+                                            (Real.fromInt steps_remaining)))
+        val best_step = get_best_step (state, 1, heuristic, step_deadline)
     in
-        accumulate_best (state, heuristic, [])
+        case best_step of
+            (step as Step {state = SOME(new_state), ...}) =>
+            accumulate_best (new_state, heuristic, step::accumulator, steps_remaining - 1, deadline)
+         | (step as Step {state = NONE, ...}) => step::accumulator
+    end
+
+  fun play_n_steps (state, heuristic, time_limit, max_steps) =
+    let
+        val deadline = Time.+(time_limit, Time.now())
+    in
+        accumulate_best (state, heuristic, [], max_steps, deadline)
     end
 
   fun play_to_end (state, heuristic, time_limit) =

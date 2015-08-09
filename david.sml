@@ -10,6 +10,10 @@ struct
     ("problem")
 
 
+  val timelimitp = Params.param "10"
+    (SOME("-timelimit", "Max number of seconds to spend."))
+    ("timelimit")
+
 (* favor far-down squares *)
 fun heuristic (x, y) = y
 
@@ -62,7 +66,8 @@ fun do_seed (problemId, problem, seed_idx, seed) =
   let
      val state = Board.reset (problem, seed_idx)
      val heuristic = lockstep_heuristic problem
-     val steps = LockStep.play_to_end (state, heuristic, Time.fromSeconds 1)
+     val seconds = Params.asint 10 timelimitp
+     val steps = LockStep.play_to_end (state, heuristic, Time.fromSeconds (IntInf.fromInt seconds))
      val commands = List.rev (List.concat
                                   (List.map
                                        (fn (LockStep.Step {commands, ...}) => commands)
