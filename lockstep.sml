@@ -127,10 +127,18 @@ structure LockStep :> LOCK_STEP = struct
          |  _ => raise LockStep "impossible"
     end
 
-  fun play_to_end (state, heuristic) =
+  fun play_n_steps (state, heuristic, time_limit, n) =
     let
     in
         accumulate_best (state, heuristic, [])
     end
+
+  fun play_to_end (state, heuristic, time_limit) =
+    let
+    in
+        play_n_steps (state, heuristic, time_limit, (Board.piecesleft state) + 1)
+    end
+
+
 
 end
