@@ -52,6 +52,7 @@ struct
      "oh no! not again!oh no not againthe cloud thingpresto", (* pb_e13 *)
      "as2h2atlastbig bootybigboo tayconstancedid gyre and gimble in the wabefalconer madandon't panic!laugh aformless spawnlaughalowell observatorynew horizonvenetiaithaquaremember no matter where you go there you are!", (* pb_45 *)
      "what do you get when you multiply six by ninevoilazaphod beeblebrox", (* pb_5d2 *)
+     "hp lovecrafthplovecraftso long and thanks for all the fishzeus", (* pb_7d8 *)
      ""]
 
 end

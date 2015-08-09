@@ -612,3 +612,8 @@ as2h2
 vancouver
 icfp
 2015
+
+# charlie stross
+# http://thelaundryfiles.wikia.com/wiki/Category:Code_names
+CASE NIGHTMARE GREEN
+MAGINOT BLUE STARS
