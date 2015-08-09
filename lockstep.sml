@@ -17,6 +17,9 @@ structure LockStep :> LOCK_STEP = struct
                      scored: int
                  }
 
+   (* The state of the board and the position of the last locked piece. *)
+   datatype HeuristicInput = HI of {state: Board.state, px: int, py: int, a: int}
+
    fun stepstring (Step {px, py, a, commands, scored, ...}) =
      "{ px = " ^ Int.toString px ^ ", py = " ^ Int.toString py ^ ", a = " ^ Int.toString a ^
         ", scored = " ^ Int.toString scored ^
@@ -39,7 +42,7 @@ structure LockStep :> LOCK_STEP = struct
 
 
   datatype searchcontext = SC of { max_depth: int,
-                                   heuristic: Board.state -> int,
+                                   heuristic: HeuristicInput -> int,
                                    branch_factor: int,
                                    best: ((int * step list) option) ref,
                                    prev_steps: step list
@@ -87,11 +90,11 @@ structure LockStep :> LOCK_STEP = struct
 
   and search_steps (context as SC {heuristic, prev_steps, branch_factor, ...}, state) =
       let
-          fun mapper (step as Step {state, ...}) =
+          fun mapper (step as Step {state = state_opt, px, py, a, ...}) =
             let
-                val hscore = case state of
+                val hscore = case state_opt of
                                  NONE => 0
-                               | SOME(state) => heuristic state
+                               | SOME(state) => heuristic (HI {state = state, px = px, py = py, a = a })
                 val scored = List.foldr (fn (Step {scored,...}, s) => scored + s) 0 (step::prev_steps)
                 val still_alive_bonus = case step of
                                             (Step {state = SOME(_), ...}) => 1000000
@@ -170,7 +173,7 @@ structure LockStep :> LOCK_STEP = struct
         play_n_steps (state, heuristic, time_limit, (Board.piecesleft state) + 1)
     end
 
-fun lockstep_heuristic problem state =
+fun simple_heuristic problem (HI {state, ...})  =
   let
       val (width, height) = Board.size problem
       val score = ref 0
