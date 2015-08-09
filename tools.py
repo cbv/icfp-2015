@@ -109,14 +109,10 @@ signal.signal(signal.SIGALRM, alarm_handler)
 def checkscore(problem, seed, solution, tag):
    filename = ".flaghanfnordcheckscore"
    with open(filename, "w") as text_file:
-      text_file.write(json.dumps([
-         {'problemId': problem,
-          'seed': seed,
-          'tag': tag,
-          'solution': solution
-         }
-      ]))
-   call = "./getscore.exe -file '"+filename+"'"
+      text_file.write(solution)
+   call = "./getscore.exe -problem "+str(problem)
+   call += " -seed "+str(seed)
+   call += " -scriptfile "+filename
    try:
       proc_id = subprocess.Popen(call, 
                                  stdout=open(filename+"X", 'w'),
@@ -125,7 +121,7 @@ def checkscore(problem, seed, solution, tag):
       proc_id.wait()
       signal.alarm(0)
       with open(filename+"X", 'r') as text_file:
-         return json.loads(text_file.read())[0]
+         return json.loads(text_file.read())
    except Alarm:
       print "[checkscore] WARNING: timeout with ./getscore.exe for "+tag
       try:
@@ -133,7 +129,7 @@ def checkscore(problem, seed, solution, tag):
          proc_id.wait()
          return None
       except: return None
-   except e:
+   except Exception as e:
       print "[checkscore] Unexpected error with ./getscore.exe for "+tag
       print "[checkscore]",
       print e

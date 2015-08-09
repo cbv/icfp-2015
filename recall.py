@@ -68,7 +68,7 @@ if __name__ == "__main__":
          print "[recall] loaded "+str(len(info))+", done"
          done = True
 
-   print "[recall] usuing getscore.exe to get expected scores, may take awhile"
+   print "[recall] using getscore.exe to get expected scores, may take awhile"
    db = {}
    maxtag_len = 0
    maxscore_len = 0 

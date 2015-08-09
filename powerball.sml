@@ -48,7 +48,7 @@ struct
 
   val guesses = List.mapPartial filterout guesses
 
-  val () = app (fn s => print (s ^ "\n")) guesses
+  (* val () = app (fn s => print (s ^ "\n")) guesses *)
 
   (* "shotgun" approach just tries to jam a lot of words into
      experiments. *)
@@ -62,12 +62,13 @@ struct
                                    (T CW), (T CCW)]
   end
 
+
   fun make_experiment problem_idx seed guesses =
     let
       val problem = Vector.sub(problems, problem_idx)
       val state = Board.resetwithseed (problem, seed)
 
-      fun loop phrases =
+      fun loop (sofar : string, phrases) =
         (* try to insert a power phrase here. *)
         let
           (* Get a phrase that we can insert here, and the
@@ -75,21 +76,24 @@ struct
           fun getphrase (_, nil) = NONE
             | getphrase (acc, ph :: rest) =
             if PU.can_execute state ph
-            then SOME (ph, acc @ rest)
+               (* Might accidentally make a power word by concatenation;
+                  this makes a bad experiment so don't do it *)
+               andalso (not (PU.contains_known (sofar ^ ph)))
+            then
+                SOME (ph, acc @ rest)
+
             else getphrase (ph :: acc, rest)
         in
           case getphrase (nil, phrases) of
-            NONE => (* XXX Explore some... *) ("", phrases)
+            NONE => (* XXX Explore some... *) (sofar, phrases)
           | SOME (ph, rest) =>
-              let
-                val () = PU.execute state ph
-                val (string, unused) = loop rest
-              in
-                (ph ^ string, unused)
+              let in
+                PU.execute state ph;
+                loop (sofar ^ ph, rest)
               end
         end
     in
-      loop guesses
+      loop ("", guesses)
     end
 
   fun make_experiments nil =

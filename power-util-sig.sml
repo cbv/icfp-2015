@@ -25,6 +25,8 @@ sig
   val is_known : string -> bool
   val is_invalid : string -> bool
 
+  val contains_known : string -> bool
+
   (* Escape a solution string so that it can be placed in single-quotes
      on a bash command-line. (It actually breaks out of those quotes
      to emit single quote characters.) *)
