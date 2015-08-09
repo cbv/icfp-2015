@@ -76,7 +76,7 @@ struct
             | getphrase (acc, ph :: rest) =
             if PU.can_execute state ph
             then SOME (ph, acc @ rest)
-            else NONE
+            else getphrase (ph :: acc, rest)
         in
           case getphrase (nil, phrases) of
             NONE => (* XXX Explore some... *) ("", phrases)
@@ -88,8 +88,6 @@ struct
                 (ph ^ string, unused)
               end
         end
-
-      val expt = loop guesses
     in
       loop guesses
     end
