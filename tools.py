@@ -4,6 +4,7 @@ import string
 import requests
 import subprocess
 import sys
+import signal
 
 # Rob hates web services
 api = "https://cmage109g3.execute-api.us-west-2.amazonaws.com/what"
@@ -99,16 +100,43 @@ def scarpyreport(timestamp, all_rankings):
    elif total is 1: print "[scarpyreport] done. 1 new score"
    else: print "[scarpyreport] done, none of those scores were new."
    
-      
-               
-                
-def checkscore(problem, seed, solution):
-   call = "./getscore.exe -problem "+str(problem)+\
-          " -seed "+str(seed)+" -script '"+solution+"'"
+class Alarm(Exception):
+    pass
+def alarm_handler(signum, frame):
+    raise Alarm
+signal.signal(signal.SIGALRM, alarm_handler)
+
+def checkscore(problem, seed, solution, tag):
+   filename = ".flaghanfnordcheckscore"
+   with open(filename, "w") as text_file:
+      text_file.write(json.dumps([
+         {'problemId': problem,
+          'seed': seed,
+          'tag': tag,
+          'solution': solution
+         }
+      ]))
+   call = "./getscore.exe -file '"+filename+"'"
    try:
-      res = subprocess.check_output(call,shell=True)
-      return json.loads(res)
-   except:
+      proc_id = subprocess.Popen(call, 
+                                 stdout=open(filename+"X", 'w'),
+                                 shell=True)
+      signal.alarm(2)
+      proc_id.wait()
+      signal.alarm(0)
+      with open(filename+"X", 'r') as text_file:
+         return json.loads(text_file.read())[0]
+   except Alarm:
+      print "[checkscore] WARNING: timeout with ./getscore.exe for "+tag
+      try:
+         proc_id.kill()
+         proc_id.wait()
+         return None
+      except: return None
+   except e:
+      print "[checkscore] Unexpected error with ./getscore.exe for "+tag
+      print "[checkscore]",
+      print e
       return None
 
 # Recall all the scoreboard info we know about
@@ -191,7 +219,8 @@ def augmentscores(db):
    for tag in db.keys():
       analysis = checkscore(db[tag]['problem'],
                             db[tag]['seed'],
-                            db[tag]['solution'])
+                            db[tag]['solution'],
+                            tag)
       if analysis is not None:
          for key in analysis.keys():
             db[tag][key] = analysis[key]

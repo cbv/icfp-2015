@@ -10,7 +10,6 @@ from tools import checkdatabase
 from tools import scarpyreport
 from tools import augmentscores
 from tools import scarpyrecall
-from tools import checkscore
 
 api = "https://cmage109g3.execute-api.us-west-2.amazonaws.com/what"
 scarpy_writer = api + "/scarpydb"
