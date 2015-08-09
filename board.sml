@@ -230,9 +230,9 @@ struct
 
   fun fromjsonwithpower (s, power) =
     let
-      datatype json = datatype JSONDatatypeCallbacks.json
+      datatype json = datatype JSON.value
 
-      val j = JSON.parse s
+      val j = JSONParser.parseFile s
 
       val width = JSONUtils.Int (j, "width")
       val height = JSONUtils.Int (j, "height")
