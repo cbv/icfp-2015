@@ -25,6 +25,8 @@ struct
      "backusbanzaibenthicbigbootebuckaroobuckaroo banzaicharonc'thulhucockeconwayerisghisguthghrothgilman houseglaakigleethgloon",
      (* during search for power word in powerball phrase *)
      "xalafuxctholxexanothwhorfinwatsonlamportmormomotheryhagniyhoundehyidhrayigyomagn'thoparker",
+     "watermelonvorvadossultharvoltiyigtulushugguathulhu regiothu thuthe worm that gnaws in the nightthe nameless mistthe hydrasthanee",
+     (* pb_307 "eighth dimensioneihortemdallgobogeggod of the red fluxgolothessistashaiodhouellebecqgtuhanaihoare" *)
      ""]
 
 end
