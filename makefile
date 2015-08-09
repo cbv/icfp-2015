@@ -8,6 +8,9 @@ testboard.exe : $(SOURCES) testboard.mlb testboard.sml testboard-main.sml
 getscore.exe : $(SOURCES) getscore.mlb getscore.sml
 	mlton -output $@ getscore.mlb
 
+powerwalk.exe : $(SOURCES) powerwalk.mlb powerwalk.sml
+	mlton -output $@ powerwalk.mlb
+
 nj:
 	ml-build testboard.cm TestBoard.smlnj_entry nj.img
 
