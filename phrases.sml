@@ -13,25 +13,8 @@ struct
     , "John Bigboote" (* confirmed tag banzai8be + what jason? *)
     , "yoyodyne" (* confirmed in yes_93b *)
     , "planet 10" (* confirmed in redacted7cf *)
-    ]
-
-(*
-     (* "under the searobin minlermr fusionmonkeyboyy'llamonkey boyjohn backusidh yaaithaquahaiogh yaikranggroth golkazoth ommog", (* pb_bf4 *) *)
-*)
-
-  (*
-
-    pb_6bf "planetxplanet xplanet 10pimoa cthulhuphrases of powernctosanctolhuposeidonprintsaa'itiirokonscylla"  YES *)
-
-     (* pb_f38 "xalafuxctholxexanothwhorfinwatsonlamportmormomotheryhagniyhoundehyidhrayigyomagn'thoparkeryorithyoyodyneysbaddadenythogthaz'togguazathogy'golonac" has a power word!
-
-        pb_b0e "xalafuxctholxexanothwhorfinwatsonlamport" NO
-        pb_a33 "xalafuxctholxexanothwhorfinwatsonlamportmormomotheryhagniyhoundehyidhrayigyomagn'thoparker" NO
-               "xalafuxctholxexanothwhorfinwatsonlamportmormomotheryhagniyhoundehyidhrayigyomagn'thoparkeryorith" ?
-        pb_da8 "xalafuxctholxexanothwhorfinwatsonlamportmormomotheryhagniyhoundehyidhrayigyomagn'thoparkeryorithyoyodyneysbaddaden" YES
-
-        pb_799 "xalafuxctholxexanothwhorfinwatsonlamportmormomotheryhagniyhoundehyidhrayigyomagn'thoparkeryorithyoyodyneysbaddadenythogtha" YES
-        *)
+    , "monkeyboy" (* confirmed in woo_e28 *)
+     ]
 
   (* Ideas? *)
   val hypotheses = [
