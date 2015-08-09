@@ -15,6 +15,7 @@ struct
   (* Ideas? *)
   val hypotheses = [
     (* Other Cthulhu mythos stuff?  Yog Suthuth, Shub Niggurath...? *)
+    "icfp2015" (* dropped letters in problem 24.. /probably/ not?  fp is E W, and so is 20.. very hard not to stutter *)
   ]
 
   (* These are known to be incorrect -- phrases of weakness *)
@@ -24,7 +25,6 @@ struct
   , "Shub" (* shub alone is not enough -- refuted by experiment powerca8 *)
   , "bap" (* discovered via problem 1 score, but refuted by experiment power638 (leaderboard "isomorphic phrasing" bug). *)
   , "davar" (* refuted by experiment power4df *)
-  , "icfp2015" (* dropped letters in problem 24.. /probably/ not?  fp is E W, and so is 20.. very hard not to stutter *)
   , "Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn!" (* experiment power17c *)
   , "fnord" (* experiment power26f *)
   , "Shub Niggurath!" (* ultimately refuted by experiment power592 *)
@@ -45,5 +45,6 @@ struct
   , "Azathoth" (* refuted by tag azathoth33b *)
   , "Ghatanothoa" (* refuted by tag two304 *)
   , "Nodens" (* refuted by tag two304 *)
+  , "Nyarlathotep" (* refuted by tag nyarlathotep8d6 *)
   ]
 end
