@@ -1,5 +1,7 @@
 structure LockStep :> LOCK_STEP = struct
 
+  val HEURISTIC_FACTOR = 1000
+
   exception LockStep of string
 
    (* Lock the piece at position `(px, py)` and angle `a` *)
@@ -16,6 +18,9 @@ structure LockStep :> LOCK_STEP = struct
                      (* An example number of points scored for making this step. *)
                      scored: int
                  }
+
+   (* The state of the board and the position of the last locked piece. *)
+   datatype HeuristicInput = HI of {state: Board.state, px: int, py: int, a: int}
 
    fun stepstring (Step {px, py, a, commands, scored, ...}) =
      "{ px = " ^ Int.toString px ^ ", py = " ^ Int.toString py ^ ", a = " ^ Int.toString a ^
@@ -39,7 +44,7 @@ structure LockStep :> LOCK_STEP = struct
 
 
   datatype searchcontext = SC of { max_depth: int,
-                                   heuristic: Board.state -> int,
+                                   heuristic: HeuristicInput -> int,
                                    branch_factor: int,
                                    best: ((int * step list) option) ref,
                                    prev_steps: step list
@@ -87,17 +92,13 @@ structure LockStep :> LOCK_STEP = struct
 
   and search_steps (context as SC {heuristic, prev_steps, branch_factor, ...}, state) =
       let
-          fun mapper (step as Step {state, ...}) =
+          fun mapper (step as Step {state = state_opt, px, py, a, ...}) =
             let
-                val hscore = case state of
+                val hscore = case state_opt of
                                  NONE => 0
-                               | SOME(state) => heuristic state
+                               | SOME(state) => heuristic (HI {state = state, px = px, py = py, a = a })
                 val scored = List.foldr (fn (Step {scored,...}, s) => scored + s) 0 (step::prev_steps)
-                val still_alive_bonus = case step of
-                                            (Step {state = SOME(_), ...}) => 1000000
-                                          | _ => 0
-                val combined_score = 10000 * scored + hscore + still_alive_bonus
-
+                val combined_score = scored * HEURISTIC_FACTOR + hscore
             in
                 (combined_score, step)
             end
@@ -170,27 +171,27 @@ structure LockStep :> LOCK_STEP = struct
         play_n_steps (state, heuristic, time_limit, (Board.piecesleft state) + 1)
     end
 
-fun lockstep_heuristic problem state =
-  let
-      val (width, height) = Board.size problem
-      val score = ref 0
-      val () = Util.for
-                   0 (width - 1)
-                   (fn ii => Util.for 0 (height - 1)
-                                      (fn jj =>
-                                          if Board.isempty (state, ii, jj)
-                                          then
-                                              let
-                                              in
-                                                  (* more points, proportional to distance from botton *)
-                                                  score := ((!score) + (height - jj) )
-                                              end
-                                          else ()
+  fun simple_heuristic problem (HI {state, py, ...})  =
+    let
+        val (width, height) = Board.size problem
+        val future_pieces = (Board.piecesleft state) * 50 (* over-estimate *)
+        val score = ref future_pieces
+        val () = Util.for
+                     0 (width - 1)
+                     (fn ii => Util.for 0 (height - 1)
+                                        (fn jj =>
+                                            if Board.isempty (state, ii, jj)
+                                            then
+                                                let
+                                                in
+                                                    (* more points, proportional to distance from botton *)
+                                                    score := ((!score) + (height - jj) )
+                                                end
+                                            else ()
                                       ))
-
-  in
-      !score
-  end
+    in
+        !score
+    end
 
 
 end

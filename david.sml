@@ -43,7 +43,7 @@ fun do_seed (problemId, problem, seed_idx, seed) =
 fun do_seed (problemId, problem, seed_idx, seed) =
   let
      val state = Board.reset (problem, seed_idx)
-     val heuristic = LockStep.lockstep_heuristic problem
+     val heuristic = LockStep.simple_heuristic problem
      val seconds = Params.asint 10 timelimitp
      val steps = LockStep.play_to_end (state, heuristic, Time.fromSeconds (IntInf.fromInt seconds))
      val commands = List.rev (List.concat

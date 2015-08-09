@@ -49,6 +49,10 @@ FLEURS DE LYS
 shoggoth
 
 
+# team photo
+charybdis
+scylla
+
 # wiki
 Hastur
 Ithaqua
@@ -393,3 +397,7 @@ rivest
 milner
 hoare
 liskov
+
+# from contest logo, via akiva
+deneb
+

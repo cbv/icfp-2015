@@ -22,17 +22,27 @@ signature LOCK_STEP = sig
 
    val possible_next_steps: Board.state -> step list
 
+   val HEURISTIC_FACTOR : int (* = 1000 *)
+
+   (* The state of the board and the position of the last locked piece.
+      A heuristic function is used in evaluation of leaf nodes and in
+      prioritizing which branches to explore.
+
+     You should aim to satisfy:
+
+     (value of heuristic) / HEURISTIC_FACTOR = the expected number of real actual points
+                                               winnable from this state in the future.
+    *)
+   datatype HeuristicInput = HI of {state: Board.state, px: int, py: int, a: int}
+
    (* Takes an initial state, an heuristic, and a time limit.
-      The heuristic is used in evaluation of leaf nodes and in
-      prioritizing which branches to explore. In the full evaluation function,
-      real actual points are worth 10000 times as much as heuristic points.
       Returns the 'best' sequence of steps to take, in reverse order. *)
-   val play_to_end : Board.state * (Board.state -> int) * Time.time -> step list
+   val play_to_end : Board.state * (HeuristicInput -> int) * Time.time -> step list
 
    (* Like play_to_end, but returns at most n steps. *)
-   val play_n_steps : Board.state * (Board.state -> int) * Time.time * int -> step list
+   val play_n_steps : Board.state * (HeuristicInput -> int) * Time.time * int -> step list
 
 
   (* points for open cells with small y coordinate *)
-   val lockstep_heuristic : Board.problem -> Board.state -> int
+   val simple_heuristic : Board.problem -> HeuristicInput -> int
 end
