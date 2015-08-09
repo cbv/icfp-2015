@@ -87,7 +87,8 @@ struct
   val scorep = Params.param "0" (SOME ("-score", "Expected score from leaderboard")) "score"
 
   (* or: *)
-  (* XXX doesn't work yet *)
+  (* XXX doesn't work yet, but should be "easy" to implement -- getscore.sml has some
+     code for reading in a json solution and doing something sensible with it. *)
   val filep = Params.param "" (SOME ("-file", "A file containing a JSON solution")) "file"
 
   fun main args =
