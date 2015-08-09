@@ -35,6 +35,15 @@ struct
         case script of
           nil => { score = score, lines = lines, phrases = phrases,
                    leftover = 0, fate = "SCRIPT_EXHAUSTED" }
+        | #"\n" :: rest =>
+          replay { score = score, lines = lines, phrases = phrases,
+                   script = rest }
+        | #"\r" :: rest =>
+          replay { score = score, lines = lines, phrases = phrases,
+                   script = rest }
+        | #"\t" :: rest =>
+          replay { score = score, lines = lines, phrases = phrases,
+                   script = rest }
         | c :: rest =>
             let
               val legalchar : Board.legalchar = Board.legalize c
