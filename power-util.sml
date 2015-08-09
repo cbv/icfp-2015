@@ -107,8 +107,8 @@ struct
   structure SS = SplaySetFn(type ord_key = string
                             val compare = String.compare)
 
-  val all_excluded = Excluded.excluded @ Phrases.weakness
-  val known_powerwords = foldr SS.add' SS.empty Phrases.power
+  val all_excluded = map StringUtil.lcase (Excluded.excluded @ Phrases.weakness)
+  val known_powerwords = foldr SS.add' SS.empty (map StringUtil.lcase Phrases.power)
 
   fun is_excluded s =
     let
