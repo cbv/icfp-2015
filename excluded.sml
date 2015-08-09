@@ -60,6 +60,7 @@ struct
      (* "hoghogleslie lamport", (* XXX *) *)
      "blue dandelionbashful incendiaryanning blue skullcandid", (* pb_133, pre "case nightmare green" *)
      "club zeroapocalypse codexcobracobweb mazecode bluecode redconcrete junglecult of the bound variabledown on the farmemocumphang", (* pb_133, post "case nightmare green" *)
+     "magic circle of safetyoccintocculuso frabjous day!old dreamerinternational conference on functional programming!percival lowellhowardgreen limemortllghgod game redemocumcallay!", (* pb_4b7 *)
      ""]
 
 end
