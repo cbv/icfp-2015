@@ -131,8 +131,6 @@ def scarpyrecall():
          print "[scarpyrecall] loaded "+str(len(info))+", done"
          done = True
 
-   print ''
-   print 'Problem | Score   | Power   | Tag(s)'
    db = {}
    for i in range(0, len(info)):
       problem = int(info[i]['problem']['N'])

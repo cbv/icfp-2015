@@ -2,6 +2,9 @@
 from tools import scarpyrecall
 db = scarpyrecall()
 
+print ''
+print 'Problem | Score   | Power   | Tag(s)'
+
 for problem in sorted(db.keys()):
    print "--------|---------|---------|"+"-"*51
    for i in range(0, len(db[problem])):
