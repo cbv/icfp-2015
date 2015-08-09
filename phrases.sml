@@ -7,16 +7,12 @@ struct
     , "Ia! Ia!" (* Filled cells in problem 3. Confirmed in experiment. *)
     , "R'lyeh" (* filled cells in problem 5. Confirmed in experiment. *)
     , "Yuggoth" (* filled cells in problem 7.  Confirmed in experiment powere92. *)
-    , "Cthulhu fhtagn!" (* experiment powerc6e *)
+    , "Cthulhu fhtagn!" (* "Cthulhu waits", experiment powerc6e *)
     ]
 
   (* Ideas? *)
   val hypotheses = [
     (* Other Cthulhu mythos stuff?  Yog Suthuth, Shub Niggurath...? *)
-    "Shub Niggurath!" (* inconclusive -- experiment power4bb may have a power word,
-                         but it could have been the submission tagged 'david2'
-                         instead -- not sure there's a way to tell via the
-                         leaderboard.. *)
   ]
 
   (* These are known to be incorrect -- phrases of weakness *)
@@ -29,5 +25,15 @@ struct
   , "icfp2015" (* dropped letters in problem 24.. /probably/ not?  fp is E W, and so is 20.. very hard not to stutter *)
   , "Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn!" (* experiment power17c *)
   , "fnord" (* experiment power26f *)
+  , "Shub Niggurath!" (* ultimately refuted by experiment power592 *)
+  , "Nithon!" (* a moon of Yuggoth; refuted by experiment power436 *)
+  , "Thog!" (* a twin moon of Yuggoth; refuted by experiment powerf29 *)
+  (* three refuted by power 1c9 *)
+  , "Thok!" (* a twin moon of Yuggoth; refuted by experiment power1c9 *)
+  , "Tok'l" (* a kind of metal mined on Yuggoth; refuted by experiment power1c9 *)
+  , "Shoggoth!" (* monster from Yuggoth; refuted by experiment power1c9 *)
+  , "Innsmouth" (* Lovecraftian port town; refuted by experiment power3a4 *)
+  , "Miskatonic" (* Lovecraftian university; refuted by experiment power8e5 *)
+    (* NB: Miskatonic University is hard to make work -- "rs" is a CW/CCW *)
   ]
 end
