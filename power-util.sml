@@ -108,7 +108,8 @@ struct
                             val compare = String.compare)
 
   val all_excluded = map StringUtil.lcase (Excluded.excluded @ Phrases.weakness)
-  val known_powerwords = foldr SS.add' SS.empty (map StringUtil.lcase Phrases.power)
+  val known_powerwords = map StringUtil.lcase Phrases.power
+  val known_powerwords_set = foldr SS.add' SS.empty known_powerwords
 
   fun is_excluded s =
     let
@@ -121,10 +122,17 @@ struct
       try all_excluded
     end
 
+  fun contains_known s =
+    List.exists (fn word =>
+                 case StringUtil.find word s of
+                   NONE => false
+                 | SOME _ => true) known_powerwords
+
+
   fun is_invalid s =
     CharVector.exists (fn c => not (Board.islegal c)) s
 
-  fun is_known s = SS.member (known_powerwords, s)
+  fun is_known s = SS.member (known_powerwords_set, s)
 
   (* Ridiculous! Since we are targeting 'quoted' output, turn a single
      quote into ' (ending the quote) "'" (quoted quote) ' (restart quotes).

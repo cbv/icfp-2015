@@ -15,6 +15,10 @@ struct
     , "planet 10" (* confirmed in redacted7cf *)
     ]
 
+  (*
+
+    pb_6bf "planetxplanet xplanet 10pimoa cthulhuphrases of powernctosanctolhuposeidonprintsaa'itiirokonscylla"  YES *)
+
      (* pb_f38 "xalafuxctholxexanothwhorfinwatsonlamportmormomotheryhagniyhoundehyidhrayigyomagn'thoparkeryorithyoyodyneysbaddadenythogthaz'togguazathogy'golonac" has a power word!
 
         pb_b0e "xalafuxctholxexanothwhorfinwatsonlamport" NO
