@@ -136,12 +136,19 @@ def scarpyrecall():
       problem = info[i]['problem']['N']
       score = info[i]['score']['N']
       power = info[i]['power']['N']
-      tags = " "
-      for j in range(0, len(info[i]['alltags']['SS'])):
-         tags += " "+info[i]['alltags']['SS'][j]
+      tags = ""
       print problem+" "*(8-len(problem))+"|",
       print score+" "*(8-len(score))+"|",
-      print power+" "*(8-len(power))+"|"+tags
+      print power+" "*(8-len(power))+"|",
+      budget = 49
+      for j in range(0, len(info[i]['alltags']['SS'])):
+         new = info[i]['alltags']['SS'][j]
+         if (len(new) > budget):
+            print "\n        |         |         |",
+            budget = 49
+         print new,
+         budget = budget - len(new) - 1
+      print ""
          
    
 
