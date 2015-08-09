@@ -38,5 +38,8 @@ struct
     (* NB: Miskatonic University is hard to make work -- "rs" is a CW/CCW *)
   (* bunch of junk that contains no power phrases; experiment power588/power27e *)
   , "aleister crowley alhazred enochian Corpus Hermeticum Azathoth Aiwaz nathan of gaza Klippoth"
+  , "klaatu barada nikto" (* worth a shot; experiment power811 *)
+  (* more random cthulhu junk; experiment power777 *)
+  , "Al Azif Madame Blavatsky Salem Kadath UAAAH 'Umr at Tawil At U'mr ....... Tawil At'Umr"
   ]
 end
