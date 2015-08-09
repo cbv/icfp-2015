@@ -21,8 +21,10 @@ struct
      "abholosabhothaiueb gnshalalalaalithlai tyyammutsebaapocolothothayi'igaylithbasatanbastbyatiscthaeghya",
      "cthaatcoinchenncoatlicuecluluclooloocrom cruachclearedcighuluchaugnar faugncathuluazathothbigger scorescthugha'ymnarcthulhucthullucthulucthyllactogghacyaeghaeyroix",
      "cxaxukluthcynothoglysei'lordzewadythalladygradveahtehserrordagondaolothderlethdhuminfinalsgaloisghadamonghatanothoahoneycombhoggghastalyksebekscathachkaalutkthanid",
-     "klosmiebhyxkathulukassogthakthulhukthulhutktulukulhukutulamkutunluulocksmh'ithrhakutuluph'nglui"
-     (* pb_fc4 "ovytonvothuyegothuumorryxoornoneolkothogham waitenyogthanycteliosnycramanyaghogguaoztalunnugnodensnctosanctolhumynoghramril thorionmother of pusmothermormomichelmappo no ryujinprintk'tulupimoa cthulhuphrases of powerlovecraftpharollythaliamlandothr'lyehsfatlicllpk'nar'stiod" *)
-     ]
+     "klosmiebhyxkathulukassogthakthulhukthulhutktulukulhukutulamkutunluulocksmh'ithrhakutuluph'nglui",
+     "backusbanzaibenthicbigbootebuckaroobuckaroo banzaicharonc'thulhucockeconwayerisghisguthghrothgilman houseglaakigleethgloon",
+     (* during search for power word in powerball phrase *)
+     "xalafuxctholxexanothwhorfinwatsonlamportmormomotheryhagniyhoundehyidhrayigyomagn'thoparker",
+     ""]
 
 end

@@ -10,9 +10,19 @@ struct
     , "Cthulhu fhtagn!" (* "Cthulhu waits"; experiment powerc6e *)
     , "Necronomicon" (* for summoning the Old Ones; experiment power27e *)
     , "Tsathoggua" (* Master of formless spawn, tag manual515 *)
-    , "John Bigboote" (* confirmed tag banzai8be. *)
-    , "Planet 10"
+    , "John Bigboote" (* confirmed tag banzai8be + what jason? *)
+    , "yoyodyne" (* confirmed in yes_93b *)
     ]
+
+     (* pb_f38 "xalafuxctholxexanothwhorfinwatsonlamportmormomotheryhagniyhoundehyidhrayigyomagn'thoparkeryorithyoyodyneysbaddadenythogthaz'togguazathogy'golonac" has a power word!
+
+        pb_b0e "xalafuxctholxexanothwhorfinwatsonlamport" NO
+        pb_a33 "xalafuxctholxexanothwhorfinwatsonlamportmormomotheryhagniyhoundehyidhrayigyomagn'thoparker" NO
+               "xalafuxctholxexanothwhorfinwatsonlamportmormomotheryhagniyhoundehyidhrayigyomagn'thoparkeryorith" ?
+        pb_da8 "xalafuxctholxexanothwhorfinwatsonlamportmormomotheryhagniyhoundehyidhrayigyomagn'thoparkeryorithyoyodyneysbaddaden" YES
+
+        pb_799 "xalafuxctholxexanothwhorfinwatsonlamportmormomotheryhagniyhoundehyidhrayigyomagn'thoparkeryorithyoyodyneysbaddadenythogtha" YES
+        *)
 
   (* Ideas? *)
   val hypotheses = [

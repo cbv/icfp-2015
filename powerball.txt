@@ -352,6 +352,7 @@ kasparov
 watson
 honey bees
 benthic
+# hints about 10th planet
 pluto
 neptune
 planet x
@@ -363,3 +364,31 @@ sedna
 quaoar
 varuna
 haumea
+# buckaroo banzai
+buckaroo banzai
+yoyodyne
+bigboote
+conway
+cocke
+hopcroft
+backus
+yaya
+smallberries
+lectroids
+real soon
+soon!
+buckaroo
+banzai
+Smolensk
+whorfin
+parker
+emdall
+john
+eighth dimension
+
+# characters from backstory
+lamport
+rivest
+milner
+hoare
+liskov
