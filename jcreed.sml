@@ -5,10 +5,15 @@ val problemp = Params.param "15"
                             (SOME("-problem", "Problem number to load."))
                             ("problem")
 
+structure StringSet = SplaySetFn(struct
+                                  type ord_key = string
+                                  val compare = String.compare
+                                  end)
+
 fun main () =
   let
-(*     val power_phrases = Phrases.power*)
-     val power_phrases = ["planet 10"]
+     val power_phrases = Phrases.power
+(*      val power_phrases = ["planet 10"] *)
     val problemId = Params.asint 1 problemp
     val problem = Board.fromjson
                       (StringUtil.readfile
@@ -51,22 +56,22 @@ fun main () =
       | @@ (o1, _) = o1
     infixr 3 @@
     val nn = ref 0
-    val stream = (fn n =>
-                     let val w = List.nth(power_phrases, !nn)
-                         val _ = nn := (!nn + 1) mod (length power_phrases)
-                     in
-                       w
-                     end)
-    fun lchrs_for_step state {px, py, a, commands, ...} =
+    val not_seen = ref (StringSet.addList(StringSet.empty, power_phrases))
+
+    val init_stream_state = true
+    fun query s = (if s then "ea!" else "ia!", not s, s)
+
+    fun lchrs_for_step state stream_state (LockStep.Step {px, py, a, commands, ...}) =
       let
         val powa = Pathfind.find_with_power state
                                             (Pathfind.Target {px=px, py=py, a=a})
-                                            stream
+                                            (Pathfind.PS { stream_state = stream_state,
+                                                           query = query })
         val lock_lchr = Board.anychar (hd commands)
       in
-        case powa of SOME x => x @ [lock_lchr]
+        case powa of SOME (x, stream_state') => (x @ [lock_lchr], stream_state')
                    | NONE => (* shouldn't happen, but just in case... *)
-                     map Board.anychar (rev commands)
+                     (map Board.anychar (rev commands), stream_state)
       end
 
     fun opt_compare (SOME _, SOME _) = EQUAL
@@ -80,38 +85,40 @@ fun main () =
       Int.compare (#py s1, #py s2) @@
       Int.compare (#px s1, #px s2)
 
-    fun play_to_end (state, heur) =
+    fun play_to_end stream_state (state, heur) =
       let
         val nexts = LockStep.possible_next_steps state
-        val LockStep.Step best = ListUtil.max heur nexts
+        val best_step as LockStep.Step best = ListUtil.max heur nexts
+        val (lchrs, stream_state') = lchrs_for_step state stream_state best_step
       in
-        lchrs_for_step state best @
+        lchrs @
         (case (#state best) of
              NONE => []
-           | SOME s => play_to_end (s, heur))
+           | SOME s => play_to_end stream_state' (s, heur))
       end
 
 (*     val lchrs = play_to_end (state, heur) *)
 
     val steps = rev (LockStep.play_to_end (state, LockStep.lockstep_heuristic problem,
-                                           Time.fromSeconds 10))
-(*     val _ = print ((Int.toString (length steps)) ^ "\n") *)
-    fun steps_to_lchrs state [] = (TextIO.output(TextIO.stdErr, "WAT2\n"); [Board.legalize #"p"])
-      | steps_to_lchrs state (LockStep.Step (step as {state=SOME state', ...})::tl) =
-        (TextIO.output(TextIO.stdErr, "STEP\n");
-         lchrs_for_step state step @ steps_to_lchrs state' tl)
-      | steps_to_lchrs state (LockStep.Step (step as {state=NONE, ...})::tl) =
-        (TextIO.output(TextIO.stdErr, "WAT\n");
-        lchrs_for_step state step)
+                                           Time.fromSeconds 3))
 
-    val lchrs = steps_to_lchrs state steps
+    fun steps_to_lchrs state ss [] = raise Match
+      | steps_to_lchrs state ss ((step as LockStep.Step {state=next_state, ...})::tl) =
+        let
+          val (this, ss') = lchrs_for_step state ss step
+          val rest = (case next_state of
+                          SOME state' => steps_to_lchrs state' ss' tl
+                        | NONE => [])
+        in
+          this @ rest
+        end
+
   in
-
-    print (implode (map Board.forgetlegal lchrs))
+    print (implode (map Board.forgetlegal (steps_to_lchrs state init_stream_state steps)))
   end
   handle Board.Board s =>
          TextIO.output (TextIO.stdErr, "Uncaught Board: " ^ s ^ "\n")
 
 end
 
-val () = Params.main0 "No arguments." Jcreed.main
+ val () = Params.main0 "No arguments." Jcreed.main
