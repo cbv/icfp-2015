@@ -1,4 +1,4 @@
-default : testboard.exe
+default : driver.exe
 
 SOURCES=board-sig.sml board.sml rng-sig.sml rng.sml forwardchain.sml forwardchain-sig.sml phrases.sml ansi.sml excluded.sml power-util.sml power-util-sig.sml
 
