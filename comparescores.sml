@@ -78,7 +78,7 @@ struct
       val results_both = maketable both
       val results_highfive = maketable highfive
 
-      val table = ["problem", "david", "ragged", "both"] ::
+      val table = ["problem", "david", "ragged", "both", "highfive"] ::
         List.tabulate (Vector.length problems,
                        fn pidx =>
                        Int.toString pidx ::
@@ -88,7 +88,7 @@ struct
                             end) [results_david,
                                   results_ragged,
                                   results_both,
-                                  results_both])
+                                  results_highfive])
 
     in
       print (StringUtil.table 80 table ^ "\n")
