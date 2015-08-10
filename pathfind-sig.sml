@@ -19,6 +19,6 @@ signature PATHFIND = sig
               val basic : string list -> basic_state power_stream
 
               type robin_state
-              val robin : string list -> robin_state power_stream
+              val robin : string -> string list -> robin_state power_stream
             end
 end

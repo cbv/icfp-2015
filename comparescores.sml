@@ -31,7 +31,7 @@ struct
           r
         end
 
-      val results = ListUtil.mapsecond maketable Solutions.all_solutions
+      val results = ListUtil.mapsecond maketable Solutions.test_solutions
 
       val table = ("problem" :: map #1 results) ::
         List.tabulate (Vector.length problems,

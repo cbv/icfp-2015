@@ -243,7 +243,7 @@ struct
     (* Try really hard to get every power word once, but be less stubborn about ordering *)
     datatype robin_state = RSA of StringSet.set * int
                          | RSB
-    fun robin power_phrases =
+    fun robin endgame power_phrases =
       let
         fun query (RSA (s, n)) =
           if StringSet.isEmpty s
@@ -256,7 +256,7 @@ struct
                 RSA (StringSet.delete(s, pick), 0),
                 RSA (s, (n+1) mod (length words_left)))
             end
-          | query RSB = ("ia! ia!", RSB, RSB)
+          | query RSB = (endgame, RSB, RSB)
         val stream_state = RSA (StringSet.addList(StringSet.empty, power_phrases), 0)
       in
         PS {query=query, stream_state=stream_state}
