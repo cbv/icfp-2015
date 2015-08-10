@@ -1,6 +1,87 @@
-./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'adam weishauptaliceaneristic principleannie gamwellbaphometeristic principledream cycledingleberriesmallory'
+### --- current megaqueue --- ###
+
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogpphoghogjohn o'"'"'connor'
+./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghogshaurashhomission control'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghogphogppthe peabody heritage'
+./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghoghogtetris'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghogppthe white ape'
+./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghoghoghogpthe picture in the housethe eye in the periodconsult your pineal gland'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghogpphogbbbbtouched by his noodly appendage'
+./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghoghoghogppngyrkorathwentworth'"'"'s day'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hogphoghogbbbbhogthe quest of iranon'
+./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghoghoghogbbuzz'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogbhogbbthe quest of iranonshubniggurath'
+./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghoghoghogbbyadthaddagthe dark brotherhoodb'"'"'gnuthunthe dunwich horroryugsituraththe survivorq'"'"'ythaz'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogthe watchers out of time'
+./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghoghoghogbbbthe future begins tomorrow!'
+./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghoghogppthe street'
+./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghoghogpphogppperfect tommy'
+./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghoghogpppppphogbaoht z'"'"'uqqamoggklarkashtonneptune'
+./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghoghogbbbbbbraandaiib'"'"'nknobody is nobody. everyone has something to offer.ruhtra dyoll'
+./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghogbbbbbbbtoday'"'"'s impossible is tomorrow'"'"'s reality'
+./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hogbbbbbbbbhogphogsecure. contain. protect.'
+./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'phogpppppbbbbbhogportland retro gaming expobokrug'
+./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'bhoghogbbbbbbbhogdresden rice'
+
+### --- ###
+
+
+### problem 24 current queue
+
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'buggshashgihovegklarkashtongoghooryeggha'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'nssughahnb'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghogthe statement of randolph carter'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogthe watchers out of time'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghoghoghogpthe other gods'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogpshaurashhothe white ape'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogpppthe peabody heritage'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogpppthe transition of juan romero'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogppppwentworth'"'"'s day'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogpppppphogb'"'"'gnuthun'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogbhogbbthe dunwich horror'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogbbtouched by his noodly appendage'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghogpppppraandaiib'"'"'nk'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghogpppppppphogthe dreamquest of unknown kadath'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hogppppppppthe eye in the period'
+
+
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'the bookthe case of charles dexter ward'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'the cats of ulthar'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'the horror at red hookthe horror from the middle spanthe hound'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'the lamp of alhazred'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghogthe statement of randolph carter'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogthe watchers out of time'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghoghoghogpthe other gods'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogpppthe transition of juan romero'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogpppthe tree'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogpppthe peabody heritage'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogppppwentworth'"'"'s day'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogpppppphog23 enigma'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogbhogbbthe dunwich horror'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogbhogbbthe quest of iranon'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogbbtouched by his noodly appendage'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghogppthe white ape'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hogppppppppthe eye in the period'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hogppppppppppphogthere are no rules anywhere'
+
+
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'adam weishauptaliceaneristic principlebaphometconcrete mathematicsannie gamwelldingleberriesdon knuth'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'greyfaceeristic principledream cycledonald knuthdiscordianismhenry armitagehoward phillips lovecraftilluminatus!j.r. bob dobbsjr bob dobbskallistilaw of 5slaw of fivesnsapoee'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'pineal glandpastafarianorder of accendooren patashnikoriginal snubklarkash tonrc5'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'polyfatherprincipia discordiamellonmalloryleviathanlegionnairessacred chaoronald grahamron'"'"'s codereverend modemacslack'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogpppppphog23 enigma'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogpppppphogc'"'"'thalpa'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogpppppphogepiskopos'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogbhogpentabarf'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogbbtouched by his noodly appendage'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghogphogbenthic treaty of the azores'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hogppppppppthe eye in the period'
+./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hogppppppppppphogthere are no rules anywhere'
+
+
+### problem 20 current queue
+
 ./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'leviathanlegionnaireslaw of fiveslaw of 5skallistijr bob dobbsmalaclypsej.r. bob dobbsilluminatus!howard phillips lovecrafthenry armitagemellonnsarc5poeeslack'
-./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'sacred chaoronald grahamron'"'"'s coderon grahamreverend modemacgreyfacehart craneklarkash ton'
 ./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'concrete mathematicsorder of accendodiscordianismdon knuthdonald knuthconsult your pineal glandepiskoposbokrug'
 ./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'oren patashnikoriginal snubrobert harrison blakearthur denthis noodly appendagesubgeniuspolyfatherprincipia discordia'
 ./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'pineal glandpastafarianthe call of cthulhupentabarfbenthic treaty of the azoresarkham horror23 enigmadent arthur dentthe mgmt'
@@ -16,7 +97,11 @@
 ./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghoghogbbbbbbbicfp programming contest'
 ./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hogbbbbbbbbhoghogsecure. contain. protect.'
 
-# old ones:
+
+
+
+# old ones, maybe less interesting:
+
 ./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghoghoghogzushakon'
 ./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghoghoghogpppppresto chango or hey presto'
 ./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghoghogpppppphogthe blackness from the stars'
@@ -28,8 +113,6 @@
 ./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghogbbbbbbbthe dweller in the gulf'
 ./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghogbbbbbbbbhogdresden rice'
 ./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hogbbbbbbbbhoghogsecure. contain. protect.'
-
-# new ones from problem 20 -- some nice long ones here!
 
 ./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghoghoghogpppppresto chango or hey presto'
 ./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghoghogpppppphogthe blackness from the starsvibur'

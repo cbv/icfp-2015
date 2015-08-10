@@ -38,6 +38,8 @@ Facts Concerning the Late Arthur Jermyn and His Family
 The Nameless City
 The Quest of Iranon
 The Moon-Bog
+The Moon Bog
+The MoonBog
 Ex Oblivione
 The Other Gods
 The Outsider
@@ -62,6 +64,8 @@ Pickman's Model
 The Strange High House in the Mist
 The Silver Key
 The Dream-Quest of Unknown Kadath
+The Dream Quest of Unknown Kadath
+The DreamQuest of Unknown Kadath
 The Case of Charles Dexter Ward
 The Colour Out of Space
 The Descendant
@@ -130,6 +134,7 @@ wgah'nagl
 fhtagn
 Ia Cthulhu
 Ia Cthulhu!
+Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn.
 
 Derleth
 Michel
@@ -164,10 +169,12 @@ Nyarlathotep
 Nyogtha
 Shub-Niggurath
 Shub Niggurath
+ShubNiggurath
 sathoggua
 Yog-Sothoth
 Yog Sothoth
 phoom-Zhah
+phoomZhah
 phoom Zhah
 Cthugha
 Cthulhu
@@ -177,15 +184,18 @@ Mother
 Hydra
 Zoth-Ommog
 Zoth Ommog
+ZothOmmog
 
 # outer gods
 Abhoth
 Aiueb Gnshal
 Azathoth
 Azhorra-Tha
+AzhorraTha
 Azhorra Tha
 The Blackness from the Stars
 The Cloud-Thing
+The CloudThing
 The Cloud Thing
 C'thalpa
 Cxaxukluth
@@ -194,14 +204,17 @@ Darkness
 D'endrrah
 Ghroth
 Gi-Hoveg
+GiHoveg
 Gi Hoveg
 Haiogh-Yai
+HaioghYai
 Haiogh Yai
 Huitloxopetl
 The Hydra
 Ialdagorth
 Kaajh'Kaalbh
 Lu-Kthu
+LuKthu
 Lu Kthu
 Mh'ithrha
 Mlandoth
@@ -209,20 +222,25 @@ Mril Thorion
 Mother of Pus
 The Nameless Mist
 Ngyr-Korath
+NgyrKorath
 Ngyr Korath
 Noth-yidik
+Nothyidik
 Noth yidik
 Nyarlathotep
 Nyctelios
 Olkoth
 Shabbith-Ka
+ShabbithKa
 Shabbith Ka
 Shub-Niggurath
+ShubNiggurath
 Shub Niggurath
 Star Mother
 Tru'nembra
 Tulzscha
 Ubbo-Sathla
+UbboSathla
 Ubbo Sathla
 Uvhash
 Xa'ligha
@@ -230,6 +248,7 @@ Xexanoth
 Ycnagnnisssz
 Yhoundeh
 Yibb-Tstll
+YibbTstll
 Yibb Tstll
 Yidhra
 Yomagn'tho
@@ -239,22 +258,28 @@ Abholos
 Alala
 Ammutseba
 Amon-Gorloth
+AmonGorloth
 Amon Gorloth
 Aphoom-Zhah
+AphoomZhah
 Aphoom Zhah
 Apocolothoth
 Arwassa
 Atlach-Nacha
+AtlachNacha
 Atlach Nacha
 Ayi'ig
 Aylith
 Baoht Z'uqqa-mogg
+Baoht Z'uqqamogg
 Baoht Z'uqqa mogg
 Basatan
 B'gnu-Thun
+B'gnuThun
 B'gnu Thun
 Bokrug
 Bugg-Shash
+BuggShash
 Bugg Shash
 Byatis
 Chaugnar Faugn
@@ -287,16 +312,20 @@ Gloon
 Gobogeg
 God of the Red Flux
 Gog-Hoor
+GogHoor
 Gog Hoor
 Gol-Goroth
+GolGoroth
 Gol Goroth
 Golothess
 the Green God
 Groth-Golka
+GrothGolka
 Groth Golka
 Gtuhanai
 Gurathnaka
 Gur'la-ya
+Gur'laya
 Gur'la ya
 Gzxtyos
 Han
@@ -307,6 +336,7 @@ Hnarqu
 Hydra
 Hziulquoigmnzhah
 Idh-yaa
+Idhyaa
 Idh yaa
 Inpesca
 Iod
@@ -314,6 +344,7 @@ Istasha
 Ithaqua
 Janai'ngo
 Juk-Shabb
+JukShabb
 Juk Shabb
 Kaalut
 Kag'Naru
@@ -339,6 +370,7 @@ Nctolhu
 Ngirrth'lu
 Northot
 Nssu-Ghahnb
+NssuGhahnb
 Nssu Ghahnb
 Nug
 Nyaghoggua
@@ -352,16 +384,20 @@ Pharol
 Poseidon
 Psuchawrl
 Ptar-Axtlan
+PtarAxtlan
 Ptar Axtlan
 Quachil Uttaus
 Quyagen
 Q'yth-az
+Q'ythaz
 Q'yth az
 Raandaii-B'nk
+RaandaiiB'nk
 Raandaii B'nk
 Ragnalla
 Raphanasuan
 Rhan-Tegoth
+RhanTegoth
 Rhan Tegoth
 Rhogog
 Rh'Thulla
@@ -376,18 +412,23 @@ Sfatlicllp
 Shaklatal
 Shathak
 Shaurash-Ho
+ShaurashHo
 Shaurash Ho
 Sheb-Teth
+ShebTeth
 Sheb Teth
 Shlithneth
 Sho-Gath
+ShoGath
 Sho Gath
 Shterot
 Shudde M'ell
 Shuy-Nihl
+ShuyNihl
 Shuy Nihl
 Sthanee
 S'tya-Yg'Nalle
+S'tyaYg'Nalle
 S'tya Yg'Nalle
 Summanus
 Swarog
@@ -400,12 +441,15 @@ Tulushuggua
 Turua
 Uitzilcapac
 Ut'Ulls-Hr'Her
+Ut'UllsHr'Her
 Ut'Ulls Hr'Her
 Vhuzompha
 Vibur
 Vile-Oct
+VileOct
 Vile Oct
 Volgna-Gath
+VolgnaGath
 Volgna Gath
 Voltiyig
 Vthyarilops
@@ -419,6 +463,7 @@ Xotli
 Xoxiigghua
 Yeb
 Yegg-Ha
+YeggHa
 Yegg Ha
 Y'Golonac
 Yhagni
@@ -427,16 +472,19 @@ Yig
 Y'lla
 'Ymnar
 Yog-Sapha
+YogSapha
 Yog Sapha
 Yorith
 Ysbaddaden
 Ythogtha
 Yug-Siturath
+YugSiturath
 Yug Siturath
 Zathog
 Zhar and Lloigor
 Zindarak
 Zoth-Ommog
+ZothOmmog
 Zoth Ommog
 Zstylzhemghi
 Zushakon
@@ -466,8 +514,10 @@ Urthuvn
 Vorvadoss
 Xislanyx
 Xuthyos-Sihb'Bz
+XuthyosSihb'Bz
 Xuthyos Sihb'Bz
 Yad-Thaddag
+YadThaddag
 Yad Thaddag
 Yaggdytha
 Zehirete
@@ -500,6 +550,7 @@ watermelon
 watermelons
 quantum computing
 d-wave
+dwave
 d wave
 kurzweil
 kasparov
@@ -550,6 +601,9 @@ lectroids
 red lectroids
 red lectroids from the 8th dimension
 red lectroids from the eighth dimension
+Perfect Tommy
+John O'Connor
+Mission Control
 
 # buckaroo banzai quotes
 no matter where you go, there you are
@@ -564,6 +618,16 @@ no matter where you go... there you are!
 remember no matter where you go there you are
 remember no matter where you go there you are!
 remember no matter where you go... there you are!
+The future begins tomorrow!
+Progress Over Protocol
+Today's impossible is tomorrow's reality
+Mystery is the source of all true art and science.
+Mystery is the source of all true art and science!
+Si Vis Pacem Para Bellum.
+Si Vis Pacem Para Bellum
+A thousand pities cannot undo one thoughtless act.
+Nothing real can defeat us. Nothing unreal exists.
+Nobody is nobody. Everyone has something to offer.
 
 # characters from backstory
 lamport
@@ -615,6 +679,7 @@ river song
 the doctor
 geronimo
 allons-y
+allonsy
 allons y
 bad wolf
 badwolf
@@ -853,8 +918,10 @@ Ajji Majji la Tarajji
 Alla Peanut Butter Sandwiches
 Alakazam
 Bibbidi-Bobbidi-Boo
+BibbidiBobbidi-Boo
 By the Power of Grayskull, I HAVE THE POWER
 Cei-u
+Ceiu
 Hocus pocus
 Izzy wizzy, let's get busy
 Jantar Mantar Jadu Mantar
@@ -969,6 +1036,7 @@ the mgmt
 robert harrison blake
 henry armitage
 klarkash-ton
+klarkashton
 klarkash ton
 unaussprechlichen kulten
 annie gamwell
@@ -979,3 +1047,13 @@ ELF
 
 # programming magic words
 hello world
+
+# trawling the bcakground section
+Classic Tetris World Championship
+Tetris
+Portland Retro Gaming Expo
+Defence against the Digital Dark Arts
+bees
+buzz
+Blue Blaze Irregulars
+Blue Blaze Irregular strike team

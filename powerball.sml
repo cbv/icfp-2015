@@ -102,14 +102,20 @@ struct
       else ("", guesses)
     end
 
-  fun make_experiments (_, nil) =
+  fun make_experiments (_, nil) _ =
     (print "Got 'em all!\n";
      nil)
-    | make_experiments (prefix, guesses) =
+    | make_experiments (prefix, guesses) (((ps as (problem_idx, seed))::pss)) =
     let
       (* XXX in all states.. *)
+      (*
+      val problem_idx = 20
+      val seed : Word32.word = 0w0
+      *)
+      (*
       val problem_idx = 24
       val seed : Word32.word = 0w18
+      *)
     in
       case make_experiment problem_idx seed prefix guesses of
         ("", _) =>
@@ -132,21 +138,21 @@ struct
                 in
                   (*print ("New prefix: " ^ prefix ^ " [" ^ Int.toString (length guesses) ^
                   " left]\n");*)
-                  make_experiments (prefix, guesses)
+                  make_experiments (prefix, guesses) (pss @ [ps])
                 end
               val guesses_p =
                 let val prefix = prefix ^ "p"
                 in
                   (*print ("New prefix: " ^ prefix ^ " [" ^ Int.toString (length guesses) ^
                   " left]\n");*)
-                  make_experiments (prefix, guesses_hog)
+                  make_experiments (prefix, guesses_hog) (pss @ [ps])
                 end
               val guesses_b =
                 let val prefix = prefix ^ "b"
                 in
                   (*print ("New prefix: " ^ prefix ^ " [" ^ Int.toString (length guesses) ^
                   " left]\n");*)
-                  make_experiments (prefix, guesses_p)
+                  make_experiments (prefix, guesses_p) (pss @ [ps])
                 end
             in
               guesses_b
@@ -159,11 +165,11 @@ struct
              " --seed " ^ Int.toString (Word32.toInt seed) ^
              " --tag pb_" ^
              " --sol '" ^ PU.escape (prefix ^ ph) ^ "'\n");
-            make_experiments (prefix, guesses)
+            make_experiments (prefix, guesses) (pss @ [ps])
           end
     end
 
-  val guesses_left = make_experiments ("", guesses)
+  val guesses_left = make_experiments ("", guesses) [(24, 0w18), (20, 0w0)]
 
   val () =
       (print ("Stuck. Leftover guesses (" ^
