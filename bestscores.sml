@@ -1,9 +1,15 @@
 structure BestScores =
 struct
 
-  structure PU = PowerUtil
+  val offsetp = Params.param "0"
+    (SOME("-offset", "First problem to work on"))
+    "offset"
 
-  val SECONDS = 5
+  val timelimitp = Params.param "5"
+    (SOME("-timelimit", "Max number of seconds to spend."))
+    ("timelimit")
+
+  structure PU = PowerUtil
 
   fun main () =
     let
@@ -15,8 +21,9 @@ struct
                  (seed_idx : int)
                  (solution : string * Solutions.solution) : string *  result =
           let val problem = Vector.sub (problems, problemi)
-              val sol = (#2 solution) { seconds = SECONDS, problem = problem, seed_idx = seed_idx,
-                                   power = Phrases.power }
+              val sol = (#2 solution) { seconds = Params.asint 5 timelimitp, problem = problem,
+                                        seed_idx = seed_idx,
+                                        power = Phrases.power }
               val seed_value = Vector.sub (Board.seeds problem, seed_idx)
               val score = PU.get_score problem seed_value sol
           in
@@ -40,16 +47,17 @@ struct
                    Int.toString problem ^ "_" ^
                    Int.toString seed_idx ^ "_" ^ method ^ "_" ^
                    Int.toString score ^ ".txt")
-              fun obj_of_sol sol =
+              fun obj_of_sol method score sol =
               "[{ \"problemId\": " ^ Int.toString problem ^ ",\n" ^
               "\"seed\": " ^
               Int.toString (Word32.toInt (Vector.sub
                                           (Board.seeds (Vector.sub (problems, problem)),
                                            seed_idx))) ^ ",\n" ^
+              "\"tag\": \"" ^ filename method score ^ "\",\n" ^
               "\"solution\": \"" ^ sol ^ "\"\n}]"
           in
               (StringUtil.writefile (filename best_method best_score)
-                                    (obj_of_sol best_sol);
+                                    (obj_of_sol best_method best_score best_sol);
                print (filename best_method best_score ^ "\n");
                { sol = best_sol, score = best_score })
           end
@@ -62,7 +70,10 @@ struct
                                            fn i => i))
           end
 
-      val r = Vector.tabulate (Vector.length problems, runprob)
+      val offset = Params.asint 0 offsetp
+
+      val r = Vector.tabulate ((Vector.length problems) - offset,
+                               (fn i => runprob (i + offset)))
     in
         print "\n";
         ()

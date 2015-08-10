@@ -4,6 +4,7 @@
    huge amounts of data. *)
 
 $(SML_LIB)/basis/basis.mlb
+(* $(SML_LIB)/basis/mlton.mlb (* XXX *) *)
 
 sml-lib/njlib/lib-base-sig.sml
 sml-lib/njlib/lib-base.sml

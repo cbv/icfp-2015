@@ -793,6 +793,8 @@ as2h2
 vancouver
 icfp
 2015
+eldritch
+eldritch forces
 
 # meta
 # this line is is 51 chars long
