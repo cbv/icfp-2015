@@ -103,7 +103,8 @@ struct
     end
 
   fun make_experiments (_, nil) =
-    print "Got 'em all!\n"
+    (print "Got 'em all!\n";
+     nil)
     | make_experiments (prefix, guesses) =
     let
       (* XXX in all states.. *)
@@ -112,23 +113,42 @@ struct
     in
       case make_experiment 24 0w18 prefix guesses of
         ("", _) =>
-          if size prefix > 10
-          then
+          if size prefix > 10 then guesses
+(*          then
             let in
               print ("Stuck. Leftover guesses (" ^
                      Int.toString (length guesses) ^ "):\n");
               (* print the list of guesses -- on a line by itself
                  so it's easy to comment out if desired *)
-              (* print (String.concatWith "\n" guesses ^ "\n"); *)
-              ()
+              print (String.concatWith "\n" guesses ^ "\n");
+              guesses
             end
+*)
           else
-            let val prefix = prefix ^ "hog"
-            in
-              print ("New prefix: " ^ prefix ^ " [" ^ Int.toString (length guesses) ^
-                     " left]\n");
-              make_experiments (prefix, guesses)
-            end
+              let val guesses_hog =
+                      let val prefix = prefix ^ "hog"
+                      in
+                          (*print ("New prefix: " ^ prefix ^ " [" ^ Int.toString (length guesses) ^
+                                 " left]\n");*)
+                          make_experiments (prefix, guesses)
+                      end
+                  val guesses_p =
+                      let val prefix = prefix ^ "p"
+                      in
+                          (*print ("New prefix: " ^ prefix ^ " [" ^ Int.toString (length guesses) ^
+                                 " left]\n");*)
+                          make_experiments (prefix, guesses_hog)
+                      end
+                  val guesses_b =
+                      let val prefix = prefix ^ "b"
+                      in
+                          (*print ("New prefix: " ^ prefix ^ " [" ^ Int.toString (length guesses) ^
+                                 " left]\n");*)
+                          make_experiments (prefix, guesses_p)
+                      end
+              in
+                  guesses_b
+              end
       | (ph, guesses) =>
           let in
             TextIO.output
@@ -141,5 +161,13 @@ struct
           end
     end
 
-  val () = make_experiments ("", guesses)
+  val guesses_left = make_experiments ("", guesses)
+
+  val () =
+      (print ("Stuck. Leftover guesses (" ^
+              Int.toString (length guesses_left) ^ "):\n");
+       (* print the list of guesses -- on a line by itself
+                 so it's easy to comment out if desired *)
+       print (String.concatWith "\n" guesses_left ^ "\n"))
+
 end
