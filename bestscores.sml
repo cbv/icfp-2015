@@ -43,9 +43,9 @@ struct
               fun obj_of_sol sol =
               "{ \"problemId\": " ^ Int.toString problem ^ ",\n" ^
               "\"seed\": " ^
-              Word.toString (Vector.sub
-                                 (Board.seeds (Vector.sub (problems, problem)),
-                                  seed_idx)) ^ ",\n" ^
+              Int.toString (Word32.toInt (Vector.sub
+                                          (Board.seeds (Vector.sub (problems, problem)),
+                                           seed_idx))) ^ ",\n" ^
               "\"solution\": \"" ^ sol ^ "\"\n}"
           in
               (StringUtil.writefile (filename best_method best_score)
