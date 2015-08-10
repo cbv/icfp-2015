@@ -155,7 +155,7 @@ structure LockStep :> LOCK_STEP = struct
                         val _ =
                             case state_opt of
                                 SOME(new_state) =>
-                                Heap.insert (!next_heap) (~combined_score) new_sequence
+                                Heap.insert (!next_heap) (combined_score) new_sequence
                               | NONE =>
                                 (* We've reached an end state. emit it. *)
                                 Heap.insert result_heap (~new_accum_score)
