@@ -72,7 +72,7 @@ struct
       else
         f ()
     end
-        
+
 
   val highfive = high_with_endgame "" "ia! ia!"
   val highsix = high_with_endgame "" "ei!"
@@ -95,9 +95,9 @@ struct
 
   val submit_solutions =
     [
-      ("high51", high51)
-    (* , ("highseven", highseven) *)
-    (* , ("highsix", highsix) *)
+      ("high51", high51),
+      ("highseven", highseven),
+      ("highsix", highsix)
     ]
 
   (* Time notwithstanding, this produces the best scores in our test:
