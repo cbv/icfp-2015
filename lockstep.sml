@@ -47,6 +47,35 @@ structure LockStep :> LOCK_STEP = struct
                            val compare = Int.compare
                            end)
 
+
+  fun possible_next_steps_n n heuristic accum state =
+    let
+        val heap = Heap.empty()
+        val accessible = ForwardChain.accessible_locations state
+        fun apper (ForwardChain.PL {locked = NONE, ... }) = ()
+          | apper (ForwardChain.PL {locked = (SOME (ForwardChain.NEW_PIECE state)),
+                                     px, py, a, commands, score, ... }) =
+            (Heap.insert heap (~((score + accum) * HEURISTIC_FACTOR + (heuristic (HI {state = state,
+                                                                           px = px, py = py, a = a}))))
+                        (Step {px = px, py = py, a = a, commands = commands,
+                               state = SOME(Board.clone state), scored = score});())
+          | apper (ForwardChain.PL {locked = (SOME ForwardChain.ALL_DONE),
+                                     px, py, a, commands, score, ... }) =
+            (Heap.insert heap (~((score + accum)* HEURISTIC_FACTOR))
+                         (Step {px = px, py = py, a = a, commands = commands,
+                                state = NONE, scored = score}); ())
+        val () = List.app apper accessible
+        fun helper acc 0 = acc
+          | helper acc m =
+            case Heap.min heap of
+                NONE => acc
+              | SOME (p,v) => helper ((p,v)::acc) (m-1)
+        val result = helper [] n
+    in
+        result
+    end
+
+
   datatype ScoredStep = SS of {
          step: step,
 
@@ -80,17 +109,21 @@ structure LockStep :> LOCK_STEP = struct
               if Heap.size (!next_heap) > 0
               then
                   let
+                      val () = print ("stepping. next heap size = "  ^ Int.toString (Heap.size (!next_heap)) ^ "\n")
                       val () = heap := (!next_heap)
                       val () = next_heap := (Heap.empty())
                       val () =
-                          if Heap.size (!heap) > 100000
+                          if Heap.size (!heap) > 10000
                           then
                               let
+                                  val () = print "TOOOOO BIG\n\n\n\n\n"
                                   val old_heap = !heap
                                   val new_heap = Heap.empty ()
-                                  val () = Util.for 0 100 (fn _ =>
+                                  val () = Util.for 0 1000 (fn _ =>
                                                              case Heap.min old_heap
-                                                              of SOME(p, v) => (Heap.insert new_heap p v;())
+                                                              of SOME(p, v) => (
+                                                                  Heap.insert new_heap p v;
+                                                                  ())
                                                                | _ => ())
                               in
                                   heap := new_heap
@@ -110,8 +143,10 @@ structure LockStep :> LOCK_STEP = struct
                         | (SS { step = Step {state = SOME(state), ...}, accum_score })::_ =>
                           (state, accum_score)
                         | _ => raise LockStep "impossible"
-                  val poss = (possible_next_steps state)
-                  val pairs_to_search = List.map (compute_combined_score heuristic accum_score) poss
+
+                  val branching_factor = 8
+
+                  val pairs_to_search = possible_next_steps_n branching_factor heuristic accum_score state
 
                   fun apper (combined_score, step as Step {scored, state = state_opt, ...}) =
                     let
@@ -130,7 +165,8 @@ structure LockStep :> LOCK_STEP = struct
                     end
               in
                   List.app apper pairs_to_search;
-(*                  print ("took a step. size = " ^ Int.toString (Heap.size (!heap)) ^ "\n");
+(*
+                  print ("took a step. size = " ^ Int.toString (Heap.size (!heap)) ^ "\n");
                   print ("result size = " ^ Int.toString (Heap.size result_heap) ^ "\n"); *)
                   (if (!iter) mod 1000 = 0 andalso (Heap.size result_heap) > 0
                   then case Heap.min result_heap of

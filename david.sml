@@ -81,6 +81,8 @@ fun main () =
   end
   handle Board.Board s =>
     TextIO.output (TextIO.stdErr, "Uncaught Board: " ^ s ^ "\n")
+      | LockStep.LockStep s =>
+    TextIO.output (TextIO.stdErr, "Uncaught LockStep: " ^ s ^ "\n")
 end
 
 
