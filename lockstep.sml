@@ -123,7 +123,8 @@ structure LockStep :> LOCK_STEP = struct
                       val time_left = Time.-(deadline, now)
                       val time_per_remaining_step =
                           if (!pieces_left) > 0
-                          then (Time.toReal time_left) / (Real.fromInt (!pieces_left))
+                          then (Time.toReal time_left) / (Real.fromInt ((!pieces_left) + 1 ))
+                                                                    (* plus one to be safe *)
                           else 1.0 (* prevent overflow *)
                       val nodes_per_step' = Int.max(1, Real.floor (time_per_remaining_step / time_per_node))
                       val nodes_per_step = Int.min(10000, nodes_per_step')
