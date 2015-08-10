@@ -13,6 +13,9 @@ sig
   (* All solutions with their short ascii names *)
   val all_solutions : (string * solution) list
 
+  (* Just my favorite solutions *)
+  val test_solutions : (string * solution) list
+
   (* Consensus current best from tests *)
   val best_solution : solution
 

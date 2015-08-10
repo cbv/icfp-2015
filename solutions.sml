@@ -37,7 +37,21 @@ struct
   fun highfive { seconds, problem, seed_idx } =
     let
       val powerstream =
-        Pathfind.PowerHeuristics.robin Phrases.power
+        Pathfind.PowerHeuristics.robin "ia! ia!" Phrases.power
+
+      val state = Board.reset (problem, seed_idx)
+      val heuristic = both_heuristic
+      val steps = rev (LockStep.play_to_end (state, heuristic,
+                                             Time.fromSeconds (IntInf.fromInt seconds)))
+      val lchrs = PowerThirst.polish state powerstream steps
+    in
+      implode (List.map Board.forgetlegal lchrs)
+    end
+
+  fun highsix { seconds, problem, seed_idx } =
+    let
+      val powerstream =
+        Pathfind.PowerHeuristics.robin "ei!" Phrases.power
 
       val state = Board.reset (problem, seed_idx)
       val heuristic = both_heuristic
@@ -50,6 +64,12 @@ struct
 
 
   val all_solutions =
+    [("david", david),
+     ("ragged", ragged),
+     ("both", both),
+     ("highfive", highfive)]
+
+  val test_solutions =
     [("david", david),
      ("ragged", ragged),
      ("both", both),

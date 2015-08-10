@@ -42,155 +42,192 @@ structure LockStep :> LOCK_STEP = struct
         List.mapPartial mapper accessible
     end
 
-
-  datatype searchcontext = SC of { max_depth: int,
-                                   heuristic: HeuristicInput -> int,
-                                   branch_factor: int,
-                                   best: ((int * step list) option) ref,
-                                   prev_steps: step list
-                                 }
+  structure Heap = HeapFn(struct
+                           type priority = int
+                           val compare = Int.compare
+                           end)
 
 
-  fun compare_first_reverse ((s1, _), (s2, _)) =
-    case Int.compare (s1, s2) of
-        LESS => GREATER
-      | GREATER => LESS
-      | EQUAL => EQUAL
-  fun take n [] = []
-    | take 0 lst = []
-    | take n (x::xs) = x::(take (n - 1) xs)
-
-  (*
-     walk through all lockstep sequences of depth n.
-     best: ((int, step list) option) ref
-
-     heuristic: Board.state -> int
-  *)
-  fun search (SC {max_depth, best, branch_factor, heuristic, prev_steps}, combined_score,
-              step as Step {state = state_opt, ...}) =
-    case (state_opt, max_depth <= 1 + (List.length prev_steps))
-     of (SOME(state), false) =>
-        let
-            val new_context = SC {max_depth = max_depth, branch_factor = branch_factor,
-                                  best = best, heuristic = heuristic,
-                                  prev_steps = step::prev_steps}
-        in
-            search_steps (new_context, state)
-        end
-     | _ => (* don't go deeper *)
-       let
-           val steps = step::prev_steps
-           val best_score = case !best of
-                                SOME((score, _)) => score
-                              | NONE => ~1
-           val () = if combined_score > best_score
-                    then best := (SOME((combined_score, List.rev steps)))
-                    else ()
-       in
-           ()
-       end
-
-  and search_steps (context as SC {heuristic, prev_steps, branch_factor, ...}, state) =
-      let
-          fun mapper (step as Step {state = state_opt, px, py, a, ...}) =
-            let
-                val hscore = case state_opt of
-                                 NONE => 0
-                               | SOME(state) => heuristic (HI {state = state, px = px, py = py, a = a })
-                val scored = List.foldr (fn (Step {scored,...}, s) => scored + s) 0 (step::prev_steps)
-                val combined_score = scored * HEURISTIC_FACTOR + hscore
-            in
-                (combined_score, step)
-            end
-
-          val poss = (possible_next_steps state)
-          val pairs = List.map mapper poss
-          val sorted_pairs = ListUtil.sort compare_first_reverse pairs
-
-          (* Just look at the most promising *)
-          val pairs_to_search = take branch_factor sorted_pairs
-          fun apper (combined_score, step) =
-            let
-            in
-                search (context, combined_score, step)
-            end
-      in
-          List.app apper pairs_to_search
-      end
-
-  fun get_best_step (state, depth, heuristic, step_deadline) =
+  fun possible_next_steps_n n heuristic accum state =
     let
-        val start_time = Time.now()
-        val branch_factor = 8;
-        val best = ref NONE
-        val context = SC {max_depth = depth, heuristic = heuristic, branch_factor = branch_factor,
-                          best = best, prev_steps = []}
-        val () = search_steps (context, state)
-        val end_time = Time.now()
-        val time_remaining = Time.-(step_deadline, end_time)
-        val elapsed = Time.-(end_time, start_time)
-
-        val enough_time =
-            Time.>(time_remaining, Time.fromReal((Time.toReal elapsed) * (Real.fromInt branch_factor)))
+        val heap = Heap.empty()
+        val accessible = ForwardChain.accessible_locations state
+        fun apper (ForwardChain.PL {locked = NONE, ... }) = ()
+          | apper (ForwardChain.PL {locked = (SOME (ForwardChain.NEW_PIECE state)),
+                                     px, py, a, commands, score, ... }) =
+            (Heap.insert heap (~((score + accum) * HEURISTIC_FACTOR + (heuristic (HI {state = state,
+                                                                           px = px, py = py, a = a}))))
+                        (Step {px = px, py = py, a = a, commands = commands,
+                               state = SOME(Board.clone state), scored = score});())
+          | apper (ForwardChain.PL {locked = (SOME ForwardChain.ALL_DONE),
+                                     px, py, a, commands, score, ... }) =
+            (Heap.insert heap (~((score + accum)* HEURISTIC_FACTOR))
+                         (Step {px = px, py = py, a = a, commands = commands,
+                                state = NONE, scored = score}); ())
+        val () = List.app apper accessible
+        fun helper acc 0 = acc
+          | helper acc m =
+            case Heap.min heap of
+                NONE => acc
+              | SOME (p,v) => helper ((p,v)::acc) (m-1)
+        val result = helper [] n
     in
-        (* we'll deepen if we have enough time and if the best step isn't an end state *)
-
-        case (enough_time, !best) of
-            (true, SOME((score, (Step { state = SOME(new_state), ...})::steps)))
-             => get_best_step(state, depth + 1, heuristic, step_deadline)
-         |  (_, SOME((_, step::steps))) => step
-         |  _ => raise LockStep "impossible"
+        result
     end
 
-  fun accumulate_best (state, heuristic, accumulator, 0, deadline) = accumulator
-    | accumulate_best (state, heuristic, accumulator, steps_remaining, deadline) =
+
+  datatype ScoredStep = SS of {
+         step: step,
+
+         (* Total points achieved up in all of history up to here.
+            This does not include an *)
+         accum_score: int
+  }
+
+  fun compute_combined_score heuristic accum_score
+                             (step as Step {state = state_opt, px, py, a, scored, ...}) =
     let
-(*        val () = TextIO.output(TextIO.stdErr, Board.toascii state ^ "\n\n\n"); *)
-        val step_deadline = Time.+(
-                              Time.now(),
-                              Time.fromReal(Time.toReal(Time.-(deadline, Time.now())) /
-                                            (Real.fromInt steps_remaining)))
-        val best_step = get_best_step (state, 1, heuristic, step_deadline)
+        val hscore = case state_opt of
+                         NONE => 0
+                       | SOME(state) => heuristic (HI {state = state, px = px, py = py, a = a })
+        val combined_score = (accum_score + scored) * HEURISTIC_FACTOR + hscore
     in
-        case best_step of
-            (step as Step {state = SOME(new_state), ...}) =>
-            accumulate_best (new_state, heuristic, step::accumulator, steps_remaining - 1, deadline)
-         | (step as Step {state = NONE, ...}) => step::accumulator
+        (combined_score, step)
     end
 
-  fun play_n_steps (state, heuristic, time_limit, max_steps) =
+  fun accumulate_best (initial_state, heuristic, deadline) =
     let
-        val deadline = Time.+(time_limit, Time.now())
+        val result_heap = Heap.empty ()
+        val heap = ref (Heap.empty ())
+        val next_heap = ref (Heap.empty ())
+        val _ = Heap.insert (!heap) 0 []
+        val iter = ref 0
+        val step_start_time = ref (Time.now())
+        val step_node_count = ref 0
+        val pieces_left = ref (Board.piecesleft initial_state)
+
+        fun search_loop () =
+          case Heap.min (!heap) of
+              NONE =>
+              if Heap.size (!next_heap) > 0
+              then
+                  let
+(*                       val () = print ("stepping. next heap size = " ^
+                                      Int.toString (Heap.size (!next_heap)) ^ "\n") *)
+                      val () = (pieces_left := ((!pieces_left) - 1))
+                      val num_nodes_last_step = !step_node_count
+                      val () = (step_node_count := 0)
+                      val now = Time.now()
+                      val elapsed = Time.-(now, !step_start_time)
+                      val time_per_node = (Time.toReal elapsed) / (Real.fromInt num_nodes_last_step)
+                      val time_left = Time.-(deadline, now)
+                      val time_per_remaining_step = (Time.toReal time_left) / (Real.fromInt (!pieces_left))
+                      val nodes_per_step' = Int.max(1, Real.floor (time_per_remaining_step / time_per_node))
+                      val nodes_per_step = Int.min(10000, nodes_per_step')
+(*                      val () = print ("nodes per step: " ^ Int.toString nodes_per_step ^ "\n") *)
+                      val () = (step_start_time := now)
+                      val () = heap := (!next_heap)
+                      val () = next_heap := (Heap.empty())
+                      val () =
+                          if Heap.size (!heap) > nodes_per_step
+                          then
+                              let
+                                  val old_heap = !heap
+                                  val new_heap = Heap.empty ()
+                                  val () = Util.for 0 nodes_per_step (fn _ =>
+                                                             case Heap.min old_heap
+                                                              of SOME(p, v) => (
+                                                                  Heap.insert new_heap p v;
+                                                                  ())
+                                                               | _ => ())
+                              in
+                                  heap := new_heap
+                              end
+                          else ()
+                  in
+                      search_loop()
+                  end
+              else ()
+            | SOME (neg_combined_score, ssteps) =>
+              let
+                  val () = iter := ((!iter) + 1)
+                  val () = step_node_count := ((!step_node_count) + 1)
+(*                  val () = print ("examining node with priority " ^ Int.toString neg_combined_score ^ "\n") *)
+                  val (state, accum_score) =
+                      case ssteps of
+                          [] => (initial_state, 0)
+                        | (SS { step = Step {state = SOME(state), ...}, accum_score })::_ =>
+                          (state, accum_score)
+                        | _ => raise LockStep "impossible"
+
+                  val branching_factor = 8
+
+                  val pairs_to_search = possible_next_steps_n branching_factor heuristic accum_score state
+
+                  fun apper (combined_score, step as Step {scored, state = state_opt, ...}) =
+                    let
+                        val new_accum_score = accum_score + scored
+                        val new_sequence = (SS {step = step, accum_score = new_accum_score})::ssteps
+                        val _ =
+                            case state_opt of
+                                SOME(new_state) =>
+                                Heap.insert (!next_heap) (combined_score) new_sequence
+                              | NONE =>
+                                (* We've reached an end state. emit it. *)
+                                Heap.insert result_heap (~new_accum_score)
+                                            new_sequence
+                    in
+                        ()
+                    end
+              in
+                  List.app apper pairs_to_search;
+(*
+                  print ("took a step. size = " ^ Int.toString (Heap.size (!heap)) ^ "\n");
+                  print ("result size = " ^ Int.toString (Heap.size result_heap) ^ "\n"); *)
+(*
+                  (if (!iter) mod 1000 = 0
+                  then case Heap.min (!heap) of
+                           SOME (p, v as (SS {accum_score, step = Step {state= SOME(state), ...}})::_) =>
+                           (
+                             Heap.insert (!heap) p v;
+                             print ("working on something with score " ^ Int.toString accum_score ^ "\n");
+                             print ("and priority " ^ Int.toString p ^ "\n");
+                             print ("length = " ^ Int.toString (List.length v) ^ "\n");
+                             print (Board.toascii state ^ "\n\n\n")
+                           )
+                        | _ => raise LockStep "impossible"
+                  else ());
+*)
+
+                  search_loop ()
+              end
+
+        val () = search_loop ()
     in
-        accumulate_best (state, heuristic, [], max_steps, deadline)
+        result_heap
     end
+
 
   fun play_to_end (state, heuristic, time_limit) =
     let
+        val deadline = Time.+(time_limit, Time.now())
+        val result_heap = accumulate_best (state, heuristic, deadline)
+        val scored_steps =
+            case Heap.min result_heap of
+                SOME(_, ssteps) => ssteps
+              | NONE => raise LockStep "impossible?"
+        val steps = List.map (fn SS {step, ...} => step) scored_steps
     in
-        play_n_steps (state, heuristic, time_limit, (Board.piecesleft state) + 1)
+        steps
     end
 
   fun simple_heuristic problem (HI {state, py, ...})  =
     let
         val (width, height) = Board.size problem
-        val future_pieces = (Board.piecesleft state) * 50 (* over-estimate *)
-        val score = ref future_pieces
-        val () = Util.for
-                     0 (width - 1)
-                     (fn ii => Util.for 0 (height - 1)
-                                        (fn jj =>
-                                            if Board.isempty (state, ii, jj)
-                                            then
-                                                let
-                                                in
-                                                    (* more points, proportional to distance from botton *)
-                                                    score := ((!score) + (height - jj) )
-                                                end
-                                            else ()
-                                      ))
+        val alive_bonus = 100000
+        val future_pieces = (Board.piecesleft state) * HEURISTIC_FACTOR div 100
     in
-        !score
+        (py * 500) + future_pieces + alive_bonus
     end
 
 
