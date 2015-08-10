@@ -79,9 +79,9 @@ struct
      ("highsix", highsix)]
 
   val submit_solutions =
-    [("highseven", highseven),
-     ("highfive", highfive),
-     ("highsix", highsix)]
+    [("highseven", highseven)]
+(*     ("highfive", highfive),
+     ("highsix", highsix)] *)
 
   (* Time notwithstanding, this produces the best scores in our test:
 

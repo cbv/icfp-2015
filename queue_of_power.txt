@@ -1,5 +1,11 @@
 ### --- current megaqueue --- ###
 
+./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghogbbbbbbbtoday'"'"'s impossible is tomorrow'"'"'s reality'
+./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghogbbbbbbbbhogdresden rice'
+./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hogppppppbbbbbhogportland retro gaming expobokrug'
+./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hogbbbbbbbbhoghogsecure. contain. protect.'
+
+
 ./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghoghogppthe street'
 ./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghoghogpphogppperfect tommy'
 ./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghoghogpppppphogbaoht z'"'"'uqqamoggklarkashtonneptune'
