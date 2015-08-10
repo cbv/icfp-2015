@@ -4,7 +4,8 @@ sig
   type solution = { seconds : int,
                     problem : Board.problem,
                     seed_idx : int,
-                    power : string list } -> string
+                    power : string list,
+                    use_stateset : bool} -> string
 
   val david : solution
   val ragged : solution

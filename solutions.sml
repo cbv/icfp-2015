@@ -4,16 +4,17 @@ struct
   type solution = { seconds : int,
                     problem : Board.problem,
                     seed_idx : int,
-                    power : string list} -> string
+                    power : string list,
+                    use_stateset : bool} -> string
 
   fun lift_heuristic h (LockStep.HI { state, ... }) = h state
 
-  fun david_with_heuristic heuristic { seconds, problem, seed_idx, ... } =
+  fun david_with_heuristic heuristic { seconds, problem, seed_idx, use_stateset, ... } =
     let
       val state = Board.reset (problem, seed_idx)
       val steps = LockStep.play_to_end (state, heuristic,
                                         Time.fromSeconds (IntInf.fromInt seconds),
-                                        true)
+                                        use_stateset)
       val commands = List.rev (List.concat
                                (List.map
                                 (fn (LockStep.Step {commands, ...}) => commands)
@@ -39,7 +40,7 @@ struct
   fun positive t = if t <= 0 then 1
                    else t
 
-  fun high_with_endgame engram { seconds, problem, seed_idx, power } =
+  fun high_with_endgame engram { seconds, problem, seed_idx, power, use_stateset } =
     let
       val start = Time.now ()
       val time_for_search = positive ((seconds * 3) div 4)
@@ -51,7 +52,7 @@ struct
       val state = Board.reset (problem, seed_idx)
       val heuristic = both_heuristic
       val steps = rev (LockStep.play_to_end (state, heuristic,
-                                             Time.fromSeconds (IntInf.fromInt seconds), true))
+                                             Time.fromSeconds (IntInf.fromInt seconds), use_stateset))
       val after_search = Time.now ()
       val elapsed = IntInf.toInt (Time.toSeconds (Time.-(after_search, start)))
       val remaining = positive (seconds - elapsed)
