@@ -1,5 +1,0 @@
-[{ "problemId": 21,
-"seed": 0,
-"tag": "tosubmit/21_0_highseven_926.txt",
-"solution": "apppalalbblapppalalblapppalbblapppalblapppallaappaalllei!lbbbbllalaaappalaallllbbblalaaaapaaalllllbbllaaaaapaaaaaalallaaaaaallaaaaaaallllllllbbllllllllbllllllllllllllallbbbbbb"
-}]
