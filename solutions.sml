@@ -131,6 +131,6 @@ problem highfive highsix
 23      669      669
 24      93386    130380
 *)
-  val best_solution = highfive
+  val best_solution = highsix
 
 end

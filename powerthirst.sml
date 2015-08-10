@@ -11,6 +11,7 @@ struct
             (Pathfind.Target {px=px, py=py, a=a})
             (Pathfind.PS { stream_state = stream_state,
                            query = query })
+            commands
           val lock_lchr = Board.anychar (hd commands)
         in
           case powa of
