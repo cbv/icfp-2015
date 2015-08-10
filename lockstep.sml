@@ -103,6 +103,8 @@ structure LockStep :> LOCK_STEP = struct
         val _ = Heap.insert (!heap) 0 []
         val iter = ref 0
         val step_start_time = ref (Time.now())
+        val step_node_count = ref 0
+        val pieces_left = ref (Board.piecesleft initial_state)
 
         fun search_loop () =
           case Heap.min (!heap) of
@@ -110,19 +112,29 @@ structure LockStep :> LOCK_STEP = struct
               if Heap.size (!next_heap) > 0
               then
                   let
-                      val () = print ("stepping. next heap size = "  ^ Int.toString (Heap.size (!next_heap)) ^ "\n")
+(*                       val () = print ("stepping. next heap size = " ^
+                                      Int.toString (Heap.size (!next_heap)) ^ "\n") *)
+                      val () = (pieces_left := ((!pieces_left) - 1))
+                      val num_nodes_last_step = !step_node_count
+                      val () = (step_node_count := 0)
                       val now = Time.now()
                       val elapsed = Time.-(now, !step_start_time)
+                      val time_per_node = (Time.toReal elapsed) / (Real.fromInt num_nodes_last_step)
+                      val time_left = Time.-(deadline, now)
+                      val time_per_remaining_step = (Time.toReal time_left) / (Real.fromInt (!pieces_left))
+                      val nodes_per_step' = Int.max(1, Real.floor (time_per_remaining_step / time_per_node))
+                      val nodes_per_step = Int.min(10000, nodes_per_step')
+(*                      val () = print ("nodes per step: " ^ Int.toString nodes_per_step ^ "\n") *)
                       val () = (step_start_time := now)
                       val () = heap := (!next_heap)
                       val () = next_heap := (Heap.empty())
                       val () =
-                          if Heap.size (!heap) > 10000
+                          if Heap.size (!heap) > nodes_per_step
                           then
                               let
                                   val old_heap = !heap
                                   val new_heap = Heap.empty ()
-                                  val () = Util.for 0 1000 (fn _ =>
+                                  val () = Util.for 0 nodes_per_step (fn _ =>
                                                              case Heap.min old_heap
                                                               of SOME(p, v) => (
                                                                   Heap.insert new_heap p v;
@@ -139,6 +151,7 @@ structure LockStep :> LOCK_STEP = struct
             | SOME (neg_combined_score, ssteps) =>
               let
                   val () = iter := ((!iter) + 1)
+                  val () = step_node_count := ((!step_node_count) + 1)
 (*                  val () = print ("examining node with priority " ^ Int.toString neg_combined_score ^ "\n") *)
                   val (state, accum_score) =
                       case ssteps of
@@ -171,17 +184,7 @@ structure LockStep :> LOCK_STEP = struct
 (*
                   print ("took a step. size = " ^ Int.toString (Heap.size (!heap)) ^ "\n");
                   print ("result size = " ^ Int.toString (Heap.size result_heap) ^ "\n"); *)
-                  (if (!iter) mod 1000 = 0 andalso (Heap.size result_heap) > 0
-                  then case Heap.min result_heap of
-                           SOME (p, v as (SS {accum_score, ...})::_) =>
-                           (
-                             Heap.insert result_heap p v;
-                             print ("found a result with score " ^ Int.toString accum_score ^ "\n");
-                             print ("length = " ^ Int.toString (List.length v) ^ "\n")
-                           )
-                        | _ => raise LockStep "impossible"
-                  else ());
-
+(*
                   (if (!iter) mod 1000 = 0
                   then case Heap.min (!heap) of
                            SOME (p, v as (SS {accum_score, step = Step {state= SOME(state), ...}})::_) =>
@@ -194,7 +197,7 @@ structure LockStep :> LOCK_STEP = struct
                            )
                         | _ => raise LockStep "impossible"
                   else ());
-
+*)
 
                   search_loop ()
               end
