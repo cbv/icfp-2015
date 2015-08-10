@@ -75,7 +75,7 @@ struct
           end
 
       val offset = Params.asint 0 offsetp
-      val num = Params.asint 25 nump - offset
+      val num = Params.asint 25 nump
 
     in
       Util.for offset (offset + num - 1)
