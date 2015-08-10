@@ -29,6 +29,7 @@ struct
               Int.toString (Word32.toInt (Vector.sub
                                           (Board.seeds problem,
                                            seed_idx))) ^ ",\n" ^
+              "\"tag\": \"CBV\",\n" ^
               "\"solution\": \"" ^ sol ^ "\"\n}"
       in
               Vector.foldli (fn (seed_idx, _, s) =>
