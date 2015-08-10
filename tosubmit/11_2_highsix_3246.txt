@@ -1,0 +1,5 @@
+[{ "problemId": 11,
+"seed": 20528,
+"tag": "tosubmit/11_2_highsix_3246.txt",
+"solution": "blue hadesldei!dlllallkkyogsothothkkklllar'lyehdaia! ia!lbbblklyuggothddlllaaaaaaalkkkaaplanet 10aapppkppdlaalalallkcthulhu fhtagn!ddppalkyoyodyneaakapppdppklllllllbllllallaaallaaddaaappaalllkllblbbdaaklkkkaaaaablbbkpppppalapdlaaapaalkkaaalpklldalllllllbdaaklllllbbllllllapdlllklaaallappaalllllkappdapdlabkkalkkllalaallldllllalallkappdllbbdlbllbkklbbblllppplalbbbbd"
+}]

@@ -1,0 +1,5 @@
+[{ "problemId": 21,
+"seed": 0,
+"tag": "tosubmit/21_0_highseven_1240.txt",
+"solution": "apppalalbblapppalalblapppalallaappalblaappallaappaaaaaei!ppalllllbbblllaaaapaaallllbbblallllllbbllaaaaapaaaaaalallaaaaaallaaaaaaallllllllbblia! ia!llbbbbbbbllllllllllllllallbbbbbb"
+}]
