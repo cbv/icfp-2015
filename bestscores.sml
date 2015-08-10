@@ -78,7 +78,7 @@ struct
       val num = Params.asint 25 nump - offset
 
     in
-      Util.for offset (num - 1)
+      Util.for offset (offset + num - 1)
       (fn i =>
        ignore (runprob i));
       print "\n";
