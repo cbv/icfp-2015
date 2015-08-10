@@ -103,6 +103,6 @@ struct
         22      2600  2600   2600 5438
         23      681   1465   472  1320
      *)
-  val best_solution = highfive
+  val best_solution = highsix
 
 end

@@ -216,13 +216,13 @@ struct
           (power_helper (state, setRef, [], tgt, power))
     end
 
-  fun find_without_power _ _ _ rev_commands =
+  fun find_without_power _ _ (PS {stream_state, ...}) rev_commands =
     let
       val commands = rev rev_commands
     in
       (* PERF: In a pinch, use anychars that are likely to produce short
          power phrases like ei! *)
-      implode (List.map (Board.forgetlegal o Board.anychar) commands)
+      SOME (List.map Board.anychar commands, stream_state)
     end
 
   structure PowerHeuristics = struct
