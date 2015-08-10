@@ -11,6 +11,7 @@ struct
     , "Cthulhu fhtagn!" (* "Cthulhu waits"; experiment powerc6e *)
     , "Necronomicon" (* for summoning the Old Ones; experiment power27e *)
     , "Tsathoggua" (* Master of formless spawn, tag manual515 *)
+    , "YogSothoth" (* cosmic entity, tag pb_4e2 *)
     (* buckaroo banzai across the 8th dimension *)
     , "John Bigboote" (* confirmed tag banzai8be + what jason? *)
     , "yoyodyne" (* confirmed in yes_93b *)
