@@ -1,2 +1,16 @@
 ICFP Contest 2015
 Cult of the Bound Variable
+
+Please see constitution.txt for participants.
+
+
+This is Standard ML code to compile with mlton. The makefile should do that.
+./driver.exe runs our "best" solution, managing everything but memory limit; use play_icfp2015 for that.
+
+We are very tired! We found 15 power words (phrases.sml) using a
+variety of techniques, mostly guessing, and algebra.
+
+
+<3
+
+Cult of Bound Variable
