@@ -42,7 +42,7 @@ struct
   fun high_with_endgame engram { seconds, problem, seed_idx, power } =
     let
       val start = Time.now ()
-      val time_for_search = positive ((seconds * 3) div 4)
+      val time_for_search = positive (seconds div 2)
       (* val time_for_polish = positive (seconds - time_for_search) *)
 
       val powerstream =
@@ -61,7 +61,6 @@ struct
       implode (List.map Board.forgetlegal lchrs)
     end
 
-  (* TODO: try "ia! ia! " *)
   val highfive = high_with_endgame "ia! ia!"
   val highsix = high_with_endgame "ei!"
   val highseven = high_with_endgame "ia! ia! "
@@ -79,7 +78,8 @@ struct
      ("highsix", highsix)]
 
   val submit_solutions =
-    [("highseven", highseven)]
+    [("highseven", highseven),
+     ("highsix", highsix)]
 (*     ("highfive", highfive),
      ("highsix", highsix)] *)
 
