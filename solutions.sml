@@ -3,11 +3,12 @@ struct
 
   type solution = { seconds : int,
                     problem : Board.problem,
-                    seed_idx : int } -> string
+                    seed_idx : int,
+                    power : string list} -> string
 
   fun lift_heuristic h (LockStep.HI { state, ... }) = h state
 
-  fun david_with_heuristic heuristic { seconds, problem, seed_idx } =
+  fun david_with_heuristic heuristic { seconds, problem, seed_idx, ... } =
     let
       val state = Board.reset (problem, seed_idx)
       val steps = LockStep.play_to_end (state, heuristic,
@@ -37,14 +38,14 @@ struct
   fun positive t = if t <= 0 then 1
                    else t
 
-  fun high_with_endgame engram { seconds, problem, seed_idx } =
+  fun high_with_endgame engram { seconds, problem, seed_idx, power } =
     let
       val start = Time.now ()
       val time_for_search = positive ((seconds * 3) div 4)
       (* val time_for_polish = positive (seconds - time_for_search) *)
 
       val powerstream =
-        Pathfind.PowerHeuristics.robin engram Phrases.power
+        Pathfind.PowerHeuristics.robin engram power
 
       val state = Board.reset (problem, seed_idx)
       val heuristic = both_heuristic
