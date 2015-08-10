@@ -1163,13 +1163,12 @@ struct
         val b = ref (0wx9e3779b9 : Word32.word)
         val c = ref (0wxbeef : Word32.word)
       in
-        Util.for 0 (BitArray.length board - 1)
-        (fn i =>
-         let val bit = if (BitArray.sub (board, i)) then 0w1 else 0w0
-         in
-           b := !b + bit;
+        Word32Array.app
+        (fn w =>
+         let in
+           b := !b + w;
            mix3 (a, b, c)
-         end);
+         end) (#2 board);
         mix3 (a, b, c);
         !c
       end
@@ -1188,5 +1187,5 @@ struct
   fun contains stateset state =
     BitArray.sub (stateset, hashkey state)
 
-  val () = print ("Size: " ^ Int.toString (MLton.size (empty_stateset ())) ^ "\n")
+  (* val () = print ("Size: " ^ Int.toString (MLton.size (empty_stateset ())) ^ "\n") *)
 end
