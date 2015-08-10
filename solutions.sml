@@ -63,6 +63,7 @@ struct
   (* TODO: try "ia! ia! " *)
   val highfive = high_with_endgame "ia! ia!"
   val highsix = high_with_endgame "ei!"
+  val highseven = high_with_endgame "ia! ia! "
 
   val all_solutions =
     [("david", david),
@@ -74,6 +75,11 @@ struct
     [(* ("david", david),
      ("ragged", ragged),
      ("both", both), *)
+     ("highsix", highsix)]
+
+  val submit_solutions =
+    [("highseven", highseven),
+     ("highfive", highfive),
      ("highsix", highsix)]
 
   (* Time notwithstanding, this produces the best scores in our test:

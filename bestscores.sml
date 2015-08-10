@@ -3,14 +3,10 @@ struct
 
   structure PU = PowerUtil
 
-  val SECONDS = 5
-
-  val solutions = List.map (#2) Solutions.all_solutions
+  val SECONDS = 60
 
   fun main () =
     let
-      (* just run first seed on each problem for now? *)
-      val seed_idx = 0
       val problems = Vector.tabulate (25, PU.loadproblem)
 
       type result = { sol: string, score: int }
@@ -29,7 +25,7 @@ struct
 
       fun runseed (problem : int) (seed_idx : int) : result =
           let val sols = List.map (runsol problem seed_idx)
-                                  (Solutions.all_solutions)
+                                  (Solutions.submit_solutions)
               val (best_method, { sol = best_sol, score = best_score }) =
                   List.foldl (fn ((i, { sol = sol1, score = score1 }),
                                   (i2, { sol = sol2, score = score2 })) =>
