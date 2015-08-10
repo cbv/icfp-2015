@@ -49,6 +49,7 @@ thulhu regio
 dagon
 Yog-Sothoth
 Yog Sothoth
+YogSothoth
 Azathoth
 arkham
 gilman house
@@ -488,6 +489,15 @@ liskov
 barbara liskov
 backus
 john backus
+don knuth
+donald knuth
+oren patashnik
+ron graham
+ronald graham
+concrete mathematics
+grigori perelman
+NSA
+
 
 # nerd classics
 gort
@@ -519,7 +529,7 @@ bad wolf
 badwolf
 pandorica
 
-# the dwarves delved too deep
+# the dwarves delved too deep/lord of the rings
 moria
 durin's bane
 balrog
@@ -527,6 +537,8 @@ fly you fools
 fly, you fools
 fly you fools!
 fly, you fools!
+go back to the shadow!
+mellon
 
 # 20,000 leagues?
 nautilus
@@ -543,6 +555,10 @@ chaim
 l'chaim
 emet
 golem
+yahweh
+jehovah
+yhwh
+jhvh
 
 # from contest logo, via akiva
 deneb
@@ -626,8 +642,8 @@ icfp
 international conference on functional programming
 international conference on functional programming!
 international conference on functional programming 2015
-ifcp programming contest
-ifcp programming contest 2015
+icfp programming contest
+icfp programming contest 2015
 cult of the bound variable
 ACM SIGPLAN
 icfp 2015
@@ -719,6 +735,7 @@ brookwood
 the deep ones
 humans
 benthic treaty
+benthic treaty of the azores
 
 # power words and IF
 xyzzy
@@ -794,3 +811,9 @@ redacted
 HOG LESLIE LAMPORT!!!
 
 # church of the subgenius?
+
+# unix magic words
+ELF
+
+# programming magic words
+hello world
