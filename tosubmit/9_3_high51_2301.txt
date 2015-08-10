@@ -1,0 +1,5 @@
+[{ "problemId": 9,
+"seed": 4150,
+"tag": "tosubmit/9_3_high51_2301.txt",
+"solution": "llbbkkkbllllyuggothddbbbllllr'lyehkaallaaaalallplanet 10kappalaalablaalllei!lllllaaalblaplllkkkllllllddlllbbbkaldladdaaapallllllllalalallaalallllllllllllblalallaaapalllllblalkkkalladdapaalllbbbdbdppppppdbdppkpkalaalalllllllddlbbbllllddbbbblllllllaaalladdappalllllblalkkklallllbbllallllbbbllllapddllbllppaalappddaladpalalllbbllalbbllbbbblppplbl"
+}]

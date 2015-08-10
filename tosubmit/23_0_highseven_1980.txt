@@ -1,5 +1,0 @@
-[{ "problemId": 23,
-"seed": 0,
-"tag": "tosubmit/23_0_highseven_1980.txt",
-"solution": "adpppdlaklllbbladppplei!dpplalllbbbbdllllllbblaalpllbllldbbbblllllbblaalpldlllaaallldallapallapddpaalllblbbdllldllllbdlllaaaplllbbblladdlalldbdallbdlllaaallbbbllladdppaalllbbbllaalladdppaladdaalldlbbbllllllllllbladlkppdlllbbbbdppppppkpkaallddlallbblllbbbbdllaapplllbladllbllbbbbllppalapdllllbbblbdllpppkallbbbbdllaalldblblldbllalbbbblppplbl"
-}]
