@@ -34,10 +34,14 @@ struct
   fun both config =
     david_with_heuristic both_heuristic config
 
+  fun positive t = if t <= 0 then 1
+                   else t
+
   fun high_with_endgame engram { seconds, problem, seed_idx } =
     let
       val start = Time.now ()
-      val time_for_search = (seconds * 3) div 4
+      val time_for_search = positive ((seconds * 3) div 4)
+      (* val time_for_polish = positive (seconds - time_for_search) *)
 
       val powerstream =
         Pathfind.PowerHeuristics.robin engram Phrases.power
@@ -46,7 +50,11 @@ struct
       val heuristic = both_heuristic
       val steps = rev (LockStep.play_to_end (state, heuristic,
                                              Time.fromSeconds (IntInf.fromInt seconds)))
-      val lchrs = PowerThirst.polish state powerstream steps
+      val after_search = Time.now ()
+      val elapsed = IntInf.toInt (Time.toSeconds (Time.-(after_search, start)))
+      val remaining = positive (seconds - elapsed)
+
+      val lchrs = PowerThirst.polish remaining state powerstream steps
     in
       implode (List.map Board.forgetlegal lchrs)
     end
