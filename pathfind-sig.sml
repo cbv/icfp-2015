@@ -13,12 +13,17 @@ signature PATHFIND = sig
   val find_with_power : Board.state -> target -> 'a power_stream ->
                         (Board.legalchar list * 'a) option
 
-  structure PowerHeuristics :
-            sig
-              type basic_state
-              val basic : string list -> basic_state power_stream
+  (* Same as above, but don't try to insert power words -- just try
+     to be done immediately (used when we run out of time budget). *)
+  val find_without_power : Board.state -> target -> 'a power_stream ->
+                          (Board.legalchar list * 'a) option
 
-              type robin_state
-              val robin : string -> string list -> robin_state power_stream
-            end
+  structure PowerHeuristics :
+  sig
+    type basic_state
+    val basic : string list -> basic_state power_stream
+
+    type robin_state
+    val robin : string -> string list -> robin_state power_stream
+  end
 end

@@ -1,5 +1,7 @@
 structure Pathfind :> PATHFIND =
 struct
+  exception Pathfind of string
+
   datatype 'a power_stream = PS of {stream_state: 'a,
                                     query: 'a -> string * 'a * 'a}
 
@@ -214,6 +216,8 @@ struct
           (power_helper (state, setRef, [], tgt, power))
 
     end
+
+  fun find_without_power _ = raise Pathfind "unimplemented"
 
 
   structure PowerHeuristics = struct
