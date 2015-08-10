@@ -574,6 +574,7 @@ haumea
 # buckaroo banzai
 buckaroo banzai
 yoyodyne
+Yoyodyne Propulsion Systems
 bigboote
 conway
 cocke
@@ -619,6 +620,7 @@ remember no matter where you go there you are
 remember no matter where you go there you are!
 remember no matter where you go... there you are!
 The future begins tomorrow!
+The future begins tomorrow.
 Progress Over Protocol
 Today's impossible is tomorrow's reality
 Mystery is the source of all true art and science.

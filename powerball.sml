@@ -102,7 +102,8 @@ struct
       else ("", guesses)
     end
 
-  fun make_experiments (_, nil) _ =
+  fun make_experiments _ nil = raise Match (* pass some problem, seed pairs *)
+    | make_experiments (_, nil) _ =
     (print "Got 'em all!\n";
      nil)
     | make_experiments (prefix, guesses) (((ps as (problem_idx, seed))::pss)) =
