@@ -95,7 +95,7 @@ structure LockStep :> LOCK_STEP = struct
         (combined_score, step)
     end
 
-  fun accumulate_best (initial_state, heuristic, deadline) =
+  fun accumulate_best (initial_state, heuristic, deadline, use_stateset) =
     let
         val best_result = ref NONE
         fun update_best_result (accum_score, ssteps) =
@@ -112,6 +112,22 @@ structure LockStep :> LOCK_STEP = struct
         val step_start_time = ref (Time.now())
         val step_node_count = ref 0
         val pieces_left = ref (Board.piecesleft initial_state)
+
+        val stateset = ref NONE
+        fun reset_stateset () =
+          if use_stateset
+          then stateset := (SOME(Board.empty_stateset()))
+          else ()
+        fun add_to_next_heap combined_score new_sequence new_state =
+          case !stateset of
+              NONE => (Heap.insert (!next_heap) combined_score new_sequence;())
+            | SOME s =>
+              if Board.contains s new_state
+              then ()
+              else (
+                  Board.insert s new_state;
+                  Heap.insert (!next_heap) combined_score new_sequence;
+                  ())
 
         fun search_loop () =
           case Heap.min (!heap) of
@@ -139,6 +155,7 @@ structure LockStep :> LOCK_STEP = struct
                       val () = (step_start_time := now)
                       val () = heap := (!next_heap)
                       val () = next_heap := (Heap.empty())
+                      val () = reset_stateset()
                       val () =
                           if Heap.size (!heap) > nodes_per_step
                           then
@@ -193,7 +210,7 @@ structure LockStep :> LOCK_STEP = struct
                         val _ =
                             case state_opt of
                                 SOME(new_state) =>
-                                (Heap.insert (!next_heap) (combined_score) new_sequence;())
+                                add_to_next_heap combined_score new_sequence new_state
                               | NONE =>
                                 (* We've reached an end state. emit it. *)
                                 update_best_result (new_accum_score, new_sequence)
@@ -232,10 +249,10 @@ structure LockStep :> LOCK_STEP = struct
     end
 
 
-  fun play_to_end (state, heuristic, time_limit) =
+  fun play_to_end (state, heuristic, time_limit, use_stateset) =
     let
         val deadline = Time.+(time_limit, Time.now())
-        val scored_steps = accumulate_best (state, heuristic, deadline)
+        val scored_steps = accumulate_best (state, heuristic, deadline, use_stateset)
         val steps = List.map (fn SS {step, ...} => step) scored_steps
     in
         steps

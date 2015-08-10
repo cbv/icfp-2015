@@ -12,7 +12,8 @@ struct
     let
       val state = Board.reset (problem, seed_idx)
       val steps = LockStep.play_to_end (state, heuristic,
-                                        Time.fromSeconds (IntInf.fromInt seconds))
+                                        Time.fromSeconds (IntInf.fromInt seconds),
+                                        true)
       val commands = List.rev (List.concat
                                (List.map
                                 (fn (LockStep.Step {commands, ...}) => commands)
@@ -50,7 +51,7 @@ struct
       val state = Board.reset (problem, seed_idx)
       val heuristic = both_heuristic
       val steps = rev (LockStep.play_to_end (state, heuristic,
-                                             Time.fromSeconds (IntInf.fromInt seconds)))
+                                             Time.fromSeconds (IntInf.fromInt seconds), true))
       val after_search = Time.now ()
       val elapsed = IntInf.toInt (Time.toSeconds (Time.-(after_search, start)))
       val remaining = positive (seconds - elapsed)
