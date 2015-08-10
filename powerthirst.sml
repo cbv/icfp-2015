@@ -2,8 +2,8 @@
 structure PowerThirst =
 struct
 
-  fun polish initial_state (powerstream as
-                    Pathfind.PS {stream_state=init_stream_state, query}) steplist =
+  fun polish seconds initial_state
+    (powerstream as Pathfind.PS {stream_state=init_stream_state, query}) steplist =
     let
       fun lchrs_for_step state stream_state (LockStep.Step {px, py, a, commands, ...}) =
         let

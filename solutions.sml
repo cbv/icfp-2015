@@ -34,10 +34,13 @@ struct
   fun both config =
     david_with_heuristic both_heuristic config
 
-  fun highfive { seconds, problem, seed_idx } =
+  fun high_with_endgame engram { seconds, problem, seed_idx } =
     let
+      val start = Time.now ()
+      val time_for_search = (seconds * 3) div 4
+
       val powerstream =
-        Pathfind.PowerHeuristics.robin "ia! ia!" Phrases.power
+        Pathfind.PowerHeuristics.robin engram Phrases.power
 
       val state = Board.reset (problem, seed_idx)
       val heuristic = both_heuristic
@@ -48,20 +51,9 @@ struct
       implode (List.map Board.forgetlegal lchrs)
     end
 
-  fun highsix { seconds, problem, seed_idx } =
-    let
-      val powerstream =
-        Pathfind.PowerHeuristics.robin "ei!" Phrases.power
-
-      val state = Board.reset (problem, seed_idx)
-      val heuristic = both_heuristic
-      val steps = rev (LockStep.play_to_end (state, heuristic,
-                                             Time.fromSeconds (IntInf.fromInt seconds)))
-      val lchrs = PowerThirst.polish state powerstream steps
-    in
-      implode (List.map Board.forgetlegal lchrs)
-    end
-
+  (* TODO: try "ia! ia! " *)
+  val highfive = high_with_endgame "ia! ia!"
+  val highsix = high_with_endgame "ei!"
 
   val all_solutions =
     [("david", david),
@@ -102,35 +94,37 @@ struct
         21      620   620    620  926
         22      2600  2600   2600 5438
         23      681   1465   472  1320
-   *)
-        (*
-problem highfive highsix
-0       6017     6017
-1       1420     1420
-2       8192     9506
-3       6728     7850
-4       14092    17530
-5       3922     3722
-6       7760     7860
-7       4278     4278
-8       8253     8253
-9       5670     5670
-10      4388     4388
-11      4173     4173
-12      6161     6806
-13      3363     3363
-14      20594    30396
-15      5034     6504
-16      7464     8174
-17      2020     2020
-18      8624     11478
-19      1920     1920
-20      5012     5232
-21      926      926
-22      5438     5438
-23      669      669
-24      93386    130380
-*)
+
+        and then on jason's laptop:
+
+        problem highfive highsix
+        0       6017     6017
+        1       1420     1420
+        2       8192     9506
+        3       6728     7850
+        4       14092    17530
+        5       3922     3722
+        6       7760     7860
+        7       4278     4278
+        8       8253     8253
+        9       5670     5670
+        10      4388     4388
+        11      4173     4173
+        12      6161     6806
+        13      3363     3363
+        14      20594    30396
+        15      5034     6504
+        16      7464     8174
+        17      2020     2020
+        18      8624     11478
+        19      1920     1920
+        20      5012     5232
+        21      926      926
+        22      5438     5438
+        23      669      669
+        24      93386    130380
+
+  *)
   val best_solution = highsix
 
 end
