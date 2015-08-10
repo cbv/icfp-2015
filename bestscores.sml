@@ -5,6 +5,10 @@ struct
     (SOME("-offset", "First problem to work on"))
     "offset"
 
+  val nump = Params.param "25"
+    (SOME("-num", "Number of problems to work on"))
+    "num"
+
   val timelimitp = Params.param "5"
     (SOME("-timelimit", "Max number of seconds to spend."))
     ("timelimit")
@@ -71,8 +75,10 @@ struct
           end
 
       val offset = Params.asint 0 offsetp
+      val num =
+        Int.max (Params.asint 25 nump, Vector.length problems - offset)
 
-      val r = Vector.tabulate ((Vector.length problems) - offset,
+      val r = Vector.tabulate (num,
                                (fn i => runprob (i + offset)))
     in
         print "\n";
