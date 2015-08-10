@@ -13,6 +13,10 @@ struct
     (SOME("-timelimit", "Max number of seconds to spend."))
     ("timelimit")
 
+  val seedidxp = Params.param "-1"
+    (SOME("-seedidx", "Single seed index to run."))
+    ("seedidx")
+
   structure PU = PowerUtil
 
   fun main () =
@@ -68,10 +72,15 @@ struct
 
       fun runprob (problem: int) : result vector =
           let val p = Vector.sub (problems, problem)
+            val forced_idx = Params.asint ~1 seedidxp
           in
+            if forced_idx = ~1
+            then
               Vector.map (runseed problem)
-                         (Vector.tabulate (Vector.length (Board.seeds p),
-                                           fn i => i))
+              (Vector.tabulate (Vector.length (Board.seeds p),
+                                fn i => i))
+            else
+              Vector.fromList [runseed problem forced_idx]
           end
 
       val offset = Params.asint 0 offsetp
