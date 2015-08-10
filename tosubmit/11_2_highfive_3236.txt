@@ -1,5 +1,0 @@
-[{ "problemId": 11,
-"seed": 20528,
-"tag": "tosubmit/11_2_highfive_3236.txt",
-"solution": "blue hadesldei!lllblklr'lyehklllllkllyuggothddlblkltsathogguakkbbblaaaaaaalia! ia!akkkaabbbbbbkppppppppdlaalalallaaddaplanet 10allalkyogsothothkkkbkpppdlllllllbllllallaaallaadaaaaalllkllblbbdaaklkayoyodyneaapdppppkapklaaapaalkkaaalpklldalllllllbdaaklllllbbllllllapdlllklaaallappaalllllkappdapdlabkkalkkllalaallldllllalallkappdllbbdlbllbkklbbblllppplalbbbbd"
-}]
