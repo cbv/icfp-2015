@@ -207,18 +207,23 @@ struct
         | x => x
     end
 
-  fun find_with_power state (Target tgt) power =
+  fun find_with_power state (Target tgt) power _ =
     let val setRef = ref (LocSet.singleton
                               (piece_location (state, Board.piece_symmetry state, [])));
     in
       Option.map
           (fn (rev_lchrs, stream_state) => (rev rev_lchrs, stream_state))
           (power_helper (state, setRef, [], tgt, power))
-
     end
 
-  fun find_without_power _ = raise Pathfind "unimplemented"
-
+  fun find_without_power _ _ _ rev_commands =
+    let
+      val commands = rev rev_commands
+    in
+      (* PERF: In a pinch, use anychars that are likely to produce short
+         power phrases like ei! *)
+      implode (List.map (Board.forgetlegal o Board.anychar) commands)
+    end
 
   structure PowerHeuristics = struct
 
