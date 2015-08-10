@@ -19,6 +19,46 @@ struct
            locked: (int * int * int) option,
            status: status }
 
+  structure BitArray =
+  struct
+    type array = int * Word32Array.array
+    fun array (size, init) =
+      let
+        val words = size div 32 + (if size mod 32 > 0 then 1 else 0)
+      in
+        (size, Word32Array.array (words, if init then 0wxFFFFFFFF
+                                         else 0wx0))
+      end
+
+    fun sub ((sz, arr), i) =
+      let
+        val widx = i div 32
+        val bidx = Word.fromInt (i mod 32)
+        val v = Word32Array.sub(arr, widx)
+      in
+        0w1 = Word32.andb (0w1, Word32.>>(v, bidx))
+      end
+
+    fun update ((sz, arr), i, b) =
+      let
+        val widx = i div 32
+        val bidx = Word.fromInt (i mod 32)
+        val v = Word32Array.sub(arr, widx)
+      in
+        if b
+        then Word32Array.update(arr,
+                                widx,
+                                Word32.orb (v, Word32.<<(0w1, bidx)))
+        else Word32Array.update(arr,
+                                widx,
+                                Word32.andb (v, Word32.notb(Word32.<<(0w1, bidx))))
+      end
+
+    fun clone (sz, arr) =
+      (sz, Word32Array.tabulate (Word32Array.length arr,
+                                 fn i => Word32Array.sub(arr, i)))
+  end
+
   type legalchar = char
 
   (* Vector of members (filled spaces), assuming the pivot is at 0,0 *)
