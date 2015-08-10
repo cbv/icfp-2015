@@ -23,7 +23,6 @@ struct
 
   fun solve_problem time file =
       let val problem = Board.fromjson file
-          val time = Int.div (time, Vector.length (Board.seeds problem))
           fun obj_of_sol sol seed_idx =
               "{ \"problemId\": " ^ Int.toString (Board.id problem) ^ ",\n" ^
               "\"seed\": " ^
@@ -37,8 +36,7 @@ struct
                                 Solutions.best_solution {seconds = time,
                                                          problem = problem,
                                                          seed_idx = seed_idx,
-                                                         power = !power,
-                                                         use_stateset = false}
+                                                         power = !power}
                         in
                             s ^ obj_of_sol sol seed_idx ^ ",\n"
                         end)
@@ -47,7 +45,10 @@ struct
       end
 
   fun main () =
-      let val time = Int.div (Params.asint 60 timep, List.length (!inputfiles))
+      let fun seeds_for_prob file =
+              Vector.length (Board.seeds (Board.fromjson file))
+          val seeds = List.foldl op+ 0 (List.map seeds_for_prob (!inputfiles))
+          val time = Int.div (Params.asint 60 timep, seeds)
           val sols = List.map (solve_problem time) (!inputfiles)
           val s = "[" ^ String.concat sols
           val s' = String.substring (s, 0, (String.size s) - 2) ^ "]"

@@ -47,16 +47,17 @@ struct
                    Int.toString problem ^ "_" ^
                    Int.toString seed_idx ^ "_" ^ method ^ "_" ^
                    Int.toString score ^ ".txt")
-              fun obj_of_sol sol =
+              fun obj_of_sol method score sol =
               "[{ \"problemId\": " ^ Int.toString problem ^ ",\n" ^
               "\"seed\": " ^
               Int.toString (Word32.toInt (Vector.sub
                                           (Board.seeds (Vector.sub (problems, problem)),
                                            seed_idx))) ^ ",\n" ^
+              "\"tag\": \"" ^ filename method score ^ "\",\n" ^
               "\"solution\": \"" ^ sol ^ "\"\n}]"
           in
               (StringUtil.writefile (filename best_method best_score)
-                                    (obj_of_sol best_sol);
+                                    (obj_of_sol best_method best_score best_sol);
                print (filename best_method best_score ^ "\n");
                { sol = best_sol, score = best_score })
           end
