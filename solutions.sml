@@ -140,7 +140,10 @@ struct
         23      669      669
         24      93386    130380
 
-  *)
-  val best_solution = highsix
+        *)
+  (* This had the highest score on 60 problem seeds,
+     whereas five and six were 35 and 25. But often those
+     victories are clustered into a single problem... *)
+  val best_solution = highseven
 
 end
