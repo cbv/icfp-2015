@@ -11,7 +11,7 @@ struct
 
 
   val timelimitp = Params.param "10"
-    (SOME("-timelimit", "Max number of seconds to spend."))
+    (SOME("-timelimit", "Max number of seconds to spend per problem."))
     ("timelimit")
 
 (* favor far-down squares *)

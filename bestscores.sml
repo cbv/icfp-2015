@@ -5,9 +5,11 @@ struct
     (SOME("-offset", "First problem to work on"))
     "offset"
 
-  structure PU = PowerUtil
+  val timelimitp = Params.param "5"
+    (SOME("-timelimit", "Max number of seconds to spend."))
+    ("timelimit")
 
-  val SECONDS = 5
+  structure PU = PowerUtil
 
   fun main () =
     let
@@ -19,7 +21,7 @@ struct
                  (seed_idx : int)
                  (solution : string * Solutions.solution) : string *  result =
           let val problem = Vector.sub (problems, problemi)
-              val sol = (#2 solution) { seconds = SECONDS, problem = problem,
+              val sol = (#2 solution) { seconds = Params.asint 5 timelimitp, problem = problem,
                                         seed_idx = seed_idx,
                                         power = Phrases.power }
               val seed_value = Vector.sub (Board.seeds problem, seed_idx)

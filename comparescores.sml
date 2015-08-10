@@ -3,7 +3,9 @@ struct
 
   structure PU = PowerUtil
 
-  val SECONDS = 10
+  val timelimitp = Params.param "5"
+    (SOME("-timelimit", "Max number of seconds to spend."))
+    ("timelimit")
 
   fun main () =
     let
@@ -17,7 +19,7 @@ struct
           fun oneidx i =
             let
               val problem = Vector.sub (problems, i)
-              val sol = solution { seconds = SECONDS, problem = problem, seed_idx = seed_idx,
+              val sol = solution { seconds = Params.asint 5 timelimitp, problem = problem, seed_idx = seed_idx,
                                    power = Phrases.power }
               val seed_value = Vector.sub (Board.seeds problem, seed_idx)
               val score = PU.get_score problem seed_value sol
