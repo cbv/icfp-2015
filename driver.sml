@@ -46,16 +46,20 @@ struct
       end
 
   fun main () =
-      let fun seeds_for_prob file =
-              Vector.length (Board.seeds (Board.fromjson file))
+    case !inputfiles of
+      nil => print "No input files.\n"
+    | _ =>
+        let
+          fun seeds_for_prob file =
+            Vector.length (Board.seeds (Board.fromjson file))
           val seeds = List.foldl op+ 0 (List.map seeds_for_prob (!inputfiles))
           val time = Int.div (Params.asint 60 timep, seeds)
           val sols = List.map (solve_problem time) (!inputfiles)
           val s = "[" ^ String.concat sols
           val s' = String.substring (s, 0, (String.size s) - 2) ^ "]"
-      in
+        in
           print s'
-      end
+        end
 end
 
 val () = Params.main0 "Takes no arguments" Driver.main
