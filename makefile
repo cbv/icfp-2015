@@ -14,6 +14,9 @@ powerwalk.exe : $(SOURCES) powerwalk.mlb powerwalk.sml
 powerball.exe : $(SOURCES) powerball.mlb powerball.sml
 	mlton -output $@ powerball.mlb
 
+driver.exe : $(SOURCES) driver.mlb driver.sml
+	mlton -output $@ driver.mlb
+
 nj:
 	ml-build testboard.cm TestBoard.smlnj_entry nj.img
 

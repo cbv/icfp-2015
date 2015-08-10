@@ -3,11 +3,12 @@ struct
 
   type solution = { seconds : int,
                     problem : Board.problem,
-                    seed_idx : int } -> string
+                    seed_idx : int,
+                    power : string list} -> string
 
   fun lift_heuristic h (LockStep.HI { state, ... }) = h state
 
-  fun david_with_heuristic heuristic { seconds, problem, seed_idx } =
+  fun david_with_heuristic heuristic { seconds, problem, seed_idx, ... } =
     let
       val state = Board.reset (problem, seed_idx)
       val steps = LockStep.play_to_end (state, heuristic,
@@ -34,34 +35,34 @@ struct
   fun both config =
     david_with_heuristic both_heuristic config
 
-  fun highfive { seconds, problem, seed_idx } =
+  fun positive t = if t <= 0 then 1
+                   else t
+
+  fun high_with_endgame engram { seconds, problem, seed_idx, power } =
     let
+      val start = Time.now ()
+      val time_for_search = positive ((seconds * 3) div 4)
+      (* val time_for_polish = positive (seconds - time_for_search) *)
+
       val powerstream =
-        Pathfind.PowerHeuristics.robin "ia! ia!" Phrases.power
+        Pathfind.PowerHeuristics.robin engram power
 
       val state = Board.reset (problem, seed_idx)
       val heuristic = both_heuristic
       val steps = rev (LockStep.play_to_end (state, heuristic,
                                              Time.fromSeconds (IntInf.fromInt seconds)))
-      val lchrs = PowerThirst.polish state powerstream steps
+      val after_search = Time.now ()
+      val elapsed = IntInf.toInt (Time.toSeconds (Time.-(after_search, start)))
+      val remaining = positive (seconds - elapsed)
+
+      val lchrs = PowerThirst.polish remaining state powerstream steps
     in
       implode (List.map Board.forgetlegal lchrs)
     end
 
-  fun highsix { seconds, problem, seed_idx } =
-    let
-      val powerstream =
-        Pathfind.PowerHeuristics.robin "ei!" Phrases.power
-
-      val state = Board.reset (problem, seed_idx)
-      val heuristic = both_heuristic
-      val steps = rev (LockStep.play_to_end (state, heuristic,
-                                             Time.fromSeconds (IntInf.fromInt seconds)))
-      val lchrs = PowerThirst.polish state powerstream steps
-    in
-      implode (List.map Board.forgetlegal lchrs)
-    end
-
+  (* TODO: try "ia! ia! " *)
+  val highfive = high_with_endgame "ia! ia!"
+  val highsix = high_with_endgame "ei!"
 
   val all_solutions =
     [("david", david),
@@ -70,10 +71,10 @@ struct
      ("highfive", highfive)]
 
   val test_solutions =
-    [("david", david),
+    [(* ("david", david),
      ("ragged", ragged),
-     ("both", both),
-     ("highfive", highfive)]
+     ("both", both), *)
+     ("highsix", highsix)]
 
   (* Time notwithstanding, this produces the best scores in our test:
 
@@ -102,7 +103,37 @@ struct
         21      620   620    620  926
         22      2600  2600   2600 5438
         23      681   1465   472  1320
-     *)
-  val best_solution = highfive
+
+        and then on jason's laptop:
+
+        problem highfive highsix
+        0       6017     6017
+        1       1420     1420
+        2       8192     9506
+        3       6728     7850
+        4       14092    17530
+        5       3922     3722
+        6       7760     7860
+        7       4278     4278
+        8       8253     8253
+        9       5670     5670
+        10      4388     4388
+        11      4173     4173
+        12      6161     6806
+        13      3363     3363
+        14      20594    30396
+        15      5034     6504
+        16      7464     8174
+        17      2020     2020
+        18      8624     11478
+        19      1920     1920
+        20      5012     5232
+        21      926      926
+        22      5438     5438
+        23      669      669
+        24      93386    130380
+
+  *)
+  val best_solution = highsix
 
 end

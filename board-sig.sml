@@ -135,6 +135,7 @@ sig
   val ispivot : state * int * int -> bool
   val pivot : state -> int * int
 
+  val id : problem -> int
   val size : problem -> int * int
   val width : problem -> int
   val height : problem -> int

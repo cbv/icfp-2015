@@ -10,13 +10,18 @@ signature PATHFIND = sig
                                        transition to if it fails. *)
                                        query: 'a -> string * 'a * 'a}
 
-  val find_with_power : Board.state -> target -> 'a power_stream ->
-                        (Board.legalchar list * 'a) option
+  val find_with_power :
+    Board.state -> target -> 'a power_stream ->
+    (* This a reversed command list that implements it, but without power *)
+    Board.command list ->
+    (Board.legalchar list * 'a) option
 
   (* Same as above, but don't try to insert power words -- just try
      to be done immediately (used when we run out of time budget). *)
-  val find_without_power : Board.state -> target -> 'a power_stream ->
-                          (Board.legalchar list * 'a) option
+  val find_without_power :
+    Board.state -> target -> 'a power_stream ->
+    Board.command list ->
+    (Board.legalchar list * 'a) option
 
   structure PowerHeuristics :
   sig

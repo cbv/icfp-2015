@@ -3,7 +3,8 @@ sig
 
   type solution = { seconds : int,
                     problem : Board.problem,
-                    seed_idx : int } -> string
+                    seed_idx : int,
+                    power : string list } -> string
 
   val david : solution
   val ragged : solution

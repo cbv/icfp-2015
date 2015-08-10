@@ -1,10 +1,18 @@
 # You can't win -- if you don't play!
 
+# H.P. "Hit Points" Lovecraft
 hp lovecraft
 hplovecraft
 Lovecraft
 h.p. lovecraft
 h.p.lovecraft
+the call of cthulhu
+the shadow over innsmouth
+howard phillips lovecraft
+dream cycle
+through the gates of the silver key
+arkham horror
+
 
 # Different spellings of cthulhu from wikipedia
 Tulu
@@ -811,6 +819,76 @@ redacted
 HOG LESLIE LAMPORT!!!
 
 # church of the subgenius?
+church of the subgenius
+subgenius
+jr bob dobbs
+j.r. bob dobbs
+slack
+dingleberries
+subgenius
+Reverend Modemac
+
+# time cube?
+
+# flying spaghetti monster
+venganza
+Baphomet
+pastafarian
+his noodly appendage
+touched by his noodly appendage
+
+
+# cryptography (ron rivest references)
+alice
+bob
+mallory
+rc5
+ron's code
+
+# discordianism
+principia discordia
+discordianism
+there are no rules anywhere
+the goddess prevails
+malaclypse
+Legionnaires
+Episkopos
+poee
+polyfather
+Aneristic Principle
+eristic principle
+pure chaos
+sacred chao
+pentabarf
+kallisti
+original snub
+greyface
+consult your pineal gland
+pineal gland
+order of accendo
+
+# illuminatus
+illuminatus!
+the eye in the period
+the golden apple
+leviathan
+23 enigma
+argenteum astrum
+adam weishaupt
+the only good fnord is a dead fnord
+law of fives
+law of 5s
+the mgt.
+the mgmt.
+the mgt
+the mgmt
+robert harrison blake
+henry armitage
+klarkash-ton
+klarkash ton
+unaussprechlichen kulten
+annie gamwell
+hart crane
 
 # unix magic words
 ELF

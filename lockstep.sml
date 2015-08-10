@@ -121,7 +121,10 @@ structure LockStep :> LOCK_STEP = struct
                       val elapsed = Time.-(now, !step_start_time)
                       val time_per_node = (Time.toReal elapsed) / (Real.fromInt num_nodes_last_step)
                       val time_left = Time.-(deadline, now)
-                      val time_per_remaining_step = (Time.toReal time_left) / (Real.fromInt (!pieces_left))
+                      val time_per_remaining_step =
+                          if (!pieces_left) > 0
+                          then (Time.toReal time_left) / (Real.fromInt (!pieces_left))
+                          else 1.0 (* prevent overflow *)
                       val nodes_per_step' = Int.max(1, Real.floor (time_per_remaining_step / time_per_node))
                       val nodes_per_step = Int.min(10000, nodes_per_step')
 (*                      val () = print ("nodes per step: " ^ Int.toString nodes_per_step ^ "\n") *)
@@ -134,7 +137,7 @@ structure LockStep :> LOCK_STEP = struct
                               let
                                   val old_heap = !heap
                                   val new_heap = Heap.empty ()
-                                  val () = Util.for 0 nodes_per_step (fn _ =>
+                                  val () = Util.for 0 (nodes_per_step-1) (fn _ =>
                                                              case Heap.min old_heap
                                                               of SOME(p, v) => (
                                                                   Heap.insert new_heap p v;
@@ -145,7 +148,18 @@ structure LockStep :> LOCK_STEP = struct
                               end
                           else ()
                   in
-                      search_loop()
+                      if Time.>(time_left, Time.zeroTime)
+                      then search_loop()
+                      else
+                          let (* make sure the result queue has at least something in it. *)
+                              val _ = case Heap.min (!heap) of
+                                          SOME (p, ssteps as (ss as SS {step, accum_score})::_) =>
+                                          Heap.insert result_heap (~accum_score) ssteps
+                                       | _ => raise LockStep "but I justed inserted!?"
+                          in
+                              ()
+                          end
+
                   end
               else ()
             | SOME (neg_combined_score, ssteps) =>
@@ -158,7 +172,7 @@ structure LockStep :> LOCK_STEP = struct
                           [] => (initial_state, 0)
                         | (SS { step = Step {state = SOME(state), ...}, accum_score })::_ =>
                           (state, accum_score)
-                        | _ => raise LockStep "impossible"
+                        | _ => raise LockStep "impossible 1"
 
                   val branching_factor = 8
 
@@ -184,6 +198,7 @@ structure LockStep :> LOCK_STEP = struct
 (*
                   print ("took a step. size = " ^ Int.toString (Heap.size (!heap)) ^ "\n");
                   print ("result size = " ^ Int.toString (Heap.size result_heap) ^ "\n"); *)
+
 (*
                   (if (!iter) mod 1000 = 0
                   then case Heap.min (!heap) of
@@ -195,7 +210,7 @@ structure LockStep :> LOCK_STEP = struct
                              print ("length = " ^ Int.toString (List.length v) ^ "\n");
                              print (Board.toascii state ^ "\n\n\n")
                            )
-                        | _ => raise LockStep "impossible"
+                        | _ => ()
                   else ());
 *)
 

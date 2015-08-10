@@ -42,7 +42,8 @@ struct
     Vector.exists (fn (xx, yy) => x = xx andalso y = yy) v
 
   datatype problem =
-    P of { start : bool vector,
+    P of { id : int,
+           start : bool vector,
            width : int,
            height : int,
            sourcelength : int,
@@ -52,8 +53,9 @@ struct
            (* aka units, an ml keyword *)
            pieces : piece vector }
 
-  fun setPower (P {start, width, height, sourcelength, seeds, pieces, ...}, newPower) =
-    P { start = start, width = width, height = height, sourcelength = sourcelength,
+  fun setPower (P {id, start, width, height, sourcelength, seeds, pieces, ...}, newPower) =
+    P { id = id, start = start, width = width, height = height,
+        sourcelength = sourcelength,
         seeds = seeds, pieces = pieces,
         power = Vector.map (StringUtil.reverse o StringUtil.lcase) newPower }
 
@@ -325,7 +327,7 @@ struct
     in
       app (fn (x, y) =>
            Array.update (a, y * width + x, true)) filled;
-      P { width = width, height = height,
+      P { id = id, width = width, height = height,
           seeds = Vector.fromList (map Word32.fromInt seeds),
           sourcelength = sourcelength,
           power = power,
@@ -376,7 +378,7 @@ struct
 
   (* Hypothetically, if we moved the pivot to (nx, ny) with angle a,
      would this be a collision? Then we lock at the OLD location. *)
-  fun is_locked_at (P { width, height, ... },
+  fun is_locked_at (P { id, width, height, ... },
                     board, Piece { rotations, ... }, nx, ny, na) =
     let
       val oriented_piece = Vector.sub(rotations, na)
@@ -1019,6 +1021,7 @@ struct
     sourcelength - !next_sourceidx
     | piecesleft _ = raise Board "invalid board in piecesleft"
 
+  fun id (P { id, ... }) = id
   fun size (P { width, height, ... }) = (width, height)
   fun width (P { width, ... }) = width
   fun height (P { height, ... }) = height
