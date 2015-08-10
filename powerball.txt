@@ -3,6 +3,9 @@
 hp lovecraft
 hplovecraft
 Lovecraft
+h.p. lovecraft
+h.p.lovecraft
+
 # Different spellings of cthulhu from wikipedia
 Tulu
 Clulu
@@ -769,3 +772,4 @@ welcome
 uuddlrlrba
 hello aviator
 get lamp
+mkultra
