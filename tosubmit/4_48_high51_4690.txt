@@ -1,0 +1,5 @@
+[{ "problemId": 4,
+"seed": 13694,
+"tag": "tosubmit/4_48_high51_4690.txt",
+"solution": "ph'nglui mglw'nafh cthulhu r'lyeh wgah'nagl fhtagn.kklei!llllblapllyogsothothdlllallar'lyehblue hadeskkkaaappppdalkljohn bigbootedlallktsathogguakkkaalallklcthulhu fhtagn!kklbbbllyoyodyneaia! ia!kalllkplanet 10kklllbbblladdayuggothddaaalalkkkaalalalalllklllllalallakkkaaaalalllklkklalalallakaaaaaalalllkklllllblllddlllllallakaaalallalldlalalallalakaaaaaalalldllalalallllkkklllllllkaaaaaaaalaakkkaalalllkalallalllllllllklklllpkbbbdllaaaalalllddlllllllakkaaaaalllkkklalallllalallakkalalldllllbblllkkkllllllkkklllakkpallakakkallllbblbbbdppddllbbbdlakkpllll"
+}]
