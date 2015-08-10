@@ -97,8 +97,8 @@ struct
      "elfgo back to the shadow!hello worldjehovahequestrian red sirloinb'gnu thunjhvh", (* pb_d5a *)
      "pppppzushakon", (* pb_f96 *)
      "yahwehyhwhviburhog leslie lamport!!!", (* pb_c34 *)
-     "adam weishauptaliceaneristic principleannie gamwellbaphometeristic principledream cycledingleberriesmallory" (* pb_b05, problem 20 *)
-     "the only good fnord is a dead fnordvenganzaunaussprechlichen kultenthrough the gates of the silver keythe shadow over innsmouthgrigori perelman" (* pb_a02, problem 24, pre-"yogsothoth" *)
+     "adam weishauptaliceaneristic principleannie gamwellbaphometeristic principledream cycledingleberriesmallory", (* pb_b05, problem 20 *)
+     "the only good fnord is a dead fnordvenganzaunaussprechlichen kultenthrough the gates of the silver keythe shadow over innsmouthgrigori perelman", (* pb_a02, problem 24, pre-"yogsothoth" *)
      ""]
 
 end

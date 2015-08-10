@@ -17,6 +17,9 @@ powerball.exe : $(SOURCES) powerball.mlb powerball.sml
 driver.exe : $(SOURCES) driver.mlb driver.sml
 	mlton -output $@ driver.mlb
 
+bestscores.exe : $(SOURCES) bestscores.mlb bestscores.sml
+	mlton -output $@ bestscores.mlb
+
 nj:
 	ml-build testboard.cm TestBoard.smlnj_entry nj.img
 
