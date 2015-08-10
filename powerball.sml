@@ -170,7 +170,7 @@ struct
           end
     end
 
-  val guesses_left = make_experiments ("", guesses) [(24, 0w18)(*, (20, 0w0)*)]
+  val guesses_left = make_experiments ("", guesses) [(*(24, 0w18),*) (20, 0w0)]
 
   val () =
       (print ("Stuck. Leftover guesses (" ^

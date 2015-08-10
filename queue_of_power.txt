@@ -1,26 +1,11 @@
 ### --- current megaqueue --- ###
 
-./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghogbbbbbbbtoday'"'"'s impossible is tomorrow'"'"'s reality'
-./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghogbbbbbbbbhogdresden rice'
-./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hogppppppbbbbbhogportland retro gaming expobokrug'
-./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hogbbbbbbbbhoghogsecure. contain. protect.'
-
-
-./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghoghogppthe street'
-./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghoghogpphogppperfect tommy'
-./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghoghogpppppphogbaoht z'"'"'uqqamoggklarkashtonneptune'
-./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghoghogbbbbbbraandaiib'"'"'nknobody is nobody. everyone has something to offer.ruhtra dyoll'
-./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hoghogbbbbbbbtoday'"'"'s impossible is tomorrow'"'"'s reality'
-./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'hogbbbbbbbbhogphogsecure. contain. protect.'
-./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'phogpppppbbbbbhogportland retro gaming expobokrug'
-./submitty.py --prob 20 --seed 0 --tag pb_ --sol 'bhoghogbbbbbbbhogdresden rice'
 
 ### --- ###
 
 
 ### problem 24 current queue
 
-./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'buggshashgihovegklarkashtongoghooryeggha'
 ./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'nssughahnb'
 ./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghogthe statement of randolph carter'
 ./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogthe watchers out of time'
@@ -34,7 +19,6 @@
 ./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghoghogbbtouched by his noodly appendage'
 ./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghogpppppraandaiib'"'"'nk'
 ./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hoghogpppppppphogthe dreamquest of unknown kadath'
-./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'hogppppppppthe eye in the period'
 
 
 ./submitty.py --prob 24 --seed 18 --tag pb_ --sol 'the bookthe case of charles dexter ward'
