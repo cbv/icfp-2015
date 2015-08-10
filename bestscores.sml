@@ -1,6 +1,10 @@
 structure BestScores =
 struct
 
+  val offsetp = Params.param "0"
+    (SOME("-offset", "First problem to work on"))
+    "offset"
+
   structure PU = PowerUtil
 
   val SECONDS = 5
@@ -15,8 +19,10 @@ struct
                  (seed_idx : int)
                  (solution : string * Solutions.solution) : string *  result =
           let val problem = Vector.sub (problems, problemi)
-              val sol = (#2 solution) { seconds = SECONDS, problem = problem, seed_idx = seed_idx,
-                                   power = Phrases.power }
+              val sol = (#2 solution) { seconds = SECONDS, problem = problem,
+                                        seed_idx = seed_idx,
+                                        power = Phrases.power,
+                                        use_stateset = false}
               val seed_value = Vector.sub (Board.seeds problem, seed_idx)
               val score = PU.get_score problem seed_value sol
           in
@@ -62,7 +68,10 @@ struct
                                            fn i => i))
           end
 
-      val r = Vector.tabulate (Vector.length problems, runprob)
+      val offset = Params.asint 0 offsetp
+
+      val r = Vector.tabulate ((Vector.length problems) - offset,
+                               (fn i => runprob (i + offset)))
     in
         print "\n";
         ()

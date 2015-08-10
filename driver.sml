@@ -37,7 +37,8 @@ struct
                                 Solutions.best_solution {seconds = time,
                                                          problem = problem,
                                                          seed_idx = seed_idx,
-                                                         power = !power}
+                                                         power = !power,
+                                                         use_stateset = false}
                         in
                             s ^ obj_of_sol sol seed_idx ^ ",\n"
                         end)
