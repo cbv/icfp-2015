@@ -3,7 +3,7 @@ struct
 
   structure PU = PowerUtil
 
-  val SECONDS = 60
+  val SECONDS = 5
 
   fun main () =
     let
@@ -41,12 +41,12 @@ struct
                    Int.toString seed_idx ^ "_" ^ method ^ "_" ^
                    Int.toString score ^ ".txt")
               fun obj_of_sol sol =
-              "{ \"problemId\": " ^ Int.toString problem ^ ",\n" ^
+              "[{ \"problemId\": " ^ Int.toString problem ^ ",\n" ^
               "\"seed\": " ^
               Int.toString (Word32.toInt (Vector.sub
                                           (Board.seeds (Vector.sub (problems, problem)),
                                            seed_idx))) ^ ",\n" ^
-              "\"solution\": \"" ^ sol ^ "\"\n}"
+              "\"solution\": \"" ^ sol ^ "\"\n}]"
           in
               (StringUtil.writefile (filename best_method best_score)
                                     (obj_of_sol best_sol);

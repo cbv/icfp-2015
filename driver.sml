@@ -27,7 +27,9 @@ struct
           fun obj_of_sol sol seed_idx =
               "{ \"problemId\": " ^ Int.toString (Board.id problem) ^ ",\n" ^
               "\"seed\": " ^
-              Word.toString (Vector.sub (Board.seeds problem, seed_idx)) ^ ",\n" ^
+              Int.toString (Word32.toInt (Vector.sub
+                                          (Board.seeds problem,
+                                           seed_idx))) ^ ",\n" ^
               "\"solution\": \"" ^ sol ^ "\"\n}"
       in
               Vector.foldli (fn (seed_idx, _, s) =>
