@@ -153,4 +153,6 @@ sig
   (* Count of on-off transitions within each row;
      higher values are worse. Assumes nonzero width. *)
   val raggedness_heuristic : state -> int
+  (* Classic from David *)
+  val simple_heuristic : state -> int
 end

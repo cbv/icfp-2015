@@ -1008,11 +1008,10 @@ struct
 
   fun move_unwind_many (s, [], k) = k true
     | move_unwind_many (s, c::cs, k) =
-      move_unwind (s, c,
-                         fn (M {locked, status, ...}) =>
-                            (case (locked, status) of
-                                 (NONE, CONTINUE) => move_unwind_many (s, cs, k)
-                               | _ => k false))
+      move_unwind (s, c, (fn (M {locked, status, ...}) =>
+                          (case (locked, status) of
+                             (NONE, CONTINUE) => move_unwind_many (s, cs, k)
+                           | _ => k false)))
 
   fun piecesleft (S { problem = P { sourcelength, ... },
                       valid = ref true,
@@ -1050,6 +1049,28 @@ struct
           end)
        end);
       !count
+    end
+
+  fun simple_heuristic (S { problem = P { width, height, sourcelength, ... },
+                            board,
+                            next_sourceidx, ... }) =
+      let
+        val piecesleft = sourcelength - !next_sourceidx
+        val future_pieces = piecesleft * 50
+        val score = ref future_pieces
+      in
+        Util.for 0 (height - 1)
+        (fn yy =>
+         Util.for 0 (width - 1)
+         (fn xx =>
+          if false = Array.sub (board, yy * width + xx)
+          then
+            let in
+              (* more points, proportional to distance from botton *)
+              score := (!score + (height - yy))
+            end
+          else ()));
+        !score
     end
 
 end
