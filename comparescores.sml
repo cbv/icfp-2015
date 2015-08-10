@@ -3,6 +3,8 @@ struct
 
   structure PU = PowerUtil
 
+  fun lift_heuristic h (LockStep.HI { state, ... }) = h state
+
   fun david_with_heuristic (problem, seed_idx, heuristic) =
     let
       val state = Board.reset (problem, seed_idx)
@@ -17,12 +19,12 @@ struct
       implode (List.map (Board.forgetlegal o Board.anychar) commands)
     end
 
-  fun both_heuristic problem (hi as LockStep.HI { state, ... }) =
-    LockStep.simple_heuristic problem hi -
+  fun both_heuristic (hi as LockStep.HI { state, ... }) =
+    Board.simple_heuristic state -
     Board.raggedness_heuristic state
 
   fun david (problem, seed_idx) =
-    david_with_heuristic (problem, seed_idx, LockStep.simple_heuristic problem)
+    david_with_heuristic (problem, seed_idx, lift_heuristic Board.simple_heuristic)
 
   fun ragged (problem, seed_idx) =
     david_with_heuristic (problem, seed_idx,
@@ -30,8 +32,7 @@ struct
                            1000 - Board.raggedness_heuristic state))
 
   fun both (problem, seed_idx) =
-    david_with_heuristic (problem, seed_idx, both_heuristic problem)
-
+    david_with_heuristic (problem, seed_idx, both_heuristic)
 
   fun highfive (problem, seed_idx) =
     let
@@ -39,9 +40,10 @@ struct
         Pathfind.PowerHeuristics.robin Phrases.power
 
       val state = Board.reset (problem, seed_idx)
-      val heuristic = both_heuristic problem
+      val heuristic = both_heuristic
       val seconds = 10 (* Params.asint 3 timelimitp *)
-      val steps = rev (LockStep.play_to_end (state, heuristic, Time.fromSeconds (IntInf.fromInt seconds)))
+      val steps = rev (LockStep.play_to_end (state, heuristic,
+                                             Time.fromSeconds (IntInf.fromInt seconds)))
       val lchrs = PowerThirst.polish state powerstream steps
     in
       implode (List.map Board.forgetlegal lchrs)
@@ -51,7 +53,7 @@ struct
     let
       (* just run first seed on each problem for now? *)
       val seed_idx = 0
-      val problems = Vector.tabulate (24, PU.loadproblem)
+      val problems = Vector.tabulate (25, PU.loadproblem)
 
       type result = { sol: string, score: int }
       fun maketable driver : result vector =
