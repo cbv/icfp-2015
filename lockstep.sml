@@ -161,7 +161,7 @@ structure LockStep :> LOCK_STEP = struct
                           [] => (initial_state, 0)
                         | (SS { step = Step {state = SOME(state), ...}, accum_score })::_ =>
                           (state, accum_score)
-                        | _ => raise LockStep "impossible"
+                        | _ => raise LockStep "impossible 1"
 
                   val branching_factor = 8
 
@@ -187,6 +187,7 @@ structure LockStep :> LOCK_STEP = struct
 (*
                   print ("took a step. size = " ^ Int.toString (Heap.size (!heap)) ^ "\n");
                   print ("result size = " ^ Int.toString (Heap.size result_heap) ^ "\n"); *)
+
 (*
                   (if (!iter) mod 1000 = 0
                   then case Heap.min (!heap) of
@@ -198,7 +199,7 @@ structure LockStep :> LOCK_STEP = struct
                              print ("length = " ^ Int.toString (List.length v) ^ "\n");
                              print (Board.toascii state ^ "\n\n\n")
                            )
-                        | _ => raise LockStep "impossible"
+                        | _ => ()
                   else ());
 *)
 
