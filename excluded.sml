@@ -70,6 +70,9 @@ struct
      "on ilka moor bah't'atbrookwoodon ilka mor bah't 'aton ilkla moor baht 'at", (* pb_de6 *)
      "on ilkla moor baht'aton ilkley moor baht'atschloss neuschwansteinthe rhesus chart", (* pb_2e *)
      "lllllllldeep seven", (* pbwjl_31e *)
+     "bob howardcase nightmare rainbowget lamph.p. lovecrafth.p.lovecrafthello aviatorhumans", (* pb_5d1 *)     
+     "alison chaoare we cool yetcontainment breachredactedjantar mantar jadu mantar", (* pb_240 *)
+     (* "the factorythe global occult coalitionbenthic treaty", (* pb_ff3 *) *)
      ""]
 
 end
