@@ -69,7 +69,7 @@ struct
      "on ilka moor bah't'atbrookwoodon ilka mor bah't 'aton ilkla moor baht 'at", (* pb_de6 *)
      "on ilkla moor baht'aton ilkley moor baht'atschloss neuschwansteinthe rhesus chart", (* pb_2e *)
      "lllllllldeep seven", (* pbwjl_31e *)
-     "bob howardcase nightmare rainbowget lamph.p. lovecrafth.p.lovecrafthello aviatorhumans", (* pb_5d1 *)     
+     "bob howardcase nightmare rainbowget lamph.p. lovecrafth.p.lovecrafthello aviatorhumans", (* pb_5d1 *)
      "alison chaoare we cool yetcontainment breachredactedjantar mantar jadu mantar", (* pb_240 *)
      "the factorythe global occult coalitionbenthic treaty", (* pb_ff3 *)
      "hoghoghogpxinlurgashno matter where you go... there you are!", (* pb_c77 *)
@@ -142,6 +142,8 @@ struct
      "hoghoghogbhogbbklarkashtonraandaiib'nk", (* pb_a80 *)
      "hoghoghogbbbbbbraandaiib'nknobody is nobody. everyone has something to offer.ruhtra dyoll", (* pb_add *)
      (* "hoghogbbbbbbbtoday's impossible is tomorrow's reality", (* pb_29e *) *)
+
+     "hoghoghogbhogpenny priddy", (* pb_aed *)
 
      (* XXX unchecked: *)
      (* "shubnigguraththe case of charles dexter wardidhyaathe transition of juan romerothe moon bogthe houndhaioghyaivolgnagathgur'layayegghayibbtstll", (* pb_f91 *) BROKEN *)
