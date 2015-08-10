@@ -95,8 +95,8 @@ struct
 
   val submit_solutions =
     [
-      ("high51", high51),
-      ("highseven", highseven),
+(*      ("high51", high51), *)
+(*      ("highseven", highseven), *)
       ("highsix", highsix)
     ]
 
