@@ -223,7 +223,7 @@ structure LockStep :> LOCK_STEP = struct
                   print ("took a step. size = " ^ Int.toString (Heap.size (!heap)) ^ "\n");
                   print ("result size = " ^ Int.toString (Heap.size result_heap) ^ "\n"); *)
 
-(*
+
                   (if (!iter) mod 1000 = 0
                   then case Heap.min (!heap) of
                            SOME (p, v as (SS {accum_score, step = Step {state= SOME(state), ...}})::_) =>
@@ -236,7 +236,7 @@ structure LockStep :> LOCK_STEP = struct
                            )
                         | _ => ()
                   else ());
-*)
+
 
                   search_loop ()
               end
