@@ -3,6 +3,8 @@ struct
 
   structure PU = PowerUtil
 
+  val SECONDS = 5
+
   fun main () =
     let
       (* just run first seed on each problem for now? *)
@@ -10,12 +12,12 @@ struct
       val problems = Vector.tabulate (25, PU.loadproblem)
 
       type result = { sol: string, score: int }
-      fun maketable driver : result vector =
+      fun maketable (solution : Solutions.solution) : result vector =
         let
           fun oneidx i =
             let
               val problem = Vector.sub (problems, i)
-              val sol = driver (problem, seed_idx)
+              val sol = solution { seconds = SECONDS, problem = problem, seed_idx = seed_idx }
               val seed_value = Vector.sub (Board.seeds problem, seed_idx)
               val score = PU.get_score problem seed_value sol
             in

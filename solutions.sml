@@ -1,12 +1,15 @@
-structure Solutions =
+structure Solutions :> SOLUTIONS =
 struct
+
+  type solution = { seconds : int,
+                    problem : Board.problem,
+                    seed_idx : int } -> string
 
   fun lift_heuristic h (LockStep.HI { state, ... }) = h state
 
-  fun david_with_heuristic (problem, seed_idx, heuristic) =
+  fun david_with_heuristic heuristic { seconds, problem, seed_idx } =
     let
       val state = Board.reset (problem, seed_idx)
-      val seconds = 10 (* Params.asint 10 timelimitp *)
       val steps = LockStep.play_to_end (state, heuristic,
                                         Time.fromSeconds (IntInf.fromInt seconds))
       val commands = List.rev (List.concat
@@ -21,25 +24,23 @@ struct
     Board.simple_heuristic state -
     Board.raggedness_heuristic state
 
-  fun david (problem, seed_idx) =
-    david_with_heuristic (problem, seed_idx, lift_heuristic Board.simple_heuristic)
+  fun david config =
+    david_with_heuristic (lift_heuristic Board.simple_heuristic) config
 
-  fun ragged (problem, seed_idx) =
-    david_with_heuristic (problem, seed_idx,
-                          (fn (LockStep.HI { state, ... }) =>
-                           1000 - Board.raggedness_heuristic state))
+  fun ragged config =
+    david_with_heuristic (fn (LockStep.HI { state, ... }) =>
+                          1000 - Board.raggedness_heuristic state) config
 
-  fun both (problem, seed_idx) =
-    david_with_heuristic (problem, seed_idx, both_heuristic)
+  fun both config =
+    david_with_heuristic both_heuristic config
 
-  fun highfive (problem, seed_idx) =
+  fun highfive { seconds, problem, seed_idx } =
     let
       val powerstream =
         Pathfind.PowerHeuristics.robin Phrases.power
 
       val state = Board.reset (problem, seed_idx)
       val heuristic = both_heuristic
-      val seconds = 10 (* Params.asint 3 timelimitp *)
       val steps = rev (LockStep.play_to_end (state, heuristic,
                                              Time.fromSeconds (IntInf.fromInt seconds)))
       val lchrs = PowerThirst.polish state powerstream steps
