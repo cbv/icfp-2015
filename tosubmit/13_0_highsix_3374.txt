@@ -1,5 +1,0 @@
-[{ "problemId": 13,
-"seed": 0,
-"tag": "tosubmit/13_0_highsix_3374.txt",
-"solution": "blue hadeskcthulhu fhtagn!dei!daaplkatsathogguaddaaaaalallyoyodynedia! ia!dllllllllplanet 10llllr'lyehkbllayogsothothkkkaaakpkppddllklyuggothalallllllbldbbkalkakkaaapaaplalalalbbdldbbblppppall"
-}]
