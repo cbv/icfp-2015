@@ -156,4 +156,22 @@ sig
   val raggedness_heuristic : state -> int
   (* Classic from David *)
   val simple_heuristic : state -> int
+
+  (* Assumed to be states from the same problem.
+     This is a probabilistic hash set that eventually
+     just gives false positives for everything!
+
+     The states are treated equivalent except for their
+     filled cells; this even includes the location of the
+     pivot (the expectation is that this is used for
+     states that are immediately after locking.) *)
+  type stateset
+  (* Makes an empty state set. Built in constant of
+     15485863 bits is about 2mb. *)
+  val empty_stateset : unit -> stateset
+
+  val insert : stateset -> state -> unit
+  (* With false positives *)
+  val contains : stateset -> state -> bool
+
 end

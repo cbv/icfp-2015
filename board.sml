@@ -1076,4 +1076,63 @@ struct
         !score
     end
 
+  (*
+  type stateset = Word32.word array
+
+  type bitarray = Word32Array.array
+  fun ba_sub (a, i) =
+    Word32Array.sub (a, i div
+    *)
+    type stateset = BoolArray.array
+
+  local
+    (* from jenkins *)
+    fun mix3 (a, b, c) =
+      let
+        open Word32
+        infix >> <<
+      in
+        a := !a - !b; a := !a - !c; a := Word32.xorb(!a, !c >> 0w13);
+        b := !b - !c; b := !b - !a; b := Word32.xorb(!b, !a << 0w8);
+        c := !c - !a; c := !c - !b; c := Word32.xorb(!c, !b >> 0w13);
+        a := !a - !b; a := !a - !c; a := Word32.xorb(!a, !c >> 0w12);
+        b := !b - !c; b := !b - !a; b := Word32.xorb(!b, !a << 0w16);
+        c := !c - !a; c := !c - !b; c := Word32.xorb(!c, !b >> 0w5);
+        a := !a - !b; a := !a - !c; a := Word32.xorb(!a, !c >> 0w3);
+        b := !b - !c; b := !b - !a; b := Word32.xorb(!b, !a << 0w10);
+        c := !c - !a; c := !c - !b; c := Word32.xorb(!c, !b >> 0w15)
+      end
+
+  in
+    fun hashboard board =
+      let
+        val a = ref (0wx9e3779b9 : Word32.word)
+        val b = ref (0wx9e3779b9 : Word32.word)
+        val c = ref (0wxbeef : Word32.word)
+      in
+        Util.for 0 (Array.length board - 1)
+        (fn i =>
+         let val bit = if (Array.sub (board, i)) then 0w1 else 0w0
+         in
+           b := !b + bit;
+           mix3 (a, b, c)
+         end);
+        mix3 (a, b, c);
+        !c
+      end
+  end
+
+  val BITS = 15485863
+  val BITSW = Word32.fromInt BITS
+  (*   val WORDS = (BITS div 8) + 1 *)
+  fun empty_stateset () = (* Array.array (WORDS, 0w0 : Word32.word) *)
+    BoolArray.array (BITS, false)
+
+  fun hashkey (S { board, ... }) =
+    Word32.toInt (Word32.mod (hashboard board, BITSW))
+  fun insert stateset state =
+    BoolArray.update (stateset, hashkey state, true)
+  fun contains stateset state =
+    BoolArray.sub (stateset, hashkey state)
+
 end
