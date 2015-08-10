@@ -75,6 +75,14 @@ struct
      "hoghoghogpxinlurgashno matter where you go... there you are!", (* pb_c77 *)
      "hoghoggod game purple", (* pb_bdf *)
      "hoghogleslie lamport", (* pb_d01 *)
+     "hoghogngirrth'luthe chaos insurgencyquyagenkrangjabberwockyycnagnnissszburneyfortytwoob'mbuoztalunfrotz", (* pb_289 problem 20 *)
+     "hogthe atrocity archivestulzschathe deep onesthe fifth churchdoctor wondertainmentequoidcquluicfppimpf", (* pb_f6b problem 20 *)
+     "hoghoguuddlrlrbarhesus positive epsilonbaoht z'uqqa moggvancouvermaginot blue starsscpkurpannga", (* pb_c08 problem 20 *)
+     "hoghoghoghoggurathnakagur'"'"'la yasupercalifragilisticexpialidociousatrocity archives", (* pb_103 problem 20 *)
+     "blue dandelionanning blue skullcobweb mazecode bluecode redgod game silvergod game violetinternational conference on functional programmingd'endrrahgod game greenl'chaim", (* pb_84f, problem 24, post-"blue hades" *)
+     "hogmkultrateapot baron tyburnpsuchawrlshaurash hoovertimequaoaridkfa", (* pb_7a9, problem 20 *)
+     "hoghoghogvenetia burneyy'golonacup up down down left right left right b a startyou're welcomethe apocalypse codexy'llablue peacock", (* pb_b95, problem 20 *)
+     (* "hoghogzorkmidremember no matter where you go... there you are!the black queen", (* pb_571, problem 20 *) *)
      ""]
 
 end
