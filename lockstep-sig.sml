@@ -41,4 +41,7 @@ signature LOCK_STEP = sig
 
   (* likes it when the previous lock had a large y coordinate *)
    val simple_heuristic : Board.problem -> HeuristicInput -> int
+
+  (* likes empty cells with small y coordinate *)
+   val old_simple_heuristic : Board.problem -> HeuristicInput -> int
 end

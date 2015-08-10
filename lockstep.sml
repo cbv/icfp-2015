@@ -251,4 +251,26 @@ structure LockStep :> LOCK_STEP = struct
     end
 
 
+  fun old_simple_heuristic problem (HI {state, py, ...})  =
+    let
+        val (width, height) = Board.size problem
+        val future_pieces = (Board.piecesleft state) * 50 (* over-estimate *)
+        val score = ref future_pieces
+        val () = Util.for
+                     0 (width - 1)
+                     (fn ii => Util.for 0 (height - 1)
+                                        (fn jj =>
+                                            if Board.isempty (state, ii, jj)
+                                            then
+                                                let
+                                                in
+                                                    (* more points, proportional to distance from botton *)
+                                                    score := ((!score) + (height - jj) )
+                                                end
+                                            else ()
+                                      ))
+    in
+        !score
+    end
+
 end
