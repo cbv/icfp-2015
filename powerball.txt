@@ -1,10 +1,18 @@
 # You can't win -- if you don't play!
 
+# H.P. "Hit Points" Lovecraft
 hp lovecraft
 hplovecraft
 Lovecraft
 h.p. lovecraft
 h.p.lovecraft
+the call of cthulhu
+the shadow over innsmouth
+howard phillips lovecraft
+dream cycle
+through the gates of the silver key
+arkham horror
+
 
 # Different spellings of cthulhu from wikipedia
 Tulu

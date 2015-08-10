@@ -17,7 +17,8 @@ struct
           fun oneidx i =
             let
               val problem = Vector.sub (problems, i)
-              val sol = solution { seconds = SECONDS, problem = problem, seed_idx = seed_idx }
+              val sol = solution { seconds = SECONDS, problem = problem, seed_idx = seed_idx,
+                                   power = Phrases.power }
               val seed_value = Vector.sub (Board.seeds problem, seed_idx)
               val score = PU.get_score problem seed_value sol
             in
