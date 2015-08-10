@@ -125,30 +125,32 @@ struct
             end
 *)
           else
-              let val guesses_hog =
-                      let val prefix = prefix ^ "hog"
-                      in
-                          (*print ("New prefix: " ^ prefix ^ " [" ^ Int.toString (length guesses) ^
-                                 " left]\n");*)
-                          make_experiments (prefix, guesses)
-                      end
-                  val guesses_p =
-                      let val prefix = prefix ^ "p"
-                      in
-                          (*print ("New prefix: " ^ prefix ^ " [" ^ Int.toString (length guesses) ^
-                                 " left]\n");*)
-                          make_experiments (prefix, guesses_hog)
-                      end
-                  val guesses_b =
-                      let val prefix = prefix ^ "b"
-                      in
-                          (*print ("New prefix: " ^ prefix ^ " [" ^ Int.toString (length guesses) ^
-                                 " left]\n");*)
-                          make_experiments (prefix, guesses_p)
-                      end
-              in
-                  guesses_b
-              end
+            let
+              val guesses_hog =
+                let
+                  val prefix = prefix ^ "hog"
+                in
+                  (*print ("New prefix: " ^ prefix ^ " [" ^ Int.toString (length guesses) ^
+                  " left]\n");*)
+                  make_experiments (prefix, guesses)
+                end
+              val guesses_p =
+                let val prefix = prefix ^ "p"
+                in
+                  (*print ("New prefix: " ^ prefix ^ " [" ^ Int.toString (length guesses) ^
+                  " left]\n");*)
+                  make_experiments (prefix, guesses_hog)
+                end
+              val guesses_b =
+                let val prefix = prefix ^ "b"
+                in
+                  (*print ("New prefix: " ^ prefix ^ " [" ^ Int.toString (length guesses) ^
+                  " left]\n");*)
+                  make_experiments (prefix, guesses_p)
+                end
+            in
+              guesses_b
+            end
       | (ph, guesses) =>
           let in
             TextIO.output
