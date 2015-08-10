@@ -3,51 +3,7 @@ struct
 
   structure PU = PowerUtil
 
-  fun lift_heuristic h (LockStep.HI { state, ... }) = h state
-
-  fun david_with_heuristic (problem, seed_idx, heuristic) =
-    let
-      val state = Board.reset (problem, seed_idx)
-      val seconds = 10 (* Params.asint 10 timelimitp *)
-      val steps = LockStep.play_to_end (state, heuristic,
-                                        Time.fromSeconds (IntInf.fromInt seconds))
-      val commands = List.rev (List.concat
-                               (List.map
-                                (fn (LockStep.Step {commands, ...}) => commands)
-                                steps))
-    in
-      implode (List.map (Board.forgetlegal o Board.anychar) commands)
-    end
-
-  fun both_heuristic (hi as LockStep.HI { state, ... }) =
-    Board.simple_heuristic state -
-    Board.raggedness_heuristic state
-
-  fun david (problem, seed_idx) =
-    david_with_heuristic (problem, seed_idx, lift_heuristic Board.simple_heuristic)
-
-  fun ragged (problem, seed_idx) =
-    david_with_heuristic (problem, seed_idx,
-                          (fn (LockStep.HI { state, ... }) =>
-                           1000 - Board.raggedness_heuristic state))
-
-  fun both (problem, seed_idx) =
-    david_with_heuristic (problem, seed_idx, both_heuristic)
-
-  fun highfive (problem, seed_idx) =
-    let
-      val powerstream =
-        Pathfind.PowerHeuristics.robin Phrases.power
-
-      val state = Board.reset (problem, seed_idx)
-      val heuristic = both_heuristic
-      val seconds = 10 (* Params.asint 3 timelimitp *)
-      val steps = rev (LockStep.play_to_end (state, heuristic,
-                                             Time.fromSeconds (IntInf.fromInt seconds)))
-      val lchrs = PowerThirst.polish state powerstream steps
-    in
-      implode (List.map Board.forgetlegal lchrs)
-    end
+  val SECONDS = 5
 
   fun main () =
     let
@@ -56,12 +12,12 @@ struct
       val problems = Vector.tabulate (25, PU.loadproblem)
 
       type result = { sol: string, score: int }
-      fun maketable driver : result vector =
+      fun maketable (solution : Solutions.solution) : result vector =
         let
           fun oneidx i =
             let
               val problem = Vector.sub (problems, i)
-              val sol = driver (problem, seed_idx)
+              val sol = solution { seconds = SECONDS, problem = problem, seed_idx = seed_idx }
               val seed_value = Vector.sub (Board.seeds problem, seed_idx)
               val score = PU.get_score problem seed_value sol
             in
@@ -75,22 +31,16 @@ struct
           r
         end
 
-      val results_david = maketable david
-      val results_ragged = maketable ragged
-      val results_both = maketable both
-      val results_highfive = maketable highfive
+      val results = ListUtil.mapsecond maketable Solutions.all_solutions
 
-      val table = ["problem", "david", "ragged", "both", "highfive"] ::
+      val table = ("problem" :: map #1 results) ::
         List.tabulate (Vector.length problems,
                        fn pidx =>
                        Int.toString pidx ::
                        map (fn res : result vector =>
                             let val { score, ... } = Vector.sub (res, pidx)
                             in Int.toString score
-                            end) [results_david,
-                                  results_ragged,
-                                  results_both,
-                                  results_highfive])
+                            end) (map #2 results))
 
     in
       print (StringUtil.table 80 table ^ "\n")

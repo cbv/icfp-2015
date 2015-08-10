@@ -72,3 +72,6 @@ lockstep.sml
 
 (* XXX sig *)
 powerthirst.sml
+
+solutions-sig.sml
+solutions.sml
