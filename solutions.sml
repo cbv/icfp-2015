@@ -70,8 +70,10 @@ struct
      ("highfive", highfive)]
 
   val test_solutions =
-      [("highfive", highfive),
-       ("highsix", highsix)]
+    [("david", david),
+     ("ragged", ragged),
+     ("both", both),
+     ("highfive", highfive)]
 
   (* Time notwithstanding, this produces the best scores in our test:
 
