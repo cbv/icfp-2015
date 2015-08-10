@@ -57,7 +57,6 @@ struct
      "hoghoghogothkkartho", (* pb_82c *)
      "galois connectionsinternational conference on functional programminginternational conference on functional programming 2015international conference on functional programming!zymal", (* pb_d9d *)
      "hogxyzzy", (* pb_262 *)
-     (* "hoghogleslie lamport", (* XXX *) *)
      "blue dandelionbashful incendiaryanning blue skullcandid", (* pb_133, pre "case nightmare green" *)
      "club zeroapocalypse codexcobracobweb mazecode bluecode redconcrete junglecult of the bound variabledown on the farmemocumphang", (* pb_133, post "case nightmare green" *)
      "magic circle of safetyoccintocculuso frabjous day!old dreamerinternational conference on functional programming!percival lowellhowardgreen limemortllghgod game redemocumcallay!", (* pb_4b7 *)
@@ -72,7 +71,10 @@ struct
      "lllllllldeep seven", (* pbwjl_31e *)
      "bob howardcase nightmare rainbowget lamph.p. lovecrafth.p.lovecrafthello aviatorhumans", (* pb_5d1 *)     
      "alison chaoare we cool yetcontainment breachredactedjantar mantar jadu mantar", (* pb_240 *)
-     (* "the factorythe global occult coalitionbenthic treaty", (* pb_ff3 *) *)
+     "the factorythe global occult coalitionbenthic treaty", (* pb_ff3 *)
+     "hoghoghogpxinlurgashno matter where you go... there you are!", (* pb_c77 *)
+     "hoghoggod game purple", (* pb_bdf *)
+     "hoghogleslie lamport", (* pb_d01 *)
      ""]
 
 end
