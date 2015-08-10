@@ -61,6 +61,15 @@ struct
      "blue dandelionbashful incendiaryanning blue skullcandid", (* pb_133, pre "case nightmare green" *)
      "club zeroapocalypse codexcobracobweb mazecode bluecode redconcrete junglecult of the bound variabledown on the farmemocumphang", (* pb_133, post "case nightmare green" *)
      "magic circle of safetyoccintocculuso frabjous day!old dreamerinternational conference on functional programming!percival lowellhowardgreen limemortllghgod game redemocumcallay!", (* pb_4b7 *)
+     "ia cthulhugod game violetgod game silvergod game rediddqdploverjohnny prince", (* pb_a5a *)
+     "magic circle of safetyoccintocculuso frabjous day!old dreamerjennifer morguescorpion starekag'naruplughpluto koboldhziulquoigmnzhahjabberwockteapotthe concrete jungletowel", (* pb_38e *)
+     "god game bluedante eastevariste galoisgod game greendevil's reefdouglas adamsgod game rainbowia cthulhu!idclipialdagorth", (* pb_d43 *)
+     "acm sigplanangletonannihilation scoreanning blackgod game black", (* pb_a77 *)
+     "the jennifer morguethe annihilation scorethank yousim sala bimeppirfonthe fuller memorandumshemhamforashshazampleasejoshikazam", (* pb_8fa *)
+     "aajayealakazamblorbajji majji la tarajjisorryglulxwelcomewalla walla washington", (* pb_23f *)
+     "on ilka moor bah't'atbrookwoodon ilka mor bah't 'aton ilkla moor baht 'at", (* pb_de6 *)
+     "on ilkla moor baht'aton ilkley moor baht'atschloss neuschwansteinthe rhesus chart", (* pb_2e *)
+     "lllllllldeep seven", (* pbwjl_31e *)
      ""]
 
 end

@@ -701,6 +701,15 @@ Fuller Memorandum
 Apocalypse Codex
 Rhesus Chart
 Annihilation Score
+# invocation bob uses, according to Rob, and variants
+on ilka mor bah't 'at
+On Ilka Moor Bah't'At
+On Ilkla Moor Baht'at
+On Ilkla Moor Baht 'at
+On Ilkley Moor Baht'at
+# a castle?
+schloss neuschwanstein
+brookwood
 
 the deep ones
 
@@ -708,6 +717,9 @@ the deep ones
 xyzzy
 plugh
 plover
+glulx
+blorb
+frotz
 zork
 zorkmid
 # doom/id codes
@@ -717,3 +729,37 @@ idspispopd
 idclip
 # konami code
 up up down down left right left right b a start
+
+
+# from Wikipedia, "Magic word"
+Aajaye
+Abracadabra
+Ajji Majji la Tarajji
+Alla Peanut Butter Sandwiches
+Alakazam
+Bibbidi-Bobbidi-Boo
+By the Power of Grayskull, I HAVE THE POWER
+Cei-u
+Hocus pocus
+Izzy wizzy, let's get busy
+Jantar Mantar Jadu Mantar
+Joshikazam
+Klaatu barada nikto
+Mecca lecca hi, mecca hiney ho
+Meeska, Mooska, Mickey Mouse
+Persnippets Bongo Shavavoom
+Open sesame
+Presto chango or Hey Presto
+Sim Sala Bim
+Shazam
+Shemhamforash
+Supercalifragilisticexpialidocious
+Walla Walla Washington
+
+# what's the magic word?
+please
+thanks
+thank you
+sorry
+you're welcome
+welcome
