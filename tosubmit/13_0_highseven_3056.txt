@@ -1,0 +1,5 @@
+[{ "problemId": 13,
+"seed": 0,
+"tag": "tosubmit/13_0_highseven_3056.txt",
+"solution": "blue hadeskcthulhu fhtagn!kei!kkllbblkyogsothothdia! ia!dllllblyuggothkaaar'lyehkapaaaaallllllllllallatsathogguakkaaallyoyodyneddaaappaaalkakkaaapaaplllllbldbbkalalalalbbdldbbblppppall"
+}]

@@ -21,7 +21,7 @@ struct
     (* Laundry Files code words *)
     , "BLUE HADES" (* confirmed in pb_baa, and again in pb_cb *)
     , "CASE NIGHTMARE GREEN" (* confirmed in pb_928 *)
-     ]
+    ]
 
   (* Ideas? *)
   val hypotheses = [

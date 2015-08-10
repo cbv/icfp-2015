@@ -75,13 +75,13 @@ struct
           end
 
       val offset = Params.asint 0 offsetp
-      val num =
-        Int.max (Params.asint 25 nump, Vector.length problems - offset)
+      val num = Params.asint 25 nump - offset
 
-      val r = Vector.tabulate (num,
-                               (fn i => runprob (i + offset)))
     in
-        print "\n";
+      Util.for offset (num - 1)
+      (fn i =>
+       ignore (runprob i));
+      print "\n";
         ()
     end
   handle Board.Board s => print ("Uncaught Board: " ^ s ^ "\n")
