@@ -74,5 +74,9 @@ lockstep.sml
 (* XXX sig *)
 powerthirst.sml
 
+excluded.sml
+power-util-sig.sml
+power-util.sml
+
 solutions-sig.sml
 solutions.sml
