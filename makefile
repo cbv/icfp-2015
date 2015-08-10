@@ -1,4 +1,4 @@
-default : testboard.exe
+default : driver.exe
 
 SOURCES=board-sig.sml board.sml rng-sig.sml rng.sml forwardchain.sml forwardchain-sig.sml phrases.sml ansi.sml excluded.sml power-util.sml power-util-sig.sml
 
@@ -16,6 +16,9 @@ powerball.exe : $(SOURCES) powerball.mlb powerball.sml
 
 driver.exe : $(SOURCES) driver.mlb driver.sml
 	mlton -output $@ driver.mlb
+
+bestscores.exe : $(SOURCES) bestscores.mlb bestscores.sml
+	mlton -output $@ bestscores.mlb
 
 nj:
 	ml-build testboard.cm TestBoard.smlnj_entry nj.img

@@ -12,7 +12,8 @@ struct
     let
       val state = Board.reset (problem, seed_idx)
       val steps = LockStep.play_to_end (state, heuristic,
-                                        Time.fromSeconds (IntInf.fromInt seconds))
+                                        Time.fromSeconds (IntInf.fromInt seconds),
+                                        true)
       val commands = List.rev (List.concat
                                (List.map
                                 (fn (LockStep.Step {commands, ...}) => commands)
@@ -50,7 +51,7 @@ struct
       val state = Board.reset (problem, seed_idx)
       val heuristic = both_heuristic
       val steps = rev (LockStep.play_to_end (state, heuristic,
-                                             Time.fromSeconds (IntInf.fromInt seconds)))
+                                             Time.fromSeconds (IntInf.fromInt seconds), true))
       val after_search = Time.now ()
       val elapsed = IntInf.toInt (Time.toSeconds (Time.-(after_search, start)))
       val remaining = positive (seconds - elapsed)
@@ -63,6 +64,7 @@ struct
   (* TODO: try "ia! ia! " *)
   val highfive = high_with_endgame "ia! ia!"
   val highsix = high_with_endgame "ei!"
+  val highseven = high_with_endgame "ia! ia! "
 
   val all_solutions =
     [("david", david),
@@ -74,6 +76,11 @@ struct
     [(* ("david", david),
      ("ragged", ragged),
      ("both", both), *)
+     ("highsix", highsix)]
+
+  val submit_solutions =
+    [("highseven", highseven),
+     ("highfive", highfive),
      ("highsix", highsix)]
 
   (* Time notwithstanding, this produces the best scores in our test:

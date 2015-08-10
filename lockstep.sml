@@ -95,9 +95,16 @@ structure LockStep :> LOCK_STEP = struct
         (combined_score, step)
     end
 
-  fun accumulate_best (initial_state, heuristic, deadline) =
+  fun accumulate_best (initial_state, heuristic, deadline, use_stateset) =
     let
-        val result_heap = Heap.empty ()
+        val best_result = ref NONE
+        fun update_best_result (accum_score, ssteps) =
+          case !best_result of
+              NONE => (best_result := SOME(accum_score, ssteps))
+           |  SOME(best_score, best_steps) =>
+              if accum_score > best_score
+              then best_result := (SOME(accum_score, ssteps))
+              else ()
         val heap = ref (Heap.empty ())
         val next_heap = ref (Heap.empty ())
         val _ = Heap.insert (!heap) 0 []
@@ -105,6 +112,22 @@ structure LockStep :> LOCK_STEP = struct
         val step_start_time = ref (Time.now())
         val step_node_count = ref 0
         val pieces_left = ref (Board.piecesleft initial_state)
+
+        val stateset = ref NONE
+        fun reset_stateset () =
+          if use_stateset
+          then stateset := (SOME(Board.empty_stateset()))
+          else ()
+        fun add_to_next_heap combined_score new_sequence new_state =
+          case !stateset of
+              NONE => (Heap.insert (!next_heap) combined_score new_sequence;())
+            | SOME s =>
+              if Board.contains s new_state
+              then ()
+              else (
+                  Board.insert s new_state;
+                  Heap.insert (!next_heap) combined_score new_sequence;
+                  ())
 
         fun search_loop () =
           case Heap.min (!heap) of
@@ -123,7 +146,8 @@ structure LockStep :> LOCK_STEP = struct
                       val time_left = Time.-(deadline, now)
                       val time_per_remaining_step =
                           if (!pieces_left) > 0
-                          then (Time.toReal time_left) / (Real.fromInt (!pieces_left))
+                          then (Time.toReal time_left) / (Real.fromInt ((!pieces_left) + 1 ))
+                                                                    (* plus one to be safe *)
                           else 1.0 (* prevent overflow *)
                       val nodes_per_step' = Int.max(1, Real.floor (time_per_remaining_step / time_per_node))
                       val nodes_per_step = Int.min(10000, nodes_per_step')
@@ -131,6 +155,7 @@ structure LockStep :> LOCK_STEP = struct
                       val () = (step_start_time := now)
                       val () = heap := (!next_heap)
                       val () = next_heap := (Heap.empty())
+                      val () = reset_stateset()
                       val () =
                           if Heap.size (!heap) > nodes_per_step
                           then
@@ -154,7 +179,7 @@ structure LockStep :> LOCK_STEP = struct
                           let (* make sure the result queue has at least something in it. *)
                               val _ = case Heap.min (!heap) of
                                           SOME (p, ssteps as (ss as SS {step, accum_score})::_) =>
-                                          Heap.insert result_heap (~accum_score) ssteps
+                                          update_best_result (accum_score, ssteps)
                                        | _ => raise LockStep "but I justed inserted!?"
                           in
                               ()
@@ -185,11 +210,10 @@ structure LockStep :> LOCK_STEP = struct
                         val _ =
                             case state_opt of
                                 SOME(new_state) =>
-                                Heap.insert (!next_heap) (combined_score) new_sequence
+                                add_to_next_heap combined_score new_sequence new_state
                               | NONE =>
                                 (* We've reached an end state. emit it. *)
-                                Heap.insert result_heap (~new_accum_score)
-                                            new_sequence
+                                update_best_result (new_accum_score, new_sequence)
                     in
                         ()
                     end
@@ -219,18 +243,16 @@ structure LockStep :> LOCK_STEP = struct
 
         val () = search_loop ()
     in
-        result_heap
+        case !best_result of
+            SOME(s, ssteps) => ssteps
+         |  NONE => raise LockStep "impossible?"
     end
 
 
-  fun play_to_end (state, heuristic, time_limit) =
+  fun play_to_end (state, heuristic, time_limit, use_stateset) =
     let
         val deadline = Time.+(time_limit, Time.now())
-        val result_heap = accumulate_best (state, heuristic, deadline)
-        val scored_steps =
-            case Heap.min result_heap of
-                SOME(_, ssteps) => ssteps
-              | NONE => raise LockStep "impossible?"
+        val scored_steps = accumulate_best (state, heuristic, deadline, use_stateset)
         val steps = List.map (fn SS {step, ...} => step) scored_steps
     in
         steps
@@ -244,6 +266,5 @@ structure LockStep :> LOCK_STEP = struct
     in
         (py * 500) + future_pieces + alive_bonus
     end
-
 
 end

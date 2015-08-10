@@ -17,6 +17,8 @@ sig
   (* Just my favorite solutions *)
   val test_solutions : (string * solution) list
 
+  val submit_solutions : (string * solution) list
+
   (* Consensus current best from tests *)
   val best_solution : solution
 

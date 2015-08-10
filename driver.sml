@@ -22,7 +22,10 @@ struct
     "phrase"
 
   fun main () =
-      let val problem = Board.fromjson (!inputfile)
+      let (* val () = MLton.Rlimit.set (MLton.RLimit.datasize,
+                                     {hard = Params.asint 4096 !mem,
+                                      soft = Params.asint 4096 !mem}) *)
+          val problem = Board.fromjson (!inputfile)
           val time = Int.div (Params.asint 60 timep,
                               Vector.length (Board.seeds problem))
           val mem = Params.asint 1024 memp

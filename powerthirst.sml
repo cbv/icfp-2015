@@ -43,9 +43,10 @@ struct
         | loopsteps state stream_state ((step as LockStep.Step {state=next_state, ...})::tl) =
         let
           val (this, stream_state') = lchrs_for_step state stream_state step
-          val rest = (case next_state of
-                        SOME state' => loopsteps state' stream_state' tl
-                      | NONE => [])
+          val rest = (case (next_state, tl) of
+                        (SOME state', _ :: _) => loopsteps state' stream_state' tl
+                       | (NONE, _) => []
+                       | (_,[]) => [])
         in
           this @ rest
         end
