@@ -1,8 +1,8 @@
 structure Driver =
 struct
 
-  val inputfile = Params.param ""
-    (SOME("-f", "File containing JSON encoded input"))
+  val inputfiles = Params.paramacc []
+    (SOME("-f", "File containing JSON encoded input", #","))
     "file"
 
   val timep = Params.param "60"
@@ -21,20 +21,15 @@ struct
     (SOME("-p", "Phrase of power", #","))
     "phrase"
 
-  fun main () =
-      let (* val () = MLton.Rlimit.set (MLton.RLimit.datasize,
-                                     {hard = Params.asint 4096 !mem,
-                                      soft = Params.asint 4096 !mem}) *)
-          val problem = Board.fromjson (!inputfile)
-          val time = Int.div (Params.asint 60 timep,
-                              Vector.length (Board.seeds problem))
-          val mem = Params.asint 1024 memp
+  fun solve_problem time file =
+      let val problem = Board.fromjson file
+          val time = Int.div (time, Vector.length (Board.seeds problem))
           fun obj_of_sol sol seed_idx =
               "{ \"problemId\": " ^ Int.toString (Board.id problem) ^ ",\n" ^
               "\"seed\": " ^
               Word.toString (Vector.sub (Board.seeds problem, seed_idx)) ^ ",\n" ^
               "\"solution\": \"" ^ sol ^ "\"\n}"
-          val s =
+      in
               Vector.foldli (fn (seed_idx, _, s) =>
                         let val sol =
                                 Solutions.best_solution {seconds = time,
@@ -44,8 +39,14 @@ struct
                         in
                             s ^ obj_of_sol sol seed_idx ^ ",\n"
                         end)
-                    "["
+                    ""
                     (Board.seeds problem)
+      end
+
+  fun main () =
+      let val time = Int.div (Params.asint 60 timep, List.length (!inputfiles))
+          val sols = List.map (solve_problem time) (!inputfiles)
+          val s = "[" ^ String.concat sols
           val s' = String.substring (s, 0, (String.size s) - 2) ^ "]"
       in
           print s'
