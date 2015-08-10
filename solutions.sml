@@ -39,7 +39,7 @@ struct
   fun positive t = if t <= 0 then 1
                    else t
 
-  fun high_with_endgame engram { seconds, problem, seed_idx, power } =
+  fun high_with_endgame prefix engram { seconds, problem, seed_idx, power } =
     let
       val start = Time.now ()
       val time_for_search = positive (seconds div 2)
@@ -49,21 +49,37 @@ struct
         Pathfind.PowerHeuristics.robin engram power
 
       val state = Board.reset (problem, seed_idx)
-      val heuristic = both_heuristic
-      val steps = rev (LockStep.play_to_end (state, heuristic,
-                                             Time.fromSeconds (IntInf.fromInt seconds), true))
-      val after_search = Time.now ()
-      val elapsed = IntInf.toInt (Time.toSeconds (Time.-(after_search, start)))
-      val remaining = positive (seconds - elapsed)
 
-      val lchrs = PowerThirst.polish remaining state powerstream steps
+      fun f () =
+        let
+          val heuristic = both_heuristic
+          val steps = rev (LockStep.play_to_end (state, heuristic,
+                                                 Time.fromSeconds (IntInf.fromInt seconds), true))
+          val after_search = Time.now ()
+          val elapsed = IntInf.toInt (Time.toSeconds (Time.-(after_search, start)))
+          val remaining = positive (seconds - elapsed)
+
+          val lchrs = PowerThirst.polish remaining state powerstream steps
+        in
+          implode (List.map Board.forgetlegal lchrs)
+        end
     in
-      implode (List.map Board.forgetlegal lchrs)
+      if PowerUtil.can_execute state prefix then
+        let in
+          PowerUtil.execute state prefix;
+          prefix ^ f ()
+        end
+      else
+        f ()
     end
+        
 
-  val highfive = high_with_endgame "ia! ia!"
-  val highsix = high_with_endgame "ei!"
-  val highseven = high_with_endgame "ia! ia! "
+  val highfive = high_with_endgame "" "ia! ia!"
+  val highsix = high_with_endgame "" "ei!"
+  val highseven = high_with_endgame "" "ia! ia! "
+
+  val high51 = high_with_endgame "ph'nglui mglw'nafh cthulhu r'lyeh wgah'nagl fhtagn."
+                                 "ia! ia! "
 
   val all_solutions =
     [("david", david),
@@ -78,10 +94,11 @@ struct
      ("highsix", highsix)]
 
   val submit_solutions =
-    [("highseven", highseven),
-     ("highsix", highsix)]
-(*     ("highfive", highfive),
-     ("highsix", highsix)] *)
+    [
+      ("high51", high51),
+      (* ("highseven", highseven), *)
+      (* ("highsix", highsix) *)
+    ]
 
   (* Time notwithstanding, this produces the best scores in our test:
 
@@ -140,10 +157,7 @@ struct
         23      669      669
         24      93386    130380
 
-        *)
-  (* This had the highest score on 60 problem seeds,
-     whereas five and six were 35 and 25. But often those
-     victories are clustered into a single problem... *)
-  val best_solution = highseven
+  *)
+  val best_solution = highsix
 
 end

@@ -141,12 +141,11 @@ struct
      "hoghoghogpppppphogbaoht z'uqqamoggklarkashton", (* pb_227 *)
      "hoghoghogbhogbbklarkashtonraandaiib'nk", (* pb_a80 *)
      "hoghoghogbbbbbbraandaiib'nknobody is nobody. everyone has something to offer.ruhtra dyoll", (* pb_add *)
-     (* "hoghogbbbbbbbtoday's impossible is tomorrow's reality", (* pb_29e *) *)
-
-     "hoghoghogbhogpenny priddy", (* pb_aed *)
-
-     (* XXX unchecked: *)
-     (* "shubnigguraththe case of charles dexter wardidhyaathe transition of juan romerothe moon bogthe houndhaioghyaivolgnagathgur'layayegghayibbtstll", (* pb_f91 *) BROKEN *)
+     "hoghogbbbbbbbtoday's impossible is tomorrow's reality", (* pb_29e *)
+     "hoghogbbbbbbbbhogdresden rice", (* pb_520 *)
+     "hoghoghogbhogpenny priddy", (* pb_913, also pb_aed *)
+     "hogppppppbbbbbhogportland retro gaming expobokrug", (* pb_d78 *)
+     "hogbbbbbbbbhoghogsecure. contain. protect.", (* pb_5ca *)
      ""]
 
 end

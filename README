@@ -1,6 +1,7 @@
 ICFP Contest 2015
 Cult of the Bound Variable
 
+
 Please see constitution.txt for participants.
 
 
@@ -13,4 +14,53 @@ variety of techniques, mostly guessing, and algebra.
 
 <3
 
-Cult of Bound Variable
+Cult of the Bound Variable
+
+<<<<< MERGE CONFLICT
+
+Overview
+--------
+
+Our solvers generally work in two phases: first, play Hextris well; then,
+attempt to insert phrases of power into the solution.  Playing Hextris
+well involves a variety of game tree searches over "lock steps" that are
+reachable from a unit's initial position.  Once a sequence of lock steps
+are chosen, power phrase insertion (PowerThirst) attempts to find ways of
+inserting phrases of power into the sequence of moves making up a lock step
+while maintaining its target position as reachable.  We attempt to insert
+each power phrase at least once.
+
+
+Phrases of Power
+----------------
+
+To find phrases of power, we built a tool, PowerBall, to construct maximal
+sequences target words that are legal, sometimes perturbing the beginning
+of the sequence with some commands to move away from the top (hog, b, p).
+We seeded a database of target words with everything we could think of or
+find reference to relating to the Cthulhu mythos, H. P. Lovecraft, Stross's
+Laundry Files series, Buckaroo Banzai, and a few other topics that we felt
+were thematically appropriate, e.g., Church of the Subgenius, Discordianism,
+Robert Anton Wilson, and various other bits of nerd culture.
+
+For a full list of target words and phrases, see powerball.txt.
+
+We manually ran the "experiments" produced by PowerBall and added any
+negative results to PowerBall's "exclusion" list -- PowerBall carefully
+ignores any phrase that's already known to be a phrase of power or any
+phrase that is known *not* to be a phrase of power because it's a substring
+of a solution known to contain no phrases of power.
+
+We also built a tool, PowerWalk, to digest the situation where we accidentally
+stumbled upon a phrase of power in a submitted solution -- if the contest
+server's score differs from our own, we can use some math and some computation
+to determine candidate substrings that could account for the discrepancy by
+being considered phrases of power.  Unfortunately, it only really discovered
+one power word this way, which was "bap", which actually wasn't a power word
+at all but merely a bug in the contest server's score computation.  ("bap" is
+isomorphic to "ei!", a bona fide power phrase.)  PowerWalk was nonetheless
+useful for providing a list of candidates to visually scan for plausibility
+when PowerBall discovered that a phrase of power was embedded in a large string
+with many potential target words -- usually, the only actual complete phrase of
+the appropriate target length would be obvious in a list of candidates.
+
