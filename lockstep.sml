@@ -102,21 +102,24 @@ structure LockStep :> LOCK_STEP = struct
         val next_heap = ref (Heap.empty ())
         val _ = Heap.insert (!heap) 0 []
         val iter = ref 0
+        val step_start_time = ref (Time.now())
 
-        fun single_step () =
+        fun search_loop () =
           case Heap.min (!heap) of
               NONE =>
               if Heap.size (!next_heap) > 0
               then
                   let
                       val () = print ("stepping. next heap size = "  ^ Int.toString (Heap.size (!next_heap)) ^ "\n")
+                      val now = Time.now()
+                      val elapsed = Time.-(now, !step_start_time)
+                      val () = (step_start_time := now)
                       val () = heap := (!next_heap)
                       val () = next_heap := (Heap.empty())
                       val () =
                           if Heap.size (!heap) > 10000
                           then
                               let
-                                  val () = print "TOOOOO BIG\n\n\n\n\n"
                                   val old_heap = !heap
                                   val new_heap = Heap.empty ()
                                   val () = Util.for 0 1000 (fn _ =>
@@ -130,7 +133,7 @@ structure LockStep :> LOCK_STEP = struct
                               end
                           else ()
                   in
-                      single_step()
+                      search_loop()
                   end
               else ()
             | SOME (neg_combined_score, ssteps) =>
@@ -192,12 +195,11 @@ structure LockStep :> LOCK_STEP = struct
                         | _ => raise LockStep "impossible"
                   else ());
 
-                  if (!iter) mod 1000 = 0 andalso Time.>(Time.now(), deadline)
-                  then ()
-                  else single_step()
+
+                  search_loop ()
               end
 
-        val () = single_step ()
+        val () = search_loop ()
     in
         result_heap
     end
