@@ -148,7 +148,18 @@ structure LockStep :> LOCK_STEP = struct
                               end
                           else ()
                   in
-                      search_loop()
+                      if Time.>(time_left, Time.zeroTime)
+                      then search_loop()
+                      else
+                          let (* make sure the result queue has at least something in it. *)
+                              val _ = case Heap.min (!heap) of
+                                          SOME (p, ssteps as (ss as SS {step, accum_score})::_) =>
+                                          Heap.insert result_heap (~accum_score) ssteps
+                                       | _ => raise LockStep "but I justed inserted!?"
+                          in
+                              ()
+                          end
+
                   end
               else ()
             | SOME (neg_combined_score, ssteps) =>
