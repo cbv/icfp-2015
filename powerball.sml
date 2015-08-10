@@ -108,12 +108,12 @@ struct
     | make_experiments (prefix, guesses) =
     let
       (* XXX in all states.. *)
-      val problem_idx = 24
-      val seed : Word32.word = 0w18
+      val problem_idx = 20
+      val seed : Word32.word = 0w0
     in
-      case make_experiment 24 0w18 prefix guesses of
+      case make_experiment 20 0w0 prefix guesses of
         ("", _) =>
-          if size prefix > 10 then guesses
+          if size prefix > 15 then guesses
 (*          then
             let in
               print ("Stuck. Leftover guesses (" ^
