@@ -137,7 +137,7 @@ structure LockStep :> LOCK_STEP = struct
                               let
                                   val old_heap = !heap
                                   val new_heap = Heap.empty ()
-                                  val () = Util.for 0 nodes_per_step (fn _ =>
+                                  val () = Util.for 0 (nodes_per_step-1) (fn _ =>
                                                              case Heap.min old_heap
                                                               of SOME(p, v) => (
                                                                   Heap.insert new_heap p v;
