@@ -19,35 +19,8 @@ fun main () =
     val power_phrases = Phrases.power
     val power_phrases = ["the deep ones"]
 
-    val Pathfind.PS {stream_state=init_stream_state, query} =
+    val powerstream =
         Pathfind.PowerHeuristics.robin power_phrases
-
-    fun lchrs_for_step state stream_state (LockStep.Step {px, py, a, commands, ...}) =
-      let
-        val powa = Pathfind.find_with_power state
-                                            (Pathfind.Target {px=px, py=py, a=a})
-                                            (Pathfind.PS { stream_state = stream_state,
-                                                           query = query })
-        val lock_lchr = Board.anychar (hd commands)
-      in
-        case powa of SOME (x, stream_state') => (x @ [lock_lchr], stream_state')
-                   | NONE => (* shouldn't happen, but just in case... *)
-                     (map Board.anychar (rev commands), stream_state)
-      end
-
-
-
-
-    fun steps_to_lchrs state ss [] = raise Match
-      | steps_to_lchrs state ss ((step as LockStep.Step {state=next_state, ...})::tl) =
-        let
-          val (this, ss') = lchrs_for_step state ss step
-          val rest = (case next_state of
-                          SOME state' => steps_to_lchrs state' ss' tl
-                        | NONE => [])
-        in
-          this @ rest
-        end
 
     fun do_seed (problemId, problem, seed_idx, seed) =
       let
@@ -55,7 +28,7 @@ fun main () =
         val heuristic = LockStep.simple_heuristic problem
         val seconds = Params.asint 3 timelimitp
         val steps = rev (LockStep.play_to_end (state, heuristic, Time.fromSeconds (IntInf.fromInt seconds)))
-        val lchrs = steps_to_lchrs state init_stream_state steps
+        val lchrs = PowerThirst.polish state powerstream steps
       in
         (if seed_idx > 0
          then print ",\n"
