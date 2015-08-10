@@ -57,6 +57,21 @@ struct
     fun clone (sz, arr) =
       (sz, Word32Array.tabulate (Word32Array.length arr,
                                  fn i => Word32Array.sub(arr, i)))
+
+    fun length (sz, _) = sz
+
+    fun copyover { src = (_, src), dst = (_, dst) } =
+      Word32Array.copy { di = 0, dst = dst, src = src }
+
+    fun allrange f (ba, start, num) =
+      let
+        fun ar (_, 0) = true
+          | ar (start, num) =
+          f (sub(ba, start)) andalso
+          ar (start + 1, num - 1)
+      in
+        ar (start, num)
+      end
   end
 
   type legalchar = char
@@ -83,7 +98,8 @@ struct
 
   datatype problem =
     P of { id : int,
-           start : bool vector,
+           (* read-only *)
+           start : BitArray.array,
            width : int,
            height : int,
            sourcelength : int,
@@ -119,7 +135,7 @@ struct
                                      val compare = stutterorder)
 
   datatype state =
-    S of { board: bool array,
+    S of { board: BitArray.array,
            problem: problem,
            score: int ref,
 
@@ -360,18 +376,18 @@ struct
                   start = get_start_coord p }
         end
 
-      val a = Array.array (width * height, false)
+      val a = BitArray.array (width * height, false)
 
       val power = Vector.map (StringUtil.reverse o
                               StringUtil.lcase) power
     in
       app (fn (x, y) =>
-           Array.update (a, y * width + x, true)) filled;
+           BitArray.update (a, y * width + x, true)) filled;
       P { id = id, width = width, height = height,
           seeds = Vector.fromList (map Word32.fromInt seeds),
           sourcelength = sourcelength,
           power = power,
-          start = Array.vector a,
+          start = a,
           pieces = Vector.fromList
           (map makepiece
            (map ExpectPiece (JSONUtils.List (j, "units")))) }
@@ -387,7 +403,7 @@ struct
   fun clone (S { board, next_sourceidx, last_lines, stutters, chars,
                  power_count, valid, problem, score, rng, piece,
                  a, x, y }) : state =
-           S { board = clone_array board,
+           S { board = BitArray.clone board,
                problem = problem,
                score = ref (!score),
                next_sourceidx = ref (!next_sourceidx),
@@ -406,7 +422,7 @@ struct
                   valid = ref true, ... },
               x, y) =
     x < 0 orelse y < 0 orelse x >= width orelse y >= height orelse
-    Array.sub (board, y * width + x)
+    BitArray.sub (board, y * width + x)
     | isfull _ = raise Board "invalid board in isfull/isempty"
   fun isempty (state, x, y) = not (isfull (state, x, y))
 
@@ -430,7 +446,7 @@ struct
         in
           px < 0 orelse py < 0 orelse
           px >= width orelse py >= height orelse
-          Array.sub (board, py * width + px)
+          BitArray.sub (board, py * width + px)
         end
     in
       Vector.exists is_collision oriented_piece
@@ -464,10 +480,7 @@ struct
     let
       val initial_rng = RNG.fromseed seed
 
-      (* PERF Faster way? *)
-      val board = Array.tabulate
-        (Vector.length start,
-         (fn x => Vector.sub(start, x)))
+      val board = BitArray.clone start
     in
       case getpiece (problem, board, 0, initial_rng) of
         (* TODO: Handle these gracefully if technically legal? *)
@@ -712,7 +725,7 @@ struct
 
   (* Imperatively update board to reflect deleted lines, and return
      the number of lines so deleted. *)
-  fun check_lines (P { width, height, ... }) board =
+  fun check_lines (P { width, height, ... }) (board : BitArray.array) =
     let
       val newy = ref (height - 1)
       val lines = ref 0
@@ -722,22 +735,22 @@ struct
        let
          val y = height - negy - 1
          val should_delete =
-             ArraySlice.all (fn x => x)
-                            (ArraySlice.slice(board, y * width, SOME width))
+           BitArray.allrange (fn x => x)
+           (board, y * width, width)
        in
          if should_delete
          then lines := !lines + 1
          else (if !newy <> y
                 then Util.for 0 (width - 1)
-                  (fn x => Array.update(board, !newy * width + x,
-                                        Array.sub(board, y * width + x)))
+                  (fn x => BitArray.update(board, !newy * width + x,
+                                           BitArray.sub(board, y * width + x)))
                else ();
                newy := !newy - 1)
        end);
       Util.for 0 (!newy)
       (fn y =>
        Util.for 0 (width - 1)
-       (fn x => Array.update(board, y * width + x, false)));
+       (fn x => BitArray.update(board, y * width + x, false)));
       !lines
     end
 
@@ -768,7 +781,7 @@ struct
               px < 0 orelse py < 0 orelse
               px >= width orelse py >= height orelse
               Array.sub (board, py * width + px) *)
-              Array.update (board, py * width + px, true)
+              BitArray.update (board, py * width + px, true)
             end
         in
           Vector.app write_to_board oriented_piece
@@ -905,7 +918,7 @@ struct
              capable of reinserting a line; it's actually pretty easy
              since we know what the contents of the line was (all
              full). *)
-          val old_board = clone_array board
+          val old_board = BitArray.clone board
           val old_rng = !rng
           val old_score = !score
           val old_x = !x
@@ -933,7 +946,7 @@ struct
               chars := old_chars;
               subtract_power power_count;
 
-              Array.copy {di = 0, dst = board, src = old_board}
+              BitArray.copyover { src = old_board, dst = board }
             end
 
           (* OK, now safe to modify anything we want... *)
@@ -1079,11 +1092,11 @@ struct
        let
          val off = y * width
          val parity =
-           ref (Array.sub (board, off + 0))
+           ref (BitArray.sub (board, off + 0))
        in
          Util.for 1 (width - 1)
          (fn x =>
-          let val value = Array.sub (board, off + x)
+          let val value = BitArray.sub (board, off + x)
           in
             if value <> !parity
             then (count := !count + 1;
@@ -1106,7 +1119,7 @@ struct
         (fn yy =>
          Util.for 0 (width - 1)
          (fn xx =>
-          if false = Array.sub (board, yy * width + xx)
+          if false = BitArray.sub (board, yy * width + xx)
           then
             let in
               (* more points, proportional to distance from botton *)
@@ -1123,7 +1136,7 @@ struct
   fun ba_sub (a, i) =
     Word32Array.sub (a, i div
     *)
-    type stateset = BoolArray.array
+    type stateset = BitArray.array
 
   local
     (* from jenkins *)
@@ -1150,9 +1163,9 @@ struct
         val b = ref (0wx9e3779b9 : Word32.word)
         val c = ref (0wxbeef : Word32.word)
       in
-        Util.for 0 (Array.length board - 1)
+        Util.for 0 (BitArray.length board - 1)
         (fn i =>
-         let val bit = if (Array.sub (board, i)) then 0w1 else 0w0
+         let val bit = if (BitArray.sub (board, i)) then 0w1 else 0w0
          in
            b := !b + bit;
            mix3 (a, b, c)
@@ -1166,13 +1179,14 @@ struct
   val BITSW = Word32.fromInt BITS
   (*   val WORDS = (BITS div 8) + 1 *)
   fun empty_stateset () = (* Array.array (WORDS, 0w0 : Word32.word) *)
-    BoolArray.array (BITS, false)
+    BitArray.array (BITS, false)
 
   fun hashkey (S { board, ... }) =
     Word32.toInt (Word32.mod (hashboard board, BITSW))
   fun insert stateset state =
-    BoolArray.update (stateset, hashkey state, true)
+    BitArray.update (stateset, hashkey state, true)
   fun contains stateset state =
-    BoolArray.sub (stateset, hashkey state)
+    BitArray.sub (stateset, hashkey state)
 
+  val () = print ("Size: " ^ Int.toString (MLton.size (empty_stateset ())) ^ "\n")
 end
