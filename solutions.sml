@@ -54,7 +54,7 @@ struct
         let
           val heuristic = both_heuristic
           val steps = rev (LockStep.play_to_end (state, heuristic,
-                                                 Time.fromSeconds (IntInf.fromInt seconds), true))
+                                                 Time.fromSeconds (IntInf.fromInt time_for_search), true))
           val after_search = Time.now ()
           val elapsed = IntInf.toInt (Time.toSeconds (Time.-(after_search, start)))
           val remaining = positive (seconds - elapsed)
