@@ -34,7 +34,7 @@ structure LockStep :> LOCK_STEP = struct
           | mapper (ForwardChain.PL {locked = (SOME (ForwardChain.NEW_PIECE state)),
                                      px, py, a, commands, score, ... }) =
             SOME (Step {px = px, py = py, a = a, commands = commands,
-                        state = SOME(Board.clone state), scored = score})
+                        state = SOME(state), scored = score})
           | mapper (ForwardChain.PL {locked = (SOME ForwardChain.ALL_DONE),
                                      px, py, a, commands, score, ... }) =
             SOME (Step {px = px, py = py, a = a, commands = commands, state = NONE, scored = score })
@@ -58,7 +58,7 @@ structure LockStep :> LOCK_STEP = struct
             (Heap.insert heap (~((score + accum) * HEURISTIC_FACTOR + (heuristic (HI {state = state,
                                                                            px = px, py = py, a = a}))))
                         (Step {px = px, py = py, a = a, commands = commands,
-                               state = SOME(Board.clone state), scored = score});())
+                               state = SOME(state), scored = score});())
           | apper (ForwardChain.PL {locked = (SOME ForwardChain.ALL_DONE),
                                      px, py, a, commands, score, ... }) =
             (Heap.insert heap (~((score + accum)* HEURISTIC_FACTOR))
