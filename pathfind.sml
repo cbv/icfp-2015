@@ -218,7 +218,7 @@ struct
 
   fun find_without_power _ _ (PS {stream_state, ...}) rev_commands =
     let
-      val commands = rev rev_commands
+      val commands = rev (List.tl rev_commands)
     in
       (* PERF: In a pinch, use anychars that are likely to produce short
          power phrases like ei! *)
